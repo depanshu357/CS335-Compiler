@@ -59,34 +59,41 @@ extern int yydebug;
     INDENT = 260,                  /* INDENT  */
     DEDENT = 261,                  /* DEDENT  */
     NAME = 262,                    /* NAME  */
-    POW = 263,                     /* POW  */
-    FLOOR_DIV = 264,               /* FLOOR_DIV  */
-    DIV = 265,                     /* DIV  */
-    MUL = 266,                     /* MUL  */
-    ADD = 267,                     /* ADD  */
-    SUB = 268,                     /* SUB  */
-    MOD = 269,                     /* MOD  */
-    SHIFT_LEFT = 270,              /* SHIFT_LEFT  */
-    SHIFT_RIGHT = 271,             /* SHIFT_RIGHT  */
-    BITWISE_AND = 272,             /* BITWISE_AND  */
-    BITWISE_XOR = 273,             /* BITWISE_XOR  */
-    BITWISE_OR = 274,              /* BITWISE_OR  */
-    TILDE = 275,                   /* TILDE  */
-    AT = 276,                      /* AT  */
-    COMMA = 277,                   /* COMMA  */
-    EQ = 278,                      /* EQ  */
-    NE = 279,                      /* NE  */
-    LT = 280,                      /* LT  */
-    GT = 281,                      /* GT  */
-    LE = 282,                      /* LE  */
-    GE = 283,                      /* GE  */
-    IN = 284,                      /* IN  */
-    IS = 285,                      /* IS  */
-    IF = 286,                      /* IF  */
-    ELSE = 287,                    /* ELSE  */
-    AND = 288,                     /* AND  */
-    OR = 289,                      /* OR  */
-    NOT = 290                      /* NOT  */
+    YIELD = 263,                   /* YIELD  */
+    FROM = 264,                    /* FROM  */
+    ELIF = 265,                    /* ELIF  */
+    POW = 266,                     /* POW  */
+    FLOOR_DIV = 267,               /* FLOOR_DIV  */
+    DIV = 268,                     /* DIV  */
+    MUL = 269,                     /* MUL  */
+    ADD = 270,                     /* ADD  */
+    SUB = 271,                     /* SUB  */
+    MOD = 272,                     /* MOD  */
+    EQUAL = 273,                   /* EQUAL  */
+    SHIFT_LEFT = 274,              /* SHIFT_LEFT  */
+    SHIFT_RIGHT = 275,             /* SHIFT_RIGHT  */
+    BITWISE_AND = 276,             /* BITWISE_AND  */
+    BITWISE_XOR = 277,             /* BITWISE_XOR  */
+    BITWISE_OR = 278,              /* BITWISE_OR  */
+    TILDE = 279,                   /* TILDE  */
+    AT = 280,                      /* AT  */
+    COMMA = 281,                   /* COMMA  */
+    WAL_OP = 282,                  /* WAL_OP  */
+    COLON = 283,                   /* COLON  */
+    SEMI_COLON = 284,              /* SEMI_COLON  */
+    EQ = 285,                      /* EQ  */
+    NE = 286,                      /* NE  */
+    LT = 287,                      /* LT  */
+    GT = 288,                      /* GT  */
+    LE = 289,                      /* LE  */
+    GE = 290,                      /* GE  */
+    IN = 291,                      /* IN  */
+    IS = 292,                      /* IS  */
+    IF = 293,                      /* IF  */
+    ELSE = 294,                    /* ELSE  */
+    AND = 295,                     /* AND  */
+    OR = 296,                      /* OR  */
+    NOT = 297                      /* NOT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -99,7 +106,7 @@ union YYSTYPE
 
     int num;
 
-#line 103 "parser.tab.h"
+#line 110 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

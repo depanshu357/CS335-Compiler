@@ -9,22 +9,42 @@
 %union{
     int num;
 }
-%token KEYWORD NEWLINE INDENT DEDENT NAME 
-%token  POW FLOOR_DIV DIV MUL ADD SUB MOD 
+%token KEYWORD NEWLINE INDENT DEDENT NAME YIELD FROM ELIF
+%token  POW FLOOR_DIV DIV MUL ADD SUB MOD EQUAL
 %token SHIFT_LEFT SHIFT_RIGHT BITWISE_AND BITWISE_XOR BITWISE_OR TILDE  
-%token AT COMMA
+%token AT COMMA WAL_OP COLON SEMI_COLON 
 %token EQ NE LT GT LE GE
-%token IN IS IF ELSE
+%token IN IS IF ELSE 
 %token AND OR NOT
 
 %%
 
-/* file: statements ;
+file: 
+    /* empty */
+    |newline_star statements;
 
-statements: statements statement 
+/* interactive: 
+    statement_newline;
+
+eval: 
+    expressions newlines; */
+
+newline_star: NEWLINE newline_star
+    | ;
+
+newline_plus: NEWLINE newline_star
+    ;
+
+
+/* statement_newline: 
+    compound_stmt NEWLINE
+    | simple_stmt NEWLINE
+    NEWLINE */
+
+statements: statement newline_star statements 
             | statement ;
 
-statement: simple_stmts ;
+statement: simple_stmts | compound_stmt;
 
 simple_stmts: simple_stmt_without_semicolon
             | multiple_simple_stmts
@@ -33,19 +53,52 @@ simple_stmts: simple_stmt_without_semicolon
 simple_stmt_without_semicolon: simple_stmt NEWLINE
                                ;
 
-multiple_simple_stmts: simple_stmt_multiple_times ';' NEWLINE
+multiple_simple_stmts: simple_stmt SEMI_COLON NEWLINE
+| simple_stmt SEMI_COLON simple_stmt_multiple_times SEMI_COLON NEWLINE
+| simple_stmt SEMI_COLON simple_stmt_multiple_times NEWLINE
                       ;
 
-simple_stmt_multiple_times: simple_stmt_multiple_times ';' simple_stmt
+simple_stmt_multiple_times: simple_stmt_multiple_times SEMI_COLON simple_stmt
                            | simple_stmt
                            ;
 
-simple_stmt: 
-    KEYWORD {cout << "KEYWORD" << endl;}
+simple_stmt: assignment ; /* incomplete */
+
+compound_stmt:  // incomplete
+    if_stmt;
+
+/* if statement */
+
+if_stmt:
+      IF named_expression COLON block elif_stmt 
+    | IF named_expression COLON block else_block 
+    | IF named_expression COLON block {cout << "If" << endl;}
     ;
 
-block:  INDENT statements DEDENT {cout << "Block" << endl;}
-    | simple_stmts; */
+/* if_stmt: a b c d {cout << "If" << endl;}
+    ;
+a: IF {cout << "1" << endl;};
+b: named_expression {cout << "2" << endl;};
+c: COLON {cout << "3" << endl;}
+d: block {cout << "4" << endl;} */
+
+elif_stmt:
+     ELIF named_expression COLON block elif_stmt 
+    | ELIF named_expression COLON block else_block
+    | ELIF named_expression COLON block 
+    ;
+else_block:
+     ELSE COLON block
+    ;
+block: NEWLINE INDENT statements DEDENT {cout << "Block" << endl;} //not defined properly
+    | simple_stmts;
+
+assignment: //incomplete
+    NAME COLON expression {cout << "Assignment" << endl;}
+    | NAME COLON expression EQUAL annotated_rhs
+    ;
+annotated_rhs: 
+    yield_expr | star_expressions;
 
 /* expressions */
 
@@ -54,6 +107,26 @@ expressions: expression COMMA expressions
     | expression
     ;
 
+named_expression: 
+    assignment_expression
+    | expression ;
+
+assignment_expression:
+     NAME WAL_OP expression ;
+
+yield_expr: 
+    YIELD FROM expression
+    | YIELD star_expressions
+    | YIELD ;
+
+star_expressions: 
+    star_expression COMMA star_expressions 
+    | star_expression COMMA
+    | star_expression
+
+star_expression:
+    MUL bitwise_or ; 
+    | expression ;
 
 expression:         
     disjunction IF disjunction ELSE disjunction
@@ -79,7 +152,7 @@ comparison: bitwise_or compare_op_bitwise_or_pairs
     | bitwise_or ;
 
 compare_op_bitwise_or_pairs: 
-    compare_op_bitwise_or_pairs compare_op_bitwise_or_pair
+    compare_op_bitwise_or_pair compare_op_bitwise_or_pairs
     | compare_op_bitwise_or_pair
     ;
 
@@ -143,11 +216,11 @@ term:
     ;
 
 factor:
-    ADD factor
-    | SUB factor
-    | TILDE factor // tilde is not working , but detecting
-    | power
-
+    ADD factor {cout<<"ADD working\n";}
+    | SUB factor {cout<<"SUB working\n";}
+    | TILDE factor  {cout<<"TILDE working\n";} 
+    | power 
+;
 power : atom
     | atom POW atom
     ;
@@ -156,14 +229,12 @@ atom:
      NAME {cout << "Name" << endl;}
      // aur bhi likhna hai       ;
     ;
-/* compound_stmt: 
-    if_stmt ;
 
-if_stmt:  */
 %%
 
 int main(){
     indent_stack.push(0);
+    /* yylex(); */
     yyparse();
     return 0;
 }

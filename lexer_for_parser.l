@@ -50,10 +50,10 @@ ARITHMETIC_OP "+"|"-"|"*"|"/"|"//"|"%"|"**"
 RELATIONAL_OP "=="|"!="|">"|"<"|">="|"<="
 LOGICAL_OP "and"|"or"|"not"
 BITWISE_OP "&"|"|"|"^"|"~"|"<<"|">>"
-ASSIGNMENT_OP "="|"+="|"-="|"*="|"/="|"%="|"**="|"&="|"|="|"^="|"<<="|">>="
+ASSIGNMENT_OP "="|"+="|"-="|"*="|"/="|"%="|"**="|"&="|"|="|"^="|"<<="|">>="|"//="|":="
 
 
-DELIMITER "("|")"|"["|"]"|"{"|"}"|","|":"|"."|";"|"@"|"->"|"//="|"@="|"|="
+DELIMITER "("|")"|"["|"]"|"{"|"}"|","|":"|"."|";"|"@"|"->"|"@="|"|="
 
 
 COMMENT "#"[^\n]*
@@ -78,6 +78,9 @@ RANGE "range"
     else if(oper=="and") return AND;
     else if(oper=="or") return OR;
     else if(oper=="not") return NOT;
+    else if(oper=="yield") return YIELD;
+    else if(oper=="from") return FROM;
+    else if(oper=="elif") return ELIF;
     // baki ka likhna baki hai
 }
 {IDENTIFIER} { cout<<"IDENTIFIER"<<" "<<yytext<<endl; return NAME; }
@@ -119,7 +122,8 @@ RANGE "range"
     else if(oper=="*") return MUL;
     else if(oper=="+") return ADD;
     else if(oper=="-") return SUB;
-    else if(oper=="%") return MOD;
+    else if(oper=="%") {return MOD;}
+    else if(oper=="=") return EQUAL;
 }
 
 {BITWISE_OP} { 
@@ -142,13 +146,17 @@ RANGE "range"
     else if(oper=="<=") return LE;
 }
 
-
+{ASSIGNMENT_OP} {
+    string oper = yytext;
+    if(oper==":=") return WAL_OP;
+}
 
 {DELIMITER} { 
     cout<<"DELIMITER"<<" "<<yytext<<endl;
     string oper = yytext;
     if(oper=="@") return AT;
     else if(oper==",") return COMMA;
+    else if(oper==":") return COLON;
 }
 
 {ERRORCHAR} {
@@ -157,7 +165,7 @@ RANGE "range"
 }
 
 . { }
-"\n" { cout<<"NEWLINE"<<endl; ;}
+"\n" { cout<<"NEWLINE"<<endl; return NEWLINE ;}
 %%
 
 // int main(){

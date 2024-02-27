@@ -1,4 +1,5 @@
-x
-if variable
-else 
-k
+x: x+y
+
+
+
+if x + y: x:y+z - variabel % x
