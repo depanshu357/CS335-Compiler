@@ -50,10 +50,10 @@ ARITHMETIC_OP "+"|"-"|"*"|"/"|"//"|"%"|"**"
 RELATIONAL_OP "=="|"!="|">"|"<"|">="|"<="
 LOGICAL_OP "and"|"or"|"not"
 BITWISE_OP "&"|"|"|"^"|"~"|"<<"|">>"
-ASSIGNMENT_OP "="|"+="|"-="|"*="|"/="|"%="|"**="|"&="|"|="|"^="|"<<="|">>="
+ASSIGNMENT_OP "="|"+="|"-="|"*="|"/="|"%="|"**="|"&="|"|="|"^="|"<<="|">>="|"//="
 
 
-DELIMITER "("|")"|"["|"]"|"{"|"}"|","|":"|"."|";"|"@"|"->"|"//="|"@="|"|="
+DELIMITER "("|")"|"["|"]"|"{"|"}"|","|":"|"."|";"|"@"|"->"|"@="|"|="
 
 
 COMMENT "#"[^\n]*
@@ -119,7 +119,7 @@ RANGE "range"
     else if(oper=="*") return MUL;
     else if(oper=="+") return ADD;
     else if(oper=="-") return SUB;
-    else if(oper=="%") return MOD;
+    else if(oper=="%") {cout<<"perc";return MOD;}
 }
 
 {BITWISE_OP} { 

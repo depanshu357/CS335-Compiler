@@ -1,4 +1,1 @@
-x
-if variable
-else 
-k
+x+-y

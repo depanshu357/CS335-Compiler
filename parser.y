@@ -73,7 +73,7 @@ comparison: bitwise_or compare_op_bitwise_or_pairs
     | bitwise_or ;
 
 compare_op_bitwise_or_pairs: 
-    compare_op_bitwise_or_pairs compare_op_bitwise_or_pair
+    compare_op_bitwise_or_pair compare_op_bitwise_or_pairs
     | compare_op_bitwise_or_pair
     ;
 
@@ -137,11 +137,11 @@ term:
     ;
 
 factor:
-    ADD factor
-    | SUB factor
-    | TILDE factor // tilde is not working , but detecting
-    | power
-
+    ADD factor {cout<<"ADD working\n";}
+    | SUB factor {cout<<"SUB working\n";}
+    | TILDE factor  {cout<<"TILDE working\n";} 
+    | power 
+;
 power : atom
     | atom POW atom
     ;
@@ -158,6 +158,7 @@ if_stmt:  */
 
 int main(){
     indent_stack.push(0);
+    /* yylex(); */
     yyparse();
     return 0;
 }
