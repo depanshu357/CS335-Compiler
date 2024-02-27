@@ -485,7 +485,6 @@ comma_arg_star: COMMA argument comma_arg_star
 
 argument: test 
     | test comp_for 
-    | test WAL_OP test 
     | test EQUAL test 
     | POW test 
     | MUL test
@@ -521,10 +520,6 @@ yield_arg: FROM test
 func_body_suite: simple_stmt 
     | NEWLINE INDENT stmt_plus DEDENT
     | NEWLINE TYPE_COMMENT NEWLINE INDENT stmt_plus DEDENT
-
-stmt_plus: stmt stmt_plus
-    | stmt
-    ;
 
 func_type_input: func_type
     | func_type NEWLINE
