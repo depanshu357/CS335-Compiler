@@ -9,226 +9,199 @@
 %union{
     int num;
 }
-%token KEYWORD NEWLINE INDENT DEDENT NAME YIELD FROM ELIF
-%token  POW FLOOR_DIV DIV MUL ADD SUB MOD EQUAL
+%token KEYWORD NEWLINE INDENT DEDENT NAME YIELD FROM ELIF AWAIT ASYNC TRUE FALSE NONE
+%token INTEGER FLOAT STRING
+%token POW FLOOR_DIV DIV MUL ADD SUB MOD EQUAL
 %token SHIFT_LEFT SHIFT_RIGHT BITWISE_AND BITWISE_XOR BITWISE_OR TILDE  
-%token AT COMMA WAL_OP COLON SEMI_COLON 
+%token AT COMMA WAL_OP COLON SEMI_COLON SMALL_OPEN SMALL_CLOSE BOX_OPEN BOX_CLOSE CURLY_OPEN CURLY_CLOSE 
 %token EQ NE LT GT LE GE
 %token IN IS IF ELSE 
 %token AND OR NOT
 
 %%
+/* operators*/
+namedexpr_test: test ;
 
-file: 
-    /* empty */
-    |newline_star statements;
+test: or_test;
+    |or_test IF or_test ELSE test;
 
-/* interactive: 
-    statement_newline;
+test_nocond: or_test;
 
-eval: 
-    expressions newlines; */
+or_test: and_test or_and_test_star;
 
-newline_star: NEWLINE newline_star
-    | ;
+or_and_test_star:OR and_test or_and_test_star 
+    | /*empty*/
+    ;
+    
+and_test: not_test and_not_test_star;
 
-newline_plus: NEWLINE newline_star
+and_not_test_star: AND not_test and_not_test_star
+    | /*empty*/
     ;
 
-
-/* statement_newline: 
-    compound_stmt NEWLINE
-    | simple_stmt NEWLINE
-    NEWLINE */
-
-statements: statement newline_star statements 
-            | statement ;
-
-statement: simple_stmts | compound_stmt;
-
-simple_stmts: simple_stmt_without_semicolon
-            | multiple_simple_stmts
-            ;
-
-simple_stmt_without_semicolon: simple_stmt NEWLINE
-                               ;
-
-multiple_simple_stmts: simple_stmt SEMI_COLON NEWLINE
-| simple_stmt SEMI_COLON simple_stmt_multiple_times SEMI_COLON NEWLINE
-| simple_stmt SEMI_COLON simple_stmt_multiple_times NEWLINE
-                      ;
-
-simple_stmt_multiple_times: simple_stmt_multiple_times SEMI_COLON simple_stmt
-                           | simple_stmt
-                           ;
-
-simple_stmt: assignment ; /* incomplete */
-
-compound_stmt:  // incomplete
-    if_stmt;
-
-/* if statement */
-
-if_stmt:
-      IF named_expression COLON block elif_stmt 
-    | IF named_expression COLON block else_block 
-    | IF named_expression COLON block {cout << "If" << endl;}
-    ;
-
-/* if_stmt: a b c d {cout << "If" << endl;}
-    ;
-a: IF {cout << "1" << endl;};
-b: named_expression {cout << "2" << endl;};
-c: COLON {cout << "3" << endl;}
-d: block {cout << "4" << endl;} */
-
-elif_stmt:
-     ELIF named_expression COLON block elif_stmt 
-    | ELIF named_expression COLON block else_block
-    | ELIF named_expression COLON block 
-    ;
-else_block:
-     ELSE COLON block
-    ;
-block: NEWLINE INDENT statements DEDENT {cout << "Block" << endl;} //not defined properly
-    | simple_stmts;
-
-assignment: //incomplete
-    NAME COLON expression {cout << "Assignment" << endl;}
-    | NAME COLON expression EQUAL annotated_rhs
-    ;
-annotated_rhs: 
-    yield_expr | star_expressions;
-
-/* expressions */
-
-expressions: expression COMMA expressions 
-    | expression COMMA 
-    | expression
-    ;
-
-named_expression: 
-    assignment_expression
-    | expression ;
-
-assignment_expression:
-     NAME WAL_OP expression ;
-
-yield_expr: 
-    YIELD FROM expression
-    | YIELD star_expressions
-    | YIELD ;
-
-star_expressions: 
-    star_expression COMMA star_expressions 
-    | star_expression COMMA
-    | star_expression
-
-star_expression:
-    MUL bitwise_or ; 
-    | expression ;
-
-expression:         
-    disjunction IF disjunction ELSE disjunction
-    | disjunction
-    // lambda expressions are to be ignored
-    ;
- 
-disjunction: conjuction OR disjunction
-    | conjuction
-    ;
-
-conjuction: inversion AND conjuction
-    | inversion
-    ;
-
-inversion: NOT inversion;
+not_test: NOT not_test
     | comparison
     ;
+    
+comparison: expr comp_op_expr_star ;
 
-/* comparsion operators */
-
-comparison: bitwise_or compare_op_bitwise_or_pairs
-    | bitwise_or ;
-
-compare_op_bitwise_or_pairs: 
-    compare_op_bitwise_or_pair compare_op_bitwise_or_pairs
-    | compare_op_bitwise_or_pair
+comp_op_expr_star: comp_op expr comp_op_expr_star
+    | /*empty*/
     ;
 
-compare_op_bitwise_or_pair:
-    eq_bitwise_or
-    | noteq_bitwise_or
-    | lte_bitwise_or
-    | lt_bitwise_or
-    | gte_bitwise_or
-    | gt_bitwise_or
-    | notin_bitwise_or
-    | in_bitwise_or
-    | isnot_bitwise_or
-    | is_bitwise_or     ;
-
-eq_bitwise_or: EQ bitwise_or;
-noteq_bitwise_or: NE bitwise_or;
-lte_bitwise_or: LE bitwise_or;
-lt_bitwise_or: LT bitwise_or;
-gte_bitwise_or: GE bitwise_or;
-gt_bitwise_or: GT bitwise_or;
-notin_bitwise_or: NOT IN bitwise_or;
-in_bitwise_or:  IN bitwise_or;
-isnot_bitwise_or: IS NOT bitwise_or;
-is_bitwise_or: IS bitwise_or;
-
-bitwise_or: 
-    bitwise_or BITWISE_OR bitwise_xor
-    | bitwise_xor
+comp_op: LT
+    |GT
+    |EQ
+    |GE
+    |LE
+    |NE
+    |IN
+    |NOT IN 
+    |IS 
+    |IS NOT 
     ;
 
-bitwise_xor: 
-    bitwise_xor BITWISE_XOR bitwise_and
-    | bitwise_and
+star_expr: MUL expr;
+
+expr: xor_expr symbol_xor_expr_star;
+
+symbol_xor_expr_star: BITWISE_OR xor_expr symbol_xor_expr_star
+    | /*empty*/
     ;
 
-bitwise_and: 
-    bitwise_and BITWISE_AND shift_expr
-    | shift_expr
+xor_expr: and_expr symbol_and_expr_star;
+
+symbol_and_expr_star: BITWISE_XOR and_expr symbol_and_expr_star
+    | /*empty*/
     ;
 
-shift_expr: 
-    shift_expr SHIFT_LEFT sum
-    | shift_expr SHIFT_RIGHT sum
-    | sum
+and_expr: shift_expr symbol_shift_expr_star;
+
+symbol_shift_expr_star: BITWISE_AND shift_expr symbol_shift_expr_star
+    | /*empty*/
     ;
 
-sum : 
-    sum ADD term
-    | sum SUB term
-    | term
+shift_expr: arith_expr shift_arith_expr_star ;
+
+shift_arith_expr_star: /*empty*/
+    | SHIFT_LEFT arith_expr shift_arith_expr_star
+    | SHIFT_RIGHT arith_expr shift_arith_expr_star
     ;
 
-term: 
-    term MUL factor
-    | term DIV factor
-    | term FLOOR_DIV factor
-    | term MOD factor
-    | term AT factor
-    | factor
+arith_expr: term symbol_term_star ;
+
+symbol_term_star: /*empty*/
+    | ADD term symbol_term_star
+    | SUB term symbol_term_star
     ;
 
-factor:
-    ADD factor {cout<<"ADD working\n";}
-    | SUB factor {cout<<"SUB working\n";}
-    | TILDE factor  {cout<<"TILDE working\n";} 
-    | power 
-;
-power : atom
-    | atom POW atom
+term: factor symbol_factor_star ;
+
+symbol_factor_star : /*empty*/
+    | symbol_factor symbol_factor_star
     ;
 
-atom:
-     NAME {cout << "Name" << endl;}
-     // aur bhi likhna hai       ;
+symbol_factor: MUL factor
+    | AT factor
+    | DIV factor
+    | FLOOR_DIV factor
     ;
+
+factor: ADD factor
+    | SUB factor
+    | TILDE factor
+    | power
+    ;
+    
+power: atom_expr 
+    | atom_expr POW factor
+    ;
+
+
+
+atom_expr: await_optional atom trailer_star;
+
+await_optional: AWAIT
+    | /*empty*/
+    ;
+    
+trailer_star: trailer trailer_star
+    | /*empty*/
+    ;
+    
+atom: SMALL_OPEN yield_expr_testlist_comp_optional SMALL_CLOSE 
+    |BOX_OPEN testlist_comp_optional BOX_CLOSE
+    |CURLY_OPEN dictorsetmaker_optional CURLY_CLOSE
+    | NAME 
+    | number 
+    | string_plus
+    | NONE 
+    | TRUE 
+    | FALSE
+    ;
+
+number: INTEGER
+    | FLOAT
+    ;
+
+string_plus: STRING string_plus
+    | /*empty*/
+    ;
+
+yield_expr_testlist_comp_optional: yield_expr
+    | testlist_comp
+    | /*empty*/
+    ;
+
+testlist_comp_optional: testlist_comp
+    | /*empty*/
+    ;
+
+dictorsetmaker_optional : dictorsetmaker
+    | /*empty*/
+    ;
+
+
+ /* Remaining from below */
+/* testlist_comp: (namedexpr_test|star_expr) ( comp_for | (',' (namedexpr_test|star_expr))* [','] )
+trailer: '(' [arglist] ')' | '[' subscriptlist ']' | '.' NAME
+subscriptlist: subscript (',' subscript)* [',']
+subscript: test | [test] ':' [test]
+exprlist: (expr|star_expr) (',' (expr|star_expr))* [',']
+testlist: test (',' test)* [',']
+dictorsetmaker: ( ((test ':' test | '**' expr)
+                   (comp_for | (',' (test ':' test | '**' expr))* [','])) |
+                  ((test | star_expr)
+                   (comp_for | (',' (test | star_expr))* [','])) )
+
+classdef: 'class' NAME ['(' [arglist] ')'] ':' suite
+
+arglist: argument (',' argument)*  [',']
+
+argument: ( test [comp_for] |
+            test ':=' test |
+            test '=' test |
+            '**' test |
+            '*' test )
+
+comp_iter: comp_for | comp_if
+sync_comp_for: 'for' exprlist 'in' or_test [comp_iter]
+comp_for: [ASYNC] sync_comp_for
+comp_if: 'if' test_nocond [comp_iter]
+
+encoding_decl: NAME
+
+yield_expr: 'yield' [yield_arg]
+yield_arg: 'from' test | testlist_star_expr
+
+func_body_suite: simple_stmt | NEWLINE [TYPE_COMMENT NEWLINE] INDENT stmt+ DEDENT
+
+func_type_input: func_type NEWLINE* ENDMARKER
+func_type: '(' [typelist] ')' '->' test
+typelist: (test (',' test)* [','
+       ['*' [test] (',' test)* [',' '**' test] | '**' test]]
+     |  '*' [test] (',' test)* [',' '**' test] | '**' test) */
+
 
 %%
 
