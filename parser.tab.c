@@ -612,7 +612,7 @@ static const yytype_int8 yypact[] =
        6,   -26,    34,    34,    34,     6,    14,    -8,    -6,    -7,
      -26,    10,    25,    28,     1,    11,    64,   -26,   -26,    40,
      -26,   -26,   -26,   -26,   -26,     6,     6,     6,    34,    34,
-      34,    34,    34,    34,    34,    34,     8,    22,    43,   -26,
+      34,    34,    34,    34,    34,    34,     8,    22,   -26,    43,
      -26,   -26,   -26,   -26,   -26,   -26,   -26,   -26,   -26,   -26,
       34,    34,    34,    34,    34,    34,    34,    34,    34,    34,
       34,    48,    30,   -26,   -26,    25,    44,    44,    44,    44,
@@ -641,8 +641,8 @@ static const yytype_int8 yydefact[] =
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -26,   -26,   -25,    35,    71,   -26,   -26,    41,   -26,   -26,
-     -26,   -26,   -26,   -26,   -26,   -26,   -26,   -26,   -24,    52,
+     -26,   -26,   -25,    35,    71,   -26,    41,   -26,   -26,   -26,
+     -26,   -26,   -26,   -26,   -26,   -26,   -26,   -26,   -24,    51,
       31,    32,   -22,    -2,     0,   -26,    21
 };
 
@@ -666,8 +666,8 @@ static const yytype_int8 yytable[] =
        5,     1,    73,    50,    37,    51,     2,     3,    61,    90,
       75,    91,    81,    82,     4,     1,    83,    84,    85,    86,
       87,    89,    64,    28,    92,    29,    30,    31,    32,    33,
-      34,    35,    36,    56,    57,    58,    23,    37,    59,    76,
-      65,    77,    88,    78,     0,    60
+      34,    35,    36,    56,    57,    58,    23,    37,    59,    65,
+      76,    77,    88,    78,     0,    60
 };
 
 static const yytype_int8 yycheck[] =
@@ -679,8 +679,8 @@ static const yytype_int8 yycheck[] =
       34,     7,    34,    18,    34,    17,    12,    13,     8,    73,
       28,    75,    54,    55,    20,     7,    56,    57,    58,    59,
       60,    31,    27,    19,    89,    22,    23,    24,    25,    26,
-      27,    28,    29,     9,    10,    11,     5,    34,    14,    38,
-      28,    50,    61,    51,    -1,    21
+      27,    28,    29,     9,    10,    11,     5,    34,    14,    28,
+      39,    50,    61,    51,    -1,    21
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
@@ -694,7 +694,7 @@ static const yytype_int8 yystos[] =
       43,    44,    45,    46,    47,    48,    49,    50,    51,    52,
       18,    17,    15,    16,    12,    13,     9,    10,    11,    14,
       21,     8,    37,    37,    38,    54,    53,    53,    53,    53,
-      53,    53,    53,    34,    53,    28,    42,    55,    56,    57,
+      53,    53,    53,    34,    53,    28,    41,    55,    56,    57,
       57,    58,    58,    59,    59,    59,    59,    59,    61,    31,
       53,    53,    37
 };
@@ -1181,14 +1181,32 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-  case 58: /* atom: NAME  */
-#line 150 "parser.y"
-          {cout << "Name" << endl;}
+  case 52: /* factor: ADD factor  */
+#line 140 "parser.y"
+               {cout<<"ADD working\n";}
 #line 1188 "parser.tab.c"
     break;
 
+  case 53: /* factor: SUB factor  */
+#line 141 "parser.y"
+                 {cout<<"SUB working\n";}
+#line 1194 "parser.tab.c"
+    break;
 
-#line 1192 "parser.tab.c"
+  case 54: /* factor: TILDE factor  */
+#line 142 "parser.y"
+                    {cout<<"TILDE working\n";}
+#line 1200 "parser.tab.c"
+    break;
+
+  case 58: /* atom: NAME  */
+#line 150 "parser.y"
+          {cout << "Name" << endl;}
+#line 1206 "parser.tab.c"
+    break;
+
+
+#line 1210 "parser.tab.c"
 
       default: break;
     }
@@ -1386,6 +1404,7 @@ yyreturnlab:
 
 int main(){
     indent_stack.push(0);
+    /* yylex(); */
     yyparse();
     return 0;
 }
