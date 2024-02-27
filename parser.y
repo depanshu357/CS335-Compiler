@@ -526,10 +526,6 @@ test_optional: test
     | /*empty*/
     ;
 
-
-
-
-
 %%
 
 int main(){
