@@ -12,7 +12,7 @@
 %token KEYWORD NEWLINE INDENT DEDENT NAME 
 %token  POW FLOOR_DIV DIV MUL ADD SUB MOD 
 %token SHIFT_LEFT SHIFT_RIGHT BITWISE_AND BITWISE_XOR BITWISE_OR TILDE  
-%token AT
+%token AT COMMA
 %token EQ NE LT GT LE GE
 %token IN IS IF ELSE
 %token AND OR NOT
@@ -48,6 +48,12 @@ block:  INDENT statements DEDENT {cout << "Block" << endl;}
     | simple_stmts; */
 
 /* expressions */
+
+expressions: expression COMMA expressions 
+    | expression COMMA 
+    | expression
+    ;
+
 
 expression:         
     disjunction IF disjunction ELSE disjunction

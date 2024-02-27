@@ -148,6 +148,7 @@ RANGE "range"
     cout<<"DELIMITER"<<" "<<yytext<<endl;
     string oper = yytext;
     if(oper=="@") return AT;
+    else if(oper==",") return COMMA;
 }
 
 {ERRORCHAR} {

@@ -995,11 +995,12 @@ YY_RULE_SETUP
     cout<<"DELIMITER"<<" "<<yytext<<endl;
     string oper = yytext;
     if(oper=="@") return AT;
+    else if(oper==",") return COMMA;
 }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 153 "lexer_for_parser.l"
+#line 154 "lexer_for_parser.l"
 {
     cout<<"Error: Unexpected character "<<yytext<< " at line "<<yylineno<< endl;
     return 0;
@@ -1007,21 +1008,21 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 158 "lexer_for_parser.l"
+#line 159 "lexer_for_parser.l"
 { }
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 159 "lexer_for_parser.l"
+#line 160 "lexer_for_parser.l"
 { cout<<"NEWLINE"<<endl; ;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 160 "lexer_for_parser.l"
+#line 161 "lexer_for_parser.l"
 ECHO;
 	YY_BREAK
-#line 1025 "lex.yy.c"
+#line 1026 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2040,7 +2041,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 160 "lexer_for_parser.l"
+#line 161 "lexer_for_parser.l"
 
 
 // int main(){

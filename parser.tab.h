@@ -73,19 +73,20 @@ extern int yydebug;
     BITWISE_OR = 274,              /* BITWISE_OR  */
     TILDE = 275,                   /* TILDE  */
     AT = 276,                      /* AT  */
-    EQ = 277,                      /* EQ  */
-    NE = 278,                      /* NE  */
-    LT = 279,                      /* LT  */
-    GT = 280,                      /* GT  */
-    LE = 281,                      /* LE  */
-    GE = 282,                      /* GE  */
-    IN = 283,                      /* IN  */
-    IS = 284,                      /* IS  */
-    IF = 285,                      /* IF  */
-    ELSE = 286,                    /* ELSE  */
-    AND = 287,                     /* AND  */
-    OR = 288,                      /* OR  */
-    NOT = 289                      /* NOT  */
+    COMMA = 277,                   /* COMMA  */
+    EQ = 278,                      /* EQ  */
+    NE = 279,                      /* NE  */
+    LT = 280,                      /* LT  */
+    GT = 281,                      /* GT  */
+    LE = 282,                      /* LE  */
+    GE = 283,                      /* GE  */
+    IN = 284,                      /* IN  */
+    IS = 285,                      /* IS  */
+    IF = 286,                      /* IF  */
+    ELSE = 287,                    /* ELSE  */
+    AND = 288,                     /* AND  */
+    OR = 289,                      /* OR  */
+    NOT = 290                      /* NOT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -98,7 +99,7 @@ union YYSTYPE
 
     int num;
 
-#line 102 "parser.tab.h"
+#line 103 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
