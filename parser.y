@@ -23,16 +23,41 @@
 %%
 /* operators*/
 
-/* single_input: NEWLINE | simple_stmt | compound_stmt NEWLINE
-file_input: (NEWLINE | stmt)* ENDMARKER
-eval_input: testlist NEWLINE* ENDMARKER
+single_input: NEWLINE 
+    | simple_stmt 
+    | compound_stmt NEWLINE
+    ;
+    
+file_input: NEWLINE file_input
+    | stmt file_input
+    | /*empty*/
+    ;
 
-decorator: '@' dotted_name [ '(' [arglist] ')' ] NEWLINE
-decorators: decorator+
-decorated: decorators (classdef | funcdef | async_funcdef)
+eval_input: testlist NEWLINE
+    | testlist
+    ;
 
-async_funcdef: ASYNC funcdef
-funcdef: 'def' NAME parameters ['->' test] ':' [TYPE_COMMENT] func_body_suite */
+decorator: AT dotted_name SMALL_OPEN arglist SMALL_CLOSE NEWLINE
+    | AT dotted_name SMALL_OPEN SMALL_CLOSE NEWLINE
+    | AT dotted_name NEWLINE
+    ;
+    
+decorators: decorator decorators
+    | decorator
+    ;
+
+decorated: decorators classdef
+    | decorators funcdef 
+    | decorators async_funcdef
+    ;
+
+async_funcdef: ASYNC funcdef;
+
+funcdef: DEF NAME parameters SUB GT test COLON TYPE_COMMENT func_body_suite
+    | DEF NAME parameters SUB GT test COLON  func_body_suite
+    | DEF NAME parameters COLON TYPE_COMMENT func_body_suite
+    | DEF NAME parameters  COLON  func_body_suite
+    ;
 
 
 stmt: simple_stmt 
