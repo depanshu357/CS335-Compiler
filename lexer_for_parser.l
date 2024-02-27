@@ -191,6 +191,8 @@ RANGE "range"
     else if(oper=="]") return BOX_CLOSE;
     else if(oper=="{") return CURLY_OPEN;
     else if(oper=="}") return CURLY_CLOSE;
+    else if(oper==".") return DOT;
+    
 }
 
 {ERRORCHAR} {
