@@ -23,16 +23,41 @@
 %%
 /* operators*/
 
-/* single_input: NEWLINE | simple_stmt | compound_stmt NEWLINE
-file_input: (NEWLINE | stmt)* ENDMARKER
-eval_input: testlist NEWLINE* ENDMARKER
+single_input: NEWLINE 
+    | simple_stmt 
+    | compound_stmt NEWLINE
+    ;
+    
+file_input: NEWLINE file_input
+    | stmt file_input
+    | /*empty*/
+    ;
 
-decorator: '@' dotted_name [ '(' [arglist] ')' ] NEWLINE
-decorators: decorator+
-decorated: decorators (classdef | funcdef | async_funcdef)
+eval_input: testlist NEWLINE
+    | testlist
+    ;
 
-async_funcdef: ASYNC funcdef
-funcdef: 'def' NAME parameters ['->' test] ':' [TYPE_COMMENT] func_body_suite */
+decorator: AT dotted_name SMALL_OPEN arglist SMALL_CLOSE NEWLINE
+    | AT dotted_name SMALL_OPEN SMALL_CLOSE NEWLINE
+    | AT dotted_name NEWLINE
+    ;
+    
+decorators: decorator decorators
+    | decorator
+    ;
+
+decorated: decorators classdef
+    | decorators funcdef 
+    | decorators async_funcdef
+    ;
+
+async_funcdef: ASYNC funcdef;
+
+funcdef: DEF NAME parameters SUB GT test COLON TYPE_COMMENT func_body_suite
+    | DEF NAME parameters SUB GT test COLON  func_body_suite
+    | DEF NAME parameters COLON TYPE_COMMENT func_body_suite
+    | DEF NAME parameters  COLON  func_body_suite
+    ;
 
 
 stmt: simple_stmt 
@@ -460,7 +485,6 @@ comma_arg_star: COMMA argument comma_arg_star
 
 argument: test 
     | test comp_for 
-    | test WAL_OP test 
     | test EQUAL test 
     | POW test 
     | MUL test
@@ -496,10 +520,6 @@ yield_arg: FROM test
 func_body_suite: simple_stmt 
     | NEWLINE INDENT stmt_plus DEDENT
     | NEWLINE TYPE_COMMENT NEWLINE INDENT stmt_plus DEDENT
-
-stmt_plus: stmt stmt_plus
-    | stmt
-    ;
 
 func_type_input: func_type
     | func_type NEWLINE
