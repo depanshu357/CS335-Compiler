@@ -1,5 +1,1 @@
-x: x+y
-
-
-
-if x + y: x:y+z - variabel % x
+x+y+z
