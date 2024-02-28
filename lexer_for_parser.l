@@ -81,12 +81,39 @@ RANGE "range"
     else if(oper=="yield") return YIELD;
     else if(oper=="from") return FROM;
     else if(oper=="elif") return ELIF;
-    // baki ka likhna baki hai
+    else if(oper=="async") return ASYNC;
+    else if(oper=="await") return AWAIT;
+    else if(oper=="None") return NONE;
+    else if(oper=="False") return FALSE;
+    else if(oper=="import") return IMPORT;
+    else if(oper=="pass") return PASS;
+    else if(oper=="break") return BREAK;
+    else if(oper=="except") return EXCEPT;
+    else if(oper=="raise") return RAISE;
+    else if(oper=="True") return TRUE;
+    else if(oper=="class") return CLASS;
+    else if(oper=="finally") return FINALLY;
+    else if(oper=="return") return RETURN;
+    else if(oper=="continue") return CONTINUE;
+    else if(oper=="for") return FOR;
+    else if(oper=="lambda") return LAMBDA;
+    else if(oper=="try") return TRY;
+    else if(oper=="as") return AS;
+    else if(oper=="def") return DEF;
+    else if(oper=="nonlocal") return NONLOCAL;
+    else if(oper=="while") return WHILE;
+    else if(oper=="assert") return ASSERT;
+    else if(oper=="del") return DEL;
+    else if(oper=="global") return GLOBAL;
+    else if(oper=="with") return WITH;
 }
-{IDENTIFIER} { cout<<"IDENTIFIER"<<" "<<yytext<<endl; return NAME; }
-{INTEGER} { cout<<"INTEGER"<<" "<<yytext<<endl;}
 
+{IDENTIFIER} { cout<<"IDENTIFIER"<<" "<<yytext<<endl; return NAME; }
+{INTEGER} { cout<<"INTEGER"<<" "<<yytext<<endl;return INTEGER;}
+{FLOATNUMBER} { cout<<"FLOAT"<<" "<<yytext<<endl;return FLOAT;}
+{STRINGLITERAL} { cout<<"STRING"<<" "<<yytext<<endl;return STRING;}
 {COMMENT} { cout<<"COMMENT"<<" "<<yytext<<endl;}
+
 
 {INDENTATIONS} {
             int new_indent = strlen(yytext);
@@ -154,9 +181,16 @@ RANGE "range"
 {DELIMITER} { 
     cout<<"DELIMITER"<<" "<<yytext<<endl;
     string oper = yytext;
+
     if(oper=="@") return AT;
     else if(oper==",") return COMMA;
     else if(oper==":") return COLON;
+    else if(oper=="(") return SMALL_OPEN;
+    else if(oper==")") return SMALL_CLOSE;
+    else if(oper=="[") return BOX_OPEN;
+    else if(oper=="]") return BOX_CLOSE;
+    else if(oper=="{") return CURLY_OPEN;
+    else if(oper=="}") return CURLY_CLOSE;
 }
 
 {ERRORCHAR} {
@@ -164,8 +198,9 @@ RANGE "range"
     return 0;
 }
 
+"\n"+ { cout<<"NEWLINE"<<endl; return NEWLINE ;}
+
 . { }
-"\n" { cout<<"NEWLINE"<<endl; return NEWLINE ;}
 %%
 
 // int main(){
