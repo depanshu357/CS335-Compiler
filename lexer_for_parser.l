@@ -9,6 +9,7 @@
 
     int current_indent = 0;
     stack<int> indent_stack;
+    int temp_count=0;
 
 %}
 
@@ -64,8 +65,42 @@ IDENTIFIER [A-Za-z_][A-Za-z0-9_]*
 
 ERRORCHAR "$"|"?"|"`" 
 
+%x STATE
+%x DEDENT_STATE
+%x HELP
 
 %%
+
+<STATE>(.|[\n]) {
+    if(temp_count==0){
+        BEGIN(INITIAL);
+    }else{
+    // cout<<temp_count<<endl;
+        unput(yytext[0]);
+        temp_count--;
+        return DEDENT;
+    }
+}
+
+    
+
+<DEDENT_STATE>(.|[\n])/([ ]) {
+    BEGIN(INITIAL);
+    
+}
+<HELP>(.|[\n]) {
+    temp_count--; 
+    if(temp_count==0){
+        BEGIN(INITIAL);
+        }
+    else{
+            return DEDENT;
+            cout<<"spaces already present after newline"<<endl;
+            unput(yytext[0]);
+    }
+}
+
+
 {KEYWORD} { 
     cout<<"KEYWORD"<<" "<<yytext<<endl; ; 
     string oper = yytext;
@@ -112,28 +147,34 @@ ERRORCHAR "$"|"?"|"`"
 {STRINGLITERAL} { cout<<"STRING"<<" "<<yytext<<endl;return STRING;}
 {COMMENT} { cout<<"COMMENT"<<" "<<yytext<<endl;}
 
-
 {INDENTATIONS} {
-            int new_indent = strlen(yytext);
+            int new_indent = strlen(yytext); 
+            if(new_indent%2==1){
+                cout<<"ERROR: wrong indentation"<<endl;
+                return 0;
+            }   
+            new_indent = new_indent/2;
             if (new_indent > indent_stack.top()) {
                 indent_stack.push( new_indent);
                 cout<<"INDENT"<<endl;
-                // return INDENT;
+                return INDENT;
             }
-            else { 
-                // cout<<new_indent<<endl;
-                // cout<<indent_stack.top()<<endl;
+            else if(new_indent<indent_stack.top()){ 
                 while (indent_stack.top()!=0 &&  new_indent < indent_stack.top()) {
                     indent_stack.pop();
-                    // cout<<indent_stack.top()<<endl;
                     cout<<"DEDENT"<<endl;
-                    // return DEDENT;
+                    temp_count++;
                 }
                 if(indent_stack.top()!=new_indent){
                     cout<<"ERROR: wrong indentation"<<endl;
                     return 0;
                 }
+                // temp_count--;
+                unput(yytext[0]);
+                BEGIN(STATE);
+                // return DEDENT;
                 // cout<<"DEDENT"<<endl;
+                // return DEDENT;
             }
 }
 
@@ -162,7 +203,7 @@ ERRORCHAR "$"|"?"|"`"
 
 {RELATIONAL_OP} {
     string oper = yytext;
-    if(oper=="==") return EQ;
+    if(oper=="==") return DOUBLE_EQUAL;
     else if(oper=="!=") return NE;
     else if(oper==">") return GT;
     else if(oper=="<") return LT;
@@ -191,6 +232,7 @@ ERRORCHAR "$"|"?"|"`"
     else if(oper=="{") return CURLY_OPEN;
     else if(oper=="}") return CURLY_CLOSE;
     else if(oper==".") return DOT;
+    else if(oper=="->") return ARROW;
     
 }
 
@@ -198,8 +240,33 @@ ERRORCHAR "$"|"?"|"`"
     cout<<"Error: Unexpected character "<<yytext<< " at line "<<yylineno<< endl;
     return 0;
 }
+    
 
-"\n"+ { cout<<"NEWLINE"<<endl; return NEWLINE ;}
+<INITIAL>"\n"+/[^ \t] {
+      while (indent_stack.top()!=0) {
+            indent_stack.pop();
+            cout<<"DEDENT"<<endl;
+            temp_count++;
+        }
+        if(indent_stack.top()!=0){
+            cout<<"ERROR: wrong indentation"<<endl;
+            return 0;
+        }
+        // temp_count--;
+        unput(yytext[0]);
+        BEGIN(STATE);
+        cout<<"NEWLINE"<<endl; 
+        return NEWLINE ;
+    }
+
+^[ \t]*{COMMENT}?"\n" {
+    //ignore empty lines and lines only with comment
+}
+
+"\n"/[ \t] {
+    cout<<"NEWLINE"<<endl;
+    return NEWLINE;
+}
 
 . { }
 %%

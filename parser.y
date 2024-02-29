@@ -54,13 +54,13 @@ decorated: decorators classdef
 
 async_funcdef: ASYNC funcdef;
 
-funcdef: DEF NAME parameters SUB GT test COLON TYPE_COMMENT func_body_suite
-    | DEF NAME parameters SUB GT test COLON  func_body_suite
+/* funcdef: DEF NAME parameters ARROW test COLON TYPE_COMMENT func_body_suite
+    | DEF NAME parameters ARROW test COLON  func_body_suite
     | DEF NAME parameters COLON TYPE_COMMENT func_body_suite
     | DEF NAME parameters  COLON  func_body_suite
-    ;
+    ; */
 
-// Written only to run START
+// Written only to run START ye dono document se dekhna hai
 parameters: SMALL_OPEN typedargslist SMALL_CLOSE ;
 
 typedargslist: NAME comma_name_star COMMA  DIV 
@@ -68,9 +68,9 @@ typedargslist: NAME comma_name_star COMMA  DIV
 // Written only to run END
 
 
-stmt: simple_stmt 
+/* stmt: simple_stmt 
     |compound_stmt
-    ;
+    ; */
     
 /* simple_stmt: small_stmt semi_colon_small_stmt_star SEMI_COLON NEWLINE
     |  small_stmt semi_colon_small_stmt_star NEWLINE
@@ -80,14 +80,12 @@ semi_colon_small_stmt_star: SEMI_COLON small_stmt semi_colon_small_stmt_star
     | 
     ; */
     
-small_stmt: expr_stmt 
-    | del_stmt 
-    | pass_stmt 
+/* small_stmt: expr_stmt 
     | flow_stmt 
     | global_stmt 
     | nonlocal_stmt 
     | assert_stmt
-    ;
+    ; */
 
 /* expr_stmt: testlist_star_expr annassign 
     | testlist_star_expr augassign testlist
@@ -115,29 +113,27 @@ annassign: COLON test
     | 
     ; */
 
-augassign: ADD_ASSIGN | SUB_ASSIGN | MUL_ASSIGN | AT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | AND_ASSIGN | OR_ASSIGN | XOR_ASSIGN |
-            LEFT_SHIFT_ASSIGN | RIGHT_SHIFT_ASSIGN | POW_ASSIGN | FLOOR_DIV_ASSIGN ;
+/* augassign: ADD_ASSIGN | SUB_ASSIGN | MUL_ASSIGN | AT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | AND_ASSIGN | OR_ASSIGN | XOR_ASSIGN |
+            LEFT_SHIFT_ASSIGN | RIGHT_SHIFT_ASSIGN | POW_ASSIGN | FLOOR_DIV_ASSIGN ; */
 
-del_stmt: DEL exprlist;
-pass_stmt: PASS;
-flow_stmt: break_stmt 
+/* flow_stmt: break_stmt 
     | continue_stmt 
     | return_stmt 
     | raise_stmt 
-    ;
+    ; */
 
-break_stmt: BREAK;
+/* break_stmt: BREAK; */
 
-continue_stmt: CONTINUE;
+/* continue_stmt: CONTINUE; */
 
-return_stmt: RETURN testlist_star_expr
+/* return_stmt: RETURN testlist_star_expr
     | RETURN 
-    ;
+    ; */
 
-raise_stmt: RAISE 
+/* raise_stmt: RAISE 
     | RAISE test 
     | RAISE test FROM test
-    ;
+    ; */
 
 dotted_as_name: dotted_name 
     |dotted_name AS NAME
@@ -155,23 +151,22 @@ dot_name_star: DOT NAME dot_name_star
     | 
     ;
 
-global_stmt: GLOBAL NAME comma_name_star ;
+/* global_stmt: GLOBAL NAME comma_name_star ; */
 
-nonlocal_stmt: NONLOCAL NAME comma_name_star ;
+/* nonlocal_stmt: NONLOCAL NAME comma_name_star ; */
 
-comma_name_star: COMMA NAME comma_name_star
+/* comma_name_star: COMMA NAME comma_name_star
     | 
-    ;
+    ; */
 
-assert_stmt: ASSERT test COMMA test
+/* assert_stmt: ASSERT test COMMA test
     | ASSERT test
-    ;
+    ; */
 
 compound_stmt: if_stmt 
     | while_stmt 
     | for_stmt 
     | try_stmt 
-    | with_stmt 
     | funcdef 
     | classdef 
     | decorated 
@@ -184,65 +179,52 @@ async_stmt: ASYNC funcdef
     | ASYNC for_stmt
     ;
 
-if_stmt: IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star ELSE COLON suite
+/* if_stmt: IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star ELSE COLON suite
     | IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star
     ;
 
 elif_namedexpr_test_colon_suite_star: ELIF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star
     | 
-    ;
+    ; */
 
-while_stmt: WHILE namedexpr_test COLON suite ELSE COLON suite
+/* while_stmt: WHILE namedexpr_test COLON suite ELSE COLON suite
     | WHILE namedexpr_test COLON suite
-    ;
+    ; */
 
-for_stmt: FOR exprlist IN testlist COLON TYPE_COMMENT suite ELSE COLON suite
+/* for_stmt: FOR exprlist IN testlist COLON TYPE_COMMENT suite ELSE COLON suite
     | FOR exprlist IN testlist COLON suite ELSE COLON suite
     | FOR exprlist IN testlist COLON TYPE_COMMENT suite
     | FOR exprlist IN testlist COLON suite
-    ; 
+    ;  */
 
-try_stmt: TRY COLON suite FINALLY COLON suite
+/* try_stmt: TRY COLON suite FINALLY COLON suite
     | TRY COLON suite except_clause_colon_suite try_stmt_options 
-    ;
+    ; */
 
-except_clause_colon_suite: except_clause COLON suite except_clause_colon_suite
+/* except_clause_colon_suite: except_clause COLON suite except_clause_colon_suite
     | except_clause COLON suite
-    ;
+    ; */
 
-try_stmt_options: ELSE COLON suite FINALLY COLON suite
+/* try_stmt_options: ELSE COLON suite FINALLY COLON suite
     | ELSE COLON suite
     | FINALLY COLON suite
     | 
-    ;
+    ; */
 
-
-with_stmt: WITH with_item comma_with_item_star COLON suite
-    | WITH with_item comma_with_item_star COLON TYPE_COMMENT suite
-    ;
-
-comma_with_item_star: COMMA with_item comma_with_item_star
-    | 
-    ;
-
-with_item: test 
-    | test AS expr
-    ;
-
-except_clause: EXCEPT test_as_name_optional
-
+/* except_clause: EXCEPT test_as_name_optional */
+/* 
 test_as_name_optional: test
     | test AS NAME
     | 
-    ;
+    ; */
 
-suite: simple_stmt 
+/* suite: simple_stmt 
     | NEWLINE INDENT stmt_plus DEDENT
-    ;
+    ; */
 
-stmt_plus: stmt stmt_plus
+/* stmt_plus: stmt stmt_plus
     | stmt
-    ;
+    ; */
 
 /*clean below*/
 /* namedexpr_test: test ; */
@@ -451,12 +433,12 @@ dictorsetmaker_option2: test
     | star_expr
     ; */
 
-classdef: CLASS NAME bracket_arglist_optional COLON suite;
+/* classdef: CLASS NAME bracket_arglist_optional COLON suite;
 
 bracket_arglist_optional: SMALL_OPEN SMALL_CLOSE
     | SMALL_OPEN arglist SMALL_CLOSE
     | 
-    ;
+    ; */
 
 /* arglist: argument comma_arg_star
     | argument comma_arg_star  COMMA */
@@ -502,8 +484,8 @@ func_type_input: func_type
     | func_type NEWLINE
     ;
 
-func_type: SMALL_OPEN SMALL_CLOSE SUB GT test
-    | SMALL_OPEN typelist SMALL_CLOSE SUB GT test
+func_type: SMALL_OPEN SMALL_CLOSE ARROW test
+    | SMALL_OPEN typelist SMALL_CLOSE ARROW test
     ;
 
 typelist: test comma_test_star

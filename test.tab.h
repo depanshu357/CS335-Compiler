@@ -116,33 +116,34 @@ extern int yydebug;
     CURLY_OPEN = 317,              /* CURLY_OPEN  */
     CURLY_CLOSE = 318,             /* CURLY_CLOSE  */
     DOT = 319,                     /* DOT  */
-    EQ = 320,                      /* EQ  */
-    NE = 321,                      /* NE  */
-    LT = 322,                      /* LT  */
-    GT = 323,                      /* GT  */
-    LE = 324,                      /* LE  */
-    GE = 325,                      /* GE  */
-    IN = 326,                      /* IN  */
-    IS = 327,                      /* IS  */
-    IF = 328,                      /* IF  */
-    ELSE = 329,                    /* ELSE  */
-    AND = 330,                     /* AND  */
-    OR = 331,                      /* OR  */
-    NOT = 332,                     /* NOT  */
-    TYPE_COMMENT = 333,            /* TYPE_COMMENT  */
-    ADD_ASSIGN = 334,              /* ADD_ASSIGN  */
-    SUB_ASSIGN = 335,              /* SUB_ASSIGN  */
-    MUL_ASSIGN = 336,              /* MUL_ASSIGN  */
-    AT_ASSIGN = 337,               /* AT_ASSIGN  */
-    DIV_ASSIGN = 338,              /* DIV_ASSIGN  */
-    MOD_ASSIGN = 339,              /* MOD_ASSIGN  */
-    AND_ASSIGN = 340,              /* AND_ASSIGN  */
-    OR_ASSIGN = 341,               /* OR_ASSIGN  */
-    XOR_ASSIGN = 342,              /* XOR_ASSIGN  */
-    LEFT_SHIFT_ASSIGN = 343,       /* LEFT_SHIFT_ASSIGN  */
-    RIGHT_SHIFT_ASSIGN = 344,      /* RIGHT_SHIFT_ASSIGN  */
-    POW_ASSIGN = 345,              /* POW_ASSIGN  */
-    FLOOR_DIV_ASSIGN = 346         /* FLOOR_DIV_ASSIGN  */
+    ARROW = 320,                   /* ARROW  */
+    DOUBLE_EQUAL = 321,            /* DOUBLE_EQUAL  */
+    NE = 322,                      /* NE  */
+    LT = 323,                      /* LT  */
+    GT = 324,                      /* GT  */
+    LE = 325,                      /* LE  */
+    GE = 326,                      /* GE  */
+    IN = 327,                      /* IN  */
+    IS = 328,                      /* IS  */
+    IF = 329,                      /* IF  */
+    ELSE = 330,                    /* ELSE  */
+    AND = 331,                     /* AND  */
+    OR = 332,                      /* OR  */
+    NOT = 333,                     /* NOT  */
+    TYPE_COMMENT = 334,            /* TYPE_COMMENT  */
+    ADD_ASSIGN = 335,              /* ADD_ASSIGN  */
+    SUB_ASSIGN = 336,              /* SUB_ASSIGN  */
+    MUL_ASSIGN = 337,              /* MUL_ASSIGN  */
+    AT_ASSIGN = 338,               /* AT_ASSIGN  */
+    DIV_ASSIGN = 339,              /* DIV_ASSIGN  */
+    MOD_ASSIGN = 340,              /* MOD_ASSIGN  */
+    AND_ASSIGN = 341,              /* AND_ASSIGN  */
+    OR_ASSIGN = 342,               /* OR_ASSIGN  */
+    XOR_ASSIGN = 343,              /* XOR_ASSIGN  */
+    LEFT_SHIFT_ASSIGN = 344,       /* LEFT_SHIFT_ASSIGN  */
+    RIGHT_SHIFT_ASSIGN = 345,      /* RIGHT_SHIFT_ASSIGN  */
+    POW_ASSIGN = 346,              /* POW_ASSIGN  */
+    FLOOR_DIV_ASSIGN = 347         /* FLOOR_DIV_ASSIGN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -155,7 +156,7 @@ union YYSTYPE
 
     int num;
 
-#line 159 "test.tab.h"
+#line 160 "test.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
