@@ -36,14 +36,14 @@ EXPONENT      ("e"|"E")("+"|"-")?{DIGITPART}
 
 STRINGLITERAL   {STRINGPREFIX}?({SHORTSTRING}|{LONGSTRING})
 STRINGPREFIX    "r"|"u"|"R"|"U"|"f"|"F"|"fr"|"Fr"|"fR"|"FR"|"rf"|"rF"|"Rf"|"RF"
-SHORTSTRING     "'"{SHORTSTRINGITEM}*"'"|"\""{SHORTSTRINGITEM}*"\""
+SHORTSTRING     "'"({SHORTSTRINGITEM})*"'"|\"({SHORTSTRINGITEM})*\"
 LONGSTRING      (["]{3,3}{LONGSTRINGITEM}*["]{3,3})|([']{3,3}{LONGSTRINGITEM}*[']{3,3})
 SHORTSTRINGITEM {SHORTSTRINGCHAR}|{STRINGESCAPESEQ}
 LONGSTRINGITEM  {LONGSTRINGCHAR}|{STRINGESCAPESEQ}
-SHORTSTRINGCHAR [^\\\n']
+SHORTSTRINGCHAR [^\\\n'"]
 LONGSTRINGCHAR  [^\\]
 STRINGESCAPESEQ "\\"{SOURCECHAR}
-SOURCECHAR "\\n"|"\\"|"'"|"\""|"a"|"b"|"f"|"n"|"r"|"t"|"v"|"ooo"|"xhh"
+SOURCECHAR "\n"|"\\"|"'"|"\""|"a"|"b"|"f"|"n"|"r"|"t"|"v"|"ooo"|"xhh"
 
 ARITHMETIC_OP "+"|"-"|"*"|"/"|"//"|"%"|"**"
 

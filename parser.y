@@ -29,10 +29,10 @@ single_input: NEWLINE
     | compound_stmt NEWLINE
     ;
     
-file_input: NEWLINE file_input
+/* file_input: NEWLINE file_input
     | stmt file_input
     | 
-    ;
+    ; */
 
 eval_input: testlist NEWLINE
     | testlist
@@ -72,13 +72,13 @@ stmt: simple_stmt
     |compound_stmt
     ;
     
-simple_stmt: small_stmt semi_colon_small_stmt_star SEMI_COLON NEWLINE
+/* simple_stmt: small_stmt semi_colon_small_stmt_star SEMI_COLON NEWLINE
     |  small_stmt semi_colon_small_stmt_star NEWLINE
     ;
 
 semi_colon_small_stmt_star: SEMI_COLON small_stmt semi_colon_small_stmt_star
     | 
-    ;
+    ; */
     
 small_stmt: expr_stmt 
     | del_stmt 
@@ -89,31 +89,31 @@ small_stmt: expr_stmt
     | assert_stmt
     ;
 
-expr_stmt: testlist_star_expr annassign 
+/* expr_stmt: testlist_star_expr annassign 
     | testlist_star_expr augassign testlist
     |testlist_star_expr  
     |testlist_star_expr expr_stmt_option1_star  
     |testlist_star_expr expr_stmt_option1_star TYPE_COMMENT
-    ;
+    ; */
 
-expr_stmt_option1_star:EQ testlist_star_expr expr_stmt_option1_star
+/* expr_stmt_option1_star:EQ testlist_star_expr expr_stmt_option1_star
     |EQ testlist_star_expr
     ;
 
 annassign: COLON test
     | COLON test EQ testlist_star_expr
-    ;
+    ; */
 
-testlist_star_expr: test testlist_star_expr_option1_star 
+/* testlist_star_expr: test testlist_star_expr_option1_star 
     | test testlist_star_expr_option1_star COMMA
     | star_expr testlist_star_expr_option1_star 
     | star_expr testlist_star_expr_option1_star COMMA
-    ;
+    ; */
 
-testlist_star_expr_option1_star: COMMA test testlist_star_expr_option1_star
+/* testlist_star_expr_option1_star: COMMA test testlist_star_expr_option1_star
     | COMMA star_expr testlist_star_expr_option1_star
     | 
-    ;
+    ; */
 
 augassign: ADD_ASSIGN | SUB_ASSIGN | MUL_ASSIGN | AT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | AND_ASSIGN | OR_ASSIGN | XOR_ASSIGN |
             LEFT_SHIFT_ASSIGN | RIGHT_SHIFT_ASSIGN | POW_ASSIGN | FLOOR_DIV_ASSIGN ;
@@ -245,12 +245,12 @@ stmt_plus: stmt stmt_plus
     ;
 
 /*clean below*/
-namedexpr_test: test ;
+/* namedexpr_test: test ; */
 
-test: or_test
-    |or_test IF or_test ELSE test;
+/* test: or_test
+    |or_test IF or_test ELSE test; */
 
-test_nocond: or_test;
+/* test_nocond: or_test; */
 
 // or_test: and_test or_and_test_star;
 
@@ -352,7 +352,7 @@ trailer_star: trailer trailer_star
     | 
     ; */
     
-atom: SMALL_OPEN testlist_comp SMALL_CLOSE
+/* atom: SMALL_OPEN testlist_comp SMALL_CLOSE
     | SMALL_OPEN SMALL_CLOSE
     |BOX_OPEN testlist_comp BOX_CLOSE
     |BOX_OPEN BOX_CLOSE
@@ -364,7 +364,7 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE
     | NONE 
     | TRUE 
     | FALSE
-    ;
+    ; */
 
 /* number: INTEGER
     | FLOAT
@@ -375,7 +375,7 @@ string_plus: STRING string_plus
     ; */
 
  /* Remaining from below */
-testlist_comp:namedexpr_test_star_expr_option comp_for 
+/* testlist_comp:namedexpr_test_star_expr_option comp_for 
     |namedexpr_test_star_expr_option  COMMA namedexpr_test_star_expr_option_star  
     |namedexpr_test_star_expr_option  COMMA namedexpr_test_star_expr_option_star COMMA
     ; 
@@ -386,7 +386,7 @@ namedexpr_test_star_expr_option: namedexpr_test
 
 namedexpr_test_star_expr_option_star: namedexpr_test_star_expr_option namedexpr_test_star_expr_option_star
     | 
-    ;
+    ; */
 
     
 /* trailer: SMALL_OPEN arglist SMALL_CLOSE 
@@ -411,7 +411,7 @@ optional_test: test
     | 
     ; */
     
-exprlist: expr_star_expr_option symbol_expr_star_expr_option_star COMMA
+/* exprlist: expr_star_expr_option symbol_expr_star_expr_option_star COMMA
     |expr_star_expr_option symbol_expr_star_expr_option_star 
     ;
 
@@ -429,9 +429,9 @@ testlist: test symbol_test_star COMMA
 
 symbol_test_star: COMMA test symbol_test_star
     | 
-    ;
+    ; */
     
-dictorsetmaker: dictorsetmaker_option1 comp_for 
+/* dictorsetmaker: dictorsetmaker_option1 comp_for 
     |dictorsetmaker_option1 dictorsetmaker_option1_star 
     |dictorsetmaker_option1 dictorsetmaker_option1_star COMMA
     |dictorsetmaker_option2 comp_for 
@@ -449,7 +449,7 @@ dictorsetmaker_option1_star: COMMA dictorsetmaker_option1 dictorsetmaker_option1
 
 dictorsetmaker_option2: test
     | star_expr
-    ;
+    ; */
 
 classdef: CLASS NAME bracket_arglist_optional COLON suite;
 
@@ -458,39 +458,39 @@ bracket_arglist_optional: SMALL_OPEN SMALL_CLOSE
     | 
     ;
 
-arglist: argument comma_arg_star
-    | argument comma_arg_star  COMMA
+/* arglist: argument comma_arg_star
+    | argument comma_arg_star  COMMA */
     ;
 
-comma_arg_star: COMMA argument comma_arg_star
+/* comma_arg_star: COMMA argument comma_arg_star
     | 
-    ;
+    ; */
 
 
 
-argument: test 
+/* argument: test 
     | test comp_for 
     | test EQUAL test 
     | POW test 
     | MUL test
-    ;
+    ; */
 
-comp_iter: comp_for 
+/* comp_iter: comp_for 
     | comp_if
-    ;
+    ; */
 
-sync_comp_for: FOR exprlist IN or_test
+/* sync_comp_for: FOR exprlist IN or_test
     | FOR exprlist IN or_test comp_iter
-    ;
+    ; */
 
 // comp_for:  sync_comp_for
 //     | ASYNC sync_comp_for
 //     ;
     
 
-comp_if: IF test_nocond
+/* comp_if: IF test_nocond
     | IF test_nocond comp_iter
-    ;
+    ; */
 
 encoding_decl: NAME ;
 

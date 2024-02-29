@@ -25,6 +25,99 @@
 %%
 
 
+file_input: NEWLINE file_input
+    | stmt file_input
+    | ;
+
+stmt: simple_stmt 
+    ;
+
+simple_stmt: small_stmt semi_colon_small_stmt_star NEWLINE
+    ;
+
+semi_colon_small_stmt_star: SEMI_COLON small_stmt semi_colon_small_stmt_star
+    | SEMI_COLON
+    |
+    ;
+
+
+// simple_stmt: small_stmt semi_colon_small_stmt_star SEMI_COLON NEWLINE
+//     |  small_stmt semi_colon_small_stmt_star NEWLINE
+//     ;
+
+// semi_colon_small_stmt_star: SEMI_COLON small_stmt semi_colon_small_stmt_star
+//     | 
+//     ;
+
+
+
+small_stmt: expr_stmt ;
+
+expr_stmt: testlist_star_expr annassign 
+    | testlist_star_expr augassign testlist
+    |testlist_star_expr  
+    |testlist_star_expr expr_stmt_option1_star  
+    |testlist_star_expr expr_stmt_option1_star TYPE_COMMENT
+    ;
+
+testlist:  test symbol_test_star
+    ;
+symbol_test_star: COMMA test symbol_test_star
+    | COMMA
+    |
+    ;
+
+/* testlist: test symbol_test_star COMMA
+    | test symbol_test_star
+    ;
+symbol_test_star: COMMA test symbol_test_star
+    | 
+    ; */
+    
+expr_stmt_option1_star:EQ testlist_star_expr expr_stmt_option1_star
+    |EQ testlist_star_expr
+    ;
+
+annassign: COLON test
+    | COLON test EQ testlist_star_expr
+    ;
+
+testlist_star_expr: test testlist_star_expr_option1_star 
+    | star_expr testlist_star_expr_option1_star 
+    ;
+
+testlist_star_expr_option1_star: COMMA test testlist_star_expr_option1_star
+    | COMMA star_expr testlist_star_expr_option1_star
+    | COMMA
+    |
+    ;
+/* expr_stmt_option1_star:EQ testlist_star_expr expr_stmt_option1_star
+    |EQ testlist_star_expr
+    ;
+
+annassign: COLON test
+    | COLON test EQ testlist_star_expr
+    ; 
+
+testlist_star_expr: test testlist_star_expr_option1_star 
+    | star_expr testlist_star_expr_option1_star 
+    ;
+
+testlist_star_expr: test testlist_star_expr_option1_star 
+    | test testlist_star_expr_option1_star COMMA
+    | star_expr testlist_star_expr_option1_star 
+    | star_expr testlist_star_expr_option1_star COMMA
+    ;
+
+testlist_star_expr_option1_star: COMMA test testlist_star_expr_option1_star
+    | COMMA star_expr testlist_star_expr_option1_star
+    | 
+    
+    ; */
+
+augassign: ADD_ASSIGN | SUB_ASSIGN | MUL_ASSIGN | AT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | AND_ASSIGN | OR_ASSIGN | XOR_ASSIGN |
+            LEFT_SHIFT_ASSIGN | RIGHT_SHIFT_ASSIGN | POW_ASSIGN | FLOOR_DIV_ASSIGN ;
+
 expr: xor_expr symbol_xor_expr_star;
 
 star_expr: MUL expr;
@@ -118,6 +211,7 @@ subscript: test
 
 
 argument: test 
+    | test comp_for 
     | test EQUAL test 
     | POW test 
     | MUL test
@@ -127,8 +221,12 @@ optional_test: test
     | /*empty*/
     ;
 
+comp_iter: comp_for 
+    | comp_if
+    ;
+
 sync_comp_for: FOR exprlist IN or_test
-    /* | FOR exprlist IN or_test comp_iter */
+    | FOR exprlist IN or_test comp_iter
     ;
 
 
@@ -136,6 +234,11 @@ comp_for:  sync_comp_for
     | ASYNC sync_comp_for
     ;
 
+comp_if: IF test_nocond
+    | IF test_nocond comp_iter
+    ;
+
+test_nocond: or_test;
 
 or_test: and_test or_and_test_star;
 
@@ -201,7 +304,8 @@ namedexpr_test_star_expr_option: namedexpr_test
 
 namedexpr_test: test ;
 
-test: atom {cout<<"recognized"<<endl;};
+test: or_test
+    |or_test IF or_test ELSE test;
 
 atom: SMALL_OPEN testlist_comp SMALL_CLOSE
     | SMALL_OPEN SMALL_CLOSE
@@ -215,6 +319,7 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE
     | TRUE 
     | FALSE
     ;
+// dictionary , setliterals are to be ignored
 
 number: INTEGER
     | FLOAT
@@ -223,6 +328,9 @@ number: INTEGER
 string_plus: STRING string_plus 
     | STRING
     ;
+
+
+
 
 %%
 
