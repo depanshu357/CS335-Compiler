@@ -9,6 +9,7 @@
 %union{
     int num;
 }
+
 %token KEYWORD NEWLINE INDENT DEDENT NAME YIELD FROM ELIF AWAIT ASYNC TRUE FALSE NONE IMPORT PASS BREAK EXCEPT RAISE CLASS FINALLY RETURN CONTINUE FOR LAMBDA TRY AS DEF NONLOCAL WHILE ASSERT DEL GLOBAL WITH
 %token INTEGER FLOAT STRING
 %token POW FLOOR_DIV DIV MUL ADD SUB MOD EQUAL
@@ -30,7 +31,7 @@ single_input: NEWLINE
     
 file_input: NEWLINE file_input
     | stmt file_input
-    | /*empty*/
+    | 
     ;
 
 eval_input: testlist NEWLINE
@@ -59,6 +60,13 @@ funcdef: DEF NAME parameters SUB GT test COLON TYPE_COMMENT func_body_suite
     | DEF NAME parameters  COLON  func_body_suite
     ;
 
+// Written only to run START
+parameters: SMALL_OPEN typedargslist SMALL_CLOSE ;
+
+typedargslist: NAME comma_name_star COMMA  DIV 
+
+// Written only to run END
+
 
 stmt: simple_stmt 
     |compound_stmt
@@ -69,7 +77,7 @@ simple_stmt: small_stmt semi_colon_small_stmt_star SEMI_COLON NEWLINE
     ;
 
 semi_colon_small_stmt_star: SEMI_COLON small_stmt semi_colon_small_stmt_star
-    | /*empty*/
+    | 
     ;
     
 small_stmt: expr_stmt 
@@ -82,21 +90,17 @@ small_stmt: expr_stmt
     ;
 
 expr_stmt: testlist_star_expr annassign 
-    | testlist_star_expr augassign yield_expr
     | testlist_star_expr augassign testlist
     |testlist_star_expr  
     |testlist_star_expr expr_stmt_option1_star  
     |testlist_star_expr expr_stmt_option1_star TYPE_COMMENT
     ;
 
-expr_stmt_option1_star: EQ yield_expr expr_stmt_option1_star
-    |EQ testlist_star_expr expr_stmt_option1_star
-    |EQ yield_expr
+expr_stmt_option1_star:EQ testlist_star_expr expr_stmt_option1_star
     |EQ testlist_star_expr
     ;
 
 annassign: COLON test
-    | COLON test EQ yield_expr
     | COLON test EQ testlist_star_expr
     ;
 
@@ -108,7 +112,7 @@ testlist_star_expr: test testlist_star_expr_option1_star
 
 testlist_star_expr_option1_star: COMMA test testlist_star_expr_option1_star
     | COMMA star_expr testlist_star_expr_option1_star
-    | /*empty*/
+    | 
     ;
 
 augassign: ADD_ASSIGN | SUB_ASSIGN | MUL_ASSIGN | AT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | AND_ASSIGN | OR_ASSIGN | XOR_ASSIGN |
@@ -120,7 +124,6 @@ flow_stmt: break_stmt
     | continue_stmt 
     | return_stmt 
     | raise_stmt 
-    | yield_stmt
     ;
 
 break_stmt: BREAK;
@@ -130,48 +133,34 @@ continue_stmt: CONTINUE;
 return_stmt: RETURN testlist_star_expr
     | RETURN 
     ;
-    
-yield_stmt: yield_expr;
 
 raise_stmt: RAISE 
     | RAISE test 
     | RAISE test FROM test
     ;
 
-/* 
-import_stmt: import_name 
-    | import_from
-    ;
-import_name: IMPORT dotted_as_names;
-
-import_from: ('from' (('.' | '...')* dotted_name | ('.' | '...')+)
-              'import' ('*' | '(' import_as_names ')' | import_as_names))
-import_as_name: NAME ['as' NAME] */
-
 dotted_as_name: dotted_name 
     |dotted_name AS NAME
     ;
 
-/* import_as_names: import_as_name (',' import_as_name)* [','] */
-
 dotted_as_names: dotted_as_name comma_dotted_as_name_star;
 
 comma_dotted_as_name_star: COMMA dotted_as_name comma_dotted_as_name_star
-    | /*empty*/
+    | 
     ;
 
 dotted_name: NAME dot_name_star;
 
 dot_name_star: DOT NAME dot_name_star
-    | /*empty*/
+    | 
     ;
 
-global_stmt: 'global' NAME comma_name_star ;
+global_stmt: GLOBAL NAME comma_name_star ;
 
 nonlocal_stmt: NONLOCAL NAME comma_name_star ;
 
 comma_name_star: COMMA NAME comma_name_star
-    | /*empty*/
+    | 
     ;
 
 assert_stmt: ASSERT test COMMA test
@@ -200,7 +189,7 @@ if_stmt: IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star ELSE
     ;
 
 elif_namedexpr_test_colon_suite_star: ELIF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star
-    | /*empty*/
+    | 
     ;
 
 while_stmt: WHILE namedexpr_test COLON suite ELSE COLON suite
@@ -224,7 +213,7 @@ except_clause_colon_suite: except_clause COLON suite except_clause_colon_suite
 try_stmt_options: ELSE COLON suite FINALLY COLON suite
     | ELSE COLON suite
     | FINALLY COLON suite
-    | /*empty*/
+    | 
     ;
 
 
@@ -233,7 +222,7 @@ with_stmt: WITH with_item comma_with_item_star COLON suite
     ;
 
 comma_with_item_star: COMMA with_item comma_with_item_star
-    | /*empty*/
+    | 
     ;
 
 with_item: test 
@@ -244,7 +233,7 @@ except_clause: EXCEPT test_as_name_optional
 
 test_as_name_optional: test
     | test AS NAME
-    | /*empty*/
+    | 
     ;
 
 suite: simple_stmt 
@@ -258,82 +247,82 @@ stmt_plus: stmt stmt_plus
 /*clean below*/
 namedexpr_test: test ;
 
-test: or_test;
+test: or_test
     |or_test IF or_test ELSE test;
 
 test_nocond: or_test;
 
-or_test: and_test or_and_test_star;
+// or_test: and_test or_and_test_star;
 
-or_and_test_star:OR and_test or_and_test_star 
-    | /*empty*/
-    ;
+// or_and_test_star:OR and_test or_and_test_star 
+//     | 
+//     ;
     
-and_test: not_test and_not_test_star;
+// and_test: not_test and_not_test_star;
 
-and_not_test_star: AND not_test and_not_test_star
-    | /*empty*/
-    ;
+// and_not_test_star: AND not_test and_not_test_star
+//     | 
+//     ;
 
-not_test: NOT not_test
-    | comparison
-    ;
+// not_test: NOT not_test
+//     | comparison
+//     ;
     
-comparison: expr comp_op_expr_star ;
+// comparison: expr comp_op_expr_star ;
 
-comp_op_expr_star: comp_op expr comp_op_expr_star
-    | /*empty*/
-    ;
+// comp_op_expr_star: comp_op expr comp_op_expr_star
+//     | 
+//     ;
 
-comp_op: LT
-    |GT
-    |EQ
-    |GE
-    |LE
-    |NE
-    |IN
-    |NOT IN 
-    |IS 
-    |IS NOT 
-    ;
+// comp_op: LT
+//     |GT
+//     |EQ
+//     |GE
+//     |LE
+//     |NE
+//     |IN
+//     |NOT IN 
+//     |IS 
+//     |IS NOT 
+//     ;
 
-star_expr: MUL expr;
+/* star_expr: MUL expr; */
 
-expr: xor_expr symbol_xor_expr_star;
+/* expr: xor_expr symbol_xor_expr_star;
 
 symbol_xor_expr_star: BITWISE_OR xor_expr symbol_xor_expr_star
-    | /*empty*/
+    | 
     ;
 
 xor_expr: and_expr symbol_and_expr_star;
 
 symbol_and_expr_star: BITWISE_XOR and_expr symbol_and_expr_star
-    | /*empty*/
+    | 
     ;
 
 and_expr: shift_expr symbol_shift_expr_star;
 
 symbol_shift_expr_star: BITWISE_AND shift_expr symbol_shift_expr_star
-    | /*empty*/
+    | 
     ;
 
 shift_expr: arith_expr shift_arith_expr_star ;
 
-shift_arith_expr_star: /*empty*/
+shift_arith_expr_star: 
     | SHIFT_LEFT arith_expr shift_arith_expr_star
     | SHIFT_RIGHT arith_expr shift_arith_expr_star
     ;
 
 arith_expr: term symbol_term_star ;
 
-symbol_term_star: /*empty*/
+symbol_term_star: 
     | ADD term symbol_term_star
     | SUB term symbol_term_star
     ;
 
 term: factor symbol_factor_star ;
 
-symbol_factor_star : /*empty*/
+symbol_factor_star : 
     | symbol_factor symbol_factor_star
     ;
 
@@ -360,10 +349,11 @@ atom_expr: AWAIT atom trailer_star
     ;
     
 trailer_star: trailer trailer_star
-    | /*empty*/
-    ;
+    | 
+    ; */
     
-atom: SMALL_OPEN yield_expr_testlist_comp_optional SMALL_CLOSE 
+atom: SMALL_OPEN testlist_comp SMALL_CLOSE
+    | SMALL_OPEN SMALL_CLOSE
     |BOX_OPEN testlist_comp BOX_CLOSE
     |BOX_OPEN BOX_CLOSE
     |CURLY_OPEN dictorsetmaker CURLY_CLOSE
@@ -376,18 +366,13 @@ atom: SMALL_OPEN yield_expr_testlist_comp_optional SMALL_CLOSE
     | FALSE
     ;
 
-number: INTEGER
+/* number: INTEGER
     | FLOAT
     ;
 
 string_plus: STRING string_plus
     | STRING
-    ;
-
-yield_expr_testlist_comp_optional: yield_expr
-    | testlist_comp
-    | /*empty*/
-    ;
+    ; */
 
  /* Remaining from below */
 testlist_comp:namedexpr_test_star_expr_option comp_for 
@@ -400,21 +385,21 @@ namedexpr_test_star_expr_option: namedexpr_test
     ;
 
 namedexpr_test_star_expr_option_star: namedexpr_test_star_expr_option namedexpr_test_star_expr_option_star
-    | /*empty*/
+    | 
     ;
 
     
-trailer: SMALL_OPEN arglist SMALL_CLOSE 
-    |SMALL_OPEN  SMALL_CLOSE  
-    |BOX_OPEN subscriptlist BOX_CLOSE 
-    |DOT NAME
+/* trailer: SMALL_OPEN arglist SMALL_CLOSE 
+    | SMALL_OPEN SMALL_CLOSE 
+    | BOX_OPEN subscriptlist BOX_CLOSE 
+    | DOT NAME
     ;
     
 subscriptlist: subscript symbol_subscript_star
     | subscript symbol_subscript_star COMMA
     ;
 
-symbol_subscript_star: /*empty*/
+symbol_subscript_star: 
     | COMMA subscript symbol_subscript_star
     ;
 
@@ -423,8 +408,8 @@ subscript: test
     ;
 
 optional_test: test 
-    | /*empty*/
-    ;
+    | 
+    ; */
     
 exprlist: expr_star_expr_option symbol_expr_star_expr_option_star COMMA
     |expr_star_expr_option symbol_expr_star_expr_option_star 
@@ -435,7 +420,7 @@ expr_star_expr_option: expr
     ;
 
 symbol_expr_star_expr_option_star: COMMA expr_star_expr_option symbol_expr_star_expr_option_star
-    | /*empty*/
+    | 
     ;
     
 testlist: test symbol_test_star COMMA
@@ -443,7 +428,7 @@ testlist: test symbol_test_star COMMA
     ;
 
 symbol_test_star: COMMA test symbol_test_star
-    | /*empty*/
+    | 
     ;
     
 dictorsetmaker: dictorsetmaker_option1 comp_for 
@@ -459,7 +444,7 @@ dictorsetmaker_option1:test COLON test
     ;
     
 dictorsetmaker_option1_star: COMMA dictorsetmaker_option1 dictorsetmaker_option1_star
-    | /*empty*/
+    | 
     ;
 
 dictorsetmaker_option2: test
@@ -470,7 +455,7 @@ classdef: CLASS NAME bracket_arglist_optional COLON suite;
 
 bracket_arglist_optional: SMALL_OPEN SMALL_CLOSE
     | SMALL_OPEN arglist SMALL_CLOSE
-    | /*empty*/
+    | 
     ;
 
 arglist: argument comma_arg_star
@@ -478,7 +463,7 @@ arglist: argument comma_arg_star
     ;
 
 comma_arg_star: COMMA argument comma_arg_star
-    | /*empty*/
+    | 
     ;
 
 
@@ -498,9 +483,9 @@ sync_comp_for: FOR exprlist IN or_test
     | FOR exprlist IN or_test comp_iter
     ;
 
-comp_for:  sync_comp_for
-    | ASYNC sync_comp_for
-    ;
+// comp_for:  sync_comp_for
+//     | ASYNC sync_comp_for
+//     ;
     
 
 comp_if: IF test_nocond
@@ -508,14 +493,6 @@ comp_if: IF test_nocond
     ;
 
 encoding_decl: NAME ;
-
-yield_expr: YIELD
-    | YIELD yield_arg
-    ;
-
-yield_arg: FROM test 
-    | testlist_star_expr
-    ;
 
 func_body_suite: simple_stmt 
     | NEWLINE INDENT stmt_plus DEDENT
@@ -540,10 +517,10 @@ typelist_options: MUL test_optional comma_test_star COMMA POW test
     ;
 
 comma_test_star: COMMA test comma_test_star
-    | /*empty*/
+    | 
     ;
 test_optional: test
-    | /*empty*/
+    | 
     ;
 
 %%

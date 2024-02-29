@@ -4,7 +4,7 @@
     #include<bits/stdc++.h>
     #include <iostream>
     #include <stack>
-    #include "parser.tab.h"
+    #include "test.tab.h"
     using namespace std;
 
     int current_indent = 0;
@@ -34,10 +34,10 @@ FRACTION      "."{DIGITPART}
 EXPONENT      ("e"|"E")("+"|"-")?{DIGITPART}
 
 
-STRINGLITERAL   {STRINGPREFIX}?({SHORTSTRING}{LONGSTRING})
+STRINGLITERAL   {STRINGPREFIX}?({SHORTSTRING}|{LONGSTRING})
 STRINGPREFIX    "r"|"u"|"R"|"U"|"f"|"F"|"fr"|"Fr"|"fR"|"FR"|"rf"|"rF"|"Rf"|"RF"
 SHORTSTRING     "'"{SHORTSTRINGITEM}*"'"|"\""{SHORTSTRINGITEM}*"\""
-LONGSTRING      "'''"{LONGSTRINGITEM}*"'''"|"\"\"\"" {LONGSTRINGITEM}* "\"\"\""
+LONGSTRING      (["]{3,3}{LONGSTRINGITEM}*["]{3,3})|([']{3,3}{LONGSTRINGITEM}*[']{3,3})
 SHORTSTRINGITEM {SHORTSTRINGCHAR}|{STRINGESCAPESEQ}
 LONGSTRINGITEM  {LONGSTRINGCHAR}|{STRINGESCAPESEQ}
 SHORTSTRINGCHAR [^\\\n']
@@ -64,8 +64,6 @@ IDENTIFIER [A-Za-z_][A-Za-z0-9_]*
 
 ERRORCHAR "$"|"?"|"`" 
 
-PRINT "print"
-RANGE "range"
 
 %%
 {KEYWORD} { 
@@ -150,7 +148,6 @@ RANGE "range"
     else if(oper=="+") return ADD;
     else if(oper=="-") return SUB;
     else if(oper=="%") {return MOD;}
-    else if(oper=="=") return EQUAL;
 }
 
 {BITWISE_OP} { 
@@ -176,6 +173,8 @@ RANGE "range"
 {ASSIGNMENT_OP} {
     string oper = yytext;
     if(oper==":=") return WAL_OP;
+    else if(oper=="=") return EQUAL;
+
 }
 
 {DELIMITER} { 
