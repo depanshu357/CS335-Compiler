@@ -1,12 +1,12 @@
-for x in z : 
-    for x in y:
-        for x in y:
-                        for y in temp:
-                            asdf
-        retujrn
-    #huhahauh
-    abcd
-bla
+class STudent: 
+    asd
+    def asdf(x):
+        print(x)
 
-
+        
+        for x in y: 
+            return
+            if x < z :
+                do
+    return x
 

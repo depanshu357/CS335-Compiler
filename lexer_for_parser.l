@@ -242,7 +242,7 @@ ERRORCHAR "$"|"?"|"`"
 }
     
 
-<INITIAL>"\n"+/[^ \t] {
+<INITIAL>"\n"+/[^ \t\#] {
       while (indent_stack.top()!=0) {
             indent_stack.pop();
             cout<<"DEDENT"<<endl;
@@ -259,13 +259,40 @@ ERRORCHAR "$"|"?"|"`"
         return NEWLINE ;
     }
 
-^[ \t]*{COMMENT}?"\n" {
-    //ignore empty lines and lines only with comment
-}
+    /*^[ \t]*{COMMENT}?"\n" {
+        //ignore empty lines and lines only with comment
+    }*/
 
-"\n"/[ \t] {
+
+"\n"+/[ \t] {
     cout<<"NEWLINE"<<endl;
     return NEWLINE;
+    // this will only when the last is newline not followed by spaces and tabs
+}
+
+"\n"+[ \t]*/[\n] {
+    cout<<"EMpty line";
+}
+
+"\n"+[ \t]*[\#][^\n]* {
+    cout<<"comment detected"<<endl;
+}
+
+"\n"+ {
+     while (indent_stack.top()!=0) {
+            indent_stack.pop();
+            cout<<"DEDENT"<<endl;
+            temp_count++;
+        }
+        if(indent_stack.top()!=0){
+            cout<<"ERROR: wrong indentation"<<endl;
+            return 0;
+        }
+        // temp_count--;
+        unput(yytext[0]);
+        BEGIN(STATE);
+        cout<<"Last NEWLINE"<<endl; 
+        return NEWLINE ;
 }
 
 . { }
