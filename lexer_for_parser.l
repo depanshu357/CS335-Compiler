@@ -14,6 +14,8 @@
 %}
 
 KEYWORD "False"|"await"|"else"|"import"|"pass"|"None"|"break"|"except"|"in"|"raise"|"True"|"class"|"finally"|"is"|"return"|"continue"|"for"|"lambda"|"try"|"as"|"def"|"from"|"nonlocal"|"while"|"assert"|"del"|"global"|"with"|"async"|"elif"|"if"|"yield"|{LOGICAL_OP}
+PRIMITIVE_TYPES "int"|"str"|"float"|"bool" 
+TYPE_HINT {PRIMITIVE_TYPES}|("list["{PRIMITIVE_TYPES}"]")
 
 INTEGER {DECINTEGER}|{BININTEGER}|{OCTINTEGER}|{HEXINTEGER}
 DECINTEGER {NONZERODIGIT}(["_"]?{DIGIT})*|"0"+(["_"]?"0")*
@@ -25,7 +27,6 @@ NONZERODIGIT [1-9]
 BINDIGIT [0-1]
 OCTDIGIT [0-7]
 HEXDIGIT {DIGIT}|[a-fA-F]
-
 
 FLOATNUMBER   {POINTFLOAT}|{EXPONENTFLOAT}
 POINTFLOAT    ({DIGITPART}?{FRACTION})|({DIGITPART}".")
@@ -68,7 +69,9 @@ ERRORCHAR "$"|"?"|"`"
 %x STATE
 %x DEDENT_STATE
 %x HELP
-
+%x BOX_STATE
+%x CURLY_STATE
+%x SMALL_STATE
 %%
 
 <STATE>(.|[\n]) {
@@ -82,7 +85,6 @@ ERRORCHAR "$"|"?"|"`"
     }
 }
 
-    
 
 <DEDENT_STATE>(.|[\n])/([ ]) {
     BEGIN(INITIAL);
@@ -139,13 +141,17 @@ ERRORCHAR "$"|"?"|"`"
     else if(oper=="del") return DEL;
     else if(oper=="global") return GLOBAL;
     else if(oper=="with") return WITH;
+    else if(oper=="None") return NONE;
 }
 
-{IDENTIFIER} { cout<<"IDENTIFIER"<<" "<<yytext<<endl; return NAME; }
-{INTEGER} { cout<<"INTEGER"<<" "<<yytext<<endl;return INTEGER;}
-{FLOATNUMBER} { cout<<"FLOAT"<<" "<<yytext<<endl;return FLOAT;}
-{STRINGLITERAL} { cout<<"STRING"<<" "<<yytext<<endl;return STRING;}
-{COMMENT} { cout<<"COMMENT"<<" "<<yytext<<endl;}
+":"[ \t]*{TYPE_HINT} { cout<<"TYPE"<<": "<<yytext<<endl; return TYPE_HINT; }
+"->"[ \t]*({TYPE_HINT}|"None") { cout<<"TYPE"<<": "<<yytext<<endl; return FUNC_TYPE_HINT; }
+
+<INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{IDENTIFIER} { cout<<"IDENTIFIER"<<" "<<yytext<<endl; return NAME; }
+<INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{INTEGER} { cout<<"INTEGER"<<" "<<yytext<<endl;return INTEGER;}
+<INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{FLOATNUMBER} { cout<<"FLOAT"<<" "<<yytext<<endl;return FLOAT;}
+<INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{STRINGLITERAL} { cout<<"STRING"<<" "<<yytext<<endl;return STRING;}
+<INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{COMMENT} { cout<<"COMMENT"<<" "<<yytext<<endl;}
 
 {INDENTATIONS} {
             int new_indent = strlen(yytext); 
@@ -180,7 +186,7 @@ ERRORCHAR "$"|"?"|"`"
 
 
 
-{ARITHMETIC_OP} { 
+<INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{ARITHMETIC_OP} { 
     string oper = yytext;
     if(oper=="**") return POW;
     else if(oper=="//") return FLOOR_DIV;
@@ -191,7 +197,7 @@ ERRORCHAR "$"|"?"|"`"
     else if(oper=="%") {return MOD;}
 }
 
-{BITWISE_OP} { 
+<INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{BITWISE_OP} { 
     string oper = yytext;
     if(oper=="<<") return SHIFT_LEFT;
     else if(oper==">>") return SHIFT_RIGHT;
@@ -201,7 +207,7 @@ ERRORCHAR "$"|"?"|"`"
     else if(oper=="~") {cout<<"sending ~"<<endl;return TILDE;}
 }
 
-{RELATIONAL_OP} {
+<INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{RELATIONAL_OP} {
     string oper = yytext;
     if(oper=="==") return DOUBLE_EQUAL;
     else if(oper=="!=") return NE;
@@ -215,28 +221,44 @@ ERRORCHAR "$"|"?"|"`"
     string oper = yytext;
     if(oper==":=") return WAL_OP;
     else if(oper=="=") return EQUAL;
+    else if(oper=="+=") return ADD_EQUAL;
+    else if(oper=="-=") return SUB_EQUAL;
+    else if(oper=="*=") return MUL_EQUAL;
+    else if(oper=="/=") return DIV_EQUAL;
+    else if(oper=="%=") return MOD_EQUAL;
+    else if(oper=="**=") return POW_EQUAL;
+    else if(oper=="&=") return BITWISE_AND_EQUAL;
+    else if(oper=="|=") return BITWISE_OR_EQUAL;
+    else if(oper=="^=") return BITWISE_XOR_EQUAL;
+    else if(oper=="<<=") return SHIFT_LEFT_EQUAL;
+    else if(oper==">>=") return SHIFT_RIGHT_EQUAL;
+    else if(oper=="//=") return FLOOR_DIV_EQUAL;
 
 }
 
-{DELIMITER} { 
+<SMALL_STATE,CURLY_STATE,BOX_STATE>[ \n\t] {
+}
+
+
+<INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{DELIMITER} { 
     cout<<"DELIMITER"<<" "<<yytext<<endl;
     string oper = yytext;
 
     if(oper=="@") return AT;
     else if(oper==",") return COMMA;
     else if(oper==":") return COLON;
-    else if(oper=="(") return SMALL_OPEN;
-    else if(oper==")") return SMALL_CLOSE;
-    else if(oper=="[") return BOX_OPEN;
-    else if(oper=="]") return BOX_CLOSE;
-    else if(oper=="{") return CURLY_OPEN;
-    else if(oper=="}") return CURLY_CLOSE;
+    else if(oper=="(") {BEGIN(SMALL_STATE);return SMALL_OPEN;}
+    else if(oper==")") {BEGIN(INITIAL);return SMALL_CLOSE;}
+    else if(oper=="[") { BEGIN(BOX_STATE);return BOX_OPEN;}
+    else if(oper=="]") { BEGIN(INITIAL);return BOX_CLOSE;}
+    else if(oper=="{") {BEGIN(CURLY_STATE);return CURLY_OPEN;}
+    else if(oper=="}") {BEGIN(INITIAL);return CURLY_CLOSE;}
     else if(oper==".") return DOT;
     else if(oper=="->") return ARROW;
     
 }
 
-{ERRORCHAR} {
+<INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{ERRORCHAR} {
     cout<<"Error: Unexpected character "<<yytext<< " at line "<<yylineno<< endl;
     return 0;
 }
@@ -267,7 +289,6 @@ ERRORCHAR "$"|"?"|"`"
 "\n"+/[ \t] {
     cout<<"NEWLINE"<<endl;
     return NEWLINE;
-    // this will only when the last is newline not followed by spaces and tabs
 }
 
 "\n"+[ \t]*/[\n] {
@@ -293,8 +314,11 @@ ERRORCHAR "$"|"?"|"`"
         BEGIN(STATE);
         cout<<"Last NEWLINE"<<endl; 
         return NEWLINE ;
-}
+        // this will only when the last is newline not followed by spaces and tabs
 
+}
+    /*explicit line joining*/
+[\\][\n][ \t]* {}
 . { }
 %%
 

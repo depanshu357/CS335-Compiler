@@ -130,20 +130,21 @@ extern int yydebug;
     AND = 331,                     /* AND  */
     OR = 332,                      /* OR  */
     NOT = 333,                     /* NOT  */
-    TYPE_COMMENT = 334,            /* TYPE_COMMENT  */
-    ADD_ASSIGN = 335,              /* ADD_ASSIGN  */
-    SUB_ASSIGN = 336,              /* SUB_ASSIGN  */
-    MUL_ASSIGN = 337,              /* MUL_ASSIGN  */
-    AT_ASSIGN = 338,               /* AT_ASSIGN  */
-    DIV_ASSIGN = 339,              /* DIV_ASSIGN  */
-    MOD_ASSIGN = 340,              /* MOD_ASSIGN  */
-    AND_ASSIGN = 341,              /* AND_ASSIGN  */
-    OR_ASSIGN = 342,               /* OR_ASSIGN  */
-    XOR_ASSIGN = 343,              /* XOR_ASSIGN  */
-    LEFT_SHIFT_ASSIGN = 344,       /* LEFT_SHIFT_ASSIGN  */
-    RIGHT_SHIFT_ASSIGN = 345,      /* RIGHT_SHIFT_ASSIGN  */
-    POW_ASSIGN = 346,              /* POW_ASSIGN  */
-    FLOOR_DIV_ASSIGN = 347         /* FLOOR_DIV_ASSIGN  */
+    TYPE_HINT = 334,               /* TYPE_HINT  */
+    FUNC_TYPE_HINT = 335,          /* FUNC_TYPE_HINT  */
+    ADD_EQUAL = 336,               /* ADD_EQUAL  */
+    SUB_EQUAL = 337,               /* SUB_EQUAL  */
+    MUL_EQUAL = 338,               /* MUL_EQUAL  */
+    AT_EQUAL = 339,                /* AT_EQUAL  */
+    DIV_EQUAL = 340,               /* DIV_EQUAL  */
+    MOD_EQUAL = 341,               /* MOD_EQUAL  */
+    BITWISE_AND_EQUAL = 342,       /* BITWISE_AND_EQUAL  */
+    BITWISE_OR_EQUAL = 343,        /* BITWISE_OR_EQUAL  */
+    BITWISE_XOR_EQUAL = 344,       /* BITWISE_XOR_EQUAL  */
+    SHIFT_LEFT_EQUAL = 345,        /* SHIFT_LEFT_EQUAL  */
+    SHIFT_RIGHT_EQUAL = 346,       /* SHIFT_RIGHT_EQUAL  */
+    POW_EQUAL = 347,               /* POW_EQUAL  */
+    FLOOR_DIV_EQUAL = 348          /* FLOOR_DIV_EQUAL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -156,7 +157,7 @@ union YYSTYPE
 
     int num;
 
-#line 160 "test.tab.h"
+#line 161 "test.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

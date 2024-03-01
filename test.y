@@ -18,28 +18,32 @@
 %token DOUBLE_EQUAL NE LT GT LE GE
 %token IN IS IF ELSE 
 %token AND OR NOT
-%token TYPE_COMMENT /*dont know what it means, just defined to remove error, doesnt work*/
-%token ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN AT_ASSIGN DIV_ASSIGN MOD_ASSIGN AND_ASSIGN OR_ASSIGN XOR_ASSIGN LEFT_SHIFT_ASSIGN RIGHT_SHIFT_ASSIGN POW_ASSIGN FLOOR_DIV_ASSIGN
-
+%token TYPE_HINT FUNC_TYPE_HINT /*dont know what it means, just defined to remove error, doesnt work*/
+%token ADD_EQUAL SUB_EQUAL MUL_EQUAL  AT_EQUAL  DIV_EQUAL MOD_EQUAL BITWISE_AND_EQUAL  BITWISE_OR_EQUAL  BITWISE_XOR_EQUAL SHIFT_LEFT_EQUAL  SHIFT_RIGHT_EQUAL  POW_EQUAL  FLOOR_DIV_EQUAL 
 
 %%
-
 
 file_input: NEWLINE file_input
     | stmt file_input
     | ;
+
 
 stmt: simple_stmt 
     |compound_stmt
     ;
 
 compound_stmt: if_stmt
-            |  while_stmt
-            | for_stmt
-            | try_stmt
-            | funcdef 
-            | classdef 
-            ;
+    |  while_stmt
+    | for_stmt
+    | try_stmt
+    | funcdef 
+    | classdef 
+    | async_stmt
+    ;
+    
+async_stmt: ASYNC funcdef
+    | ASYNC for_stmt
+    ;
 
 if_stmt: IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star ELSE COLON suite
     | IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star
@@ -53,9 +57,7 @@ while_stmt: WHILE namedexpr_test COLON suite ELSE COLON suite
     | WHILE namedexpr_test COLON suite
     ;
 
-for_stmt: FOR exprlist IN testlist COLON TYPE_COMMENT suite ELSE COLON suite
-    | FOR exprlist IN testlist COLON suite ELSE COLON suite
-    | FOR exprlist IN testlist COLON TYPE_COMMENT suite
+for_stmt:  FOR exprlist IN testlist COLON suite ELSE COLON suite
     | FOR exprlist IN testlist COLON suite
     ; 
 
@@ -80,18 +82,78 @@ test_as_name_optional: test
     | 
     ;
 
-funcdef: DEF NAME parameters ARROW test COLON TYPE_COMMENT func_body_suite
-    | DEF NAME parameters ARROW test COLON  func_body_suite
-    | DEF NAME parameters COLON TYPE_COMMENT func_body_suite
-    | DEF NAME parameters  COLON  func_body_suite
+/*using this notation instead of below one*/
+funcdef:  DEF NAME parameters  FUNC_TYPE_HINT COLON  func_body_suite
+    | DEF NAME parameters  COLON  func_body_suite {cout<<"line 84";}
     ;
 
+
+// funcdef:  DEF NAME parameters ARROW test COLON  func_body_suite
+//     | DEF NAME parameters ARROW FUNC_TYPE_HINT COLON  func_body_suite
+//     | DEF NAME parameters  COLON  func_body_suite
+//     ;
+
 // Written only to run START ye dono document se dekhna hai
-parameters: SMALL_OPEN test SMALL_CLOSE ;
+parameters: SMALL_OPEN typedarglist SMALL_CLOSE 
+    |SMALL_OPEN SMALL_CLOSE
+    ;
+
+
+typedlist_argument: tfpdef  {cout<<"line 99"<<endl;}
+    // |  tfpdef TYPE_HINT
+    // |  tfpdef TYPE_HINT EQUAL test {cout << "yes";}
+    |  tfpdef  EQUAL test {cout << "yes";}
+    ;
+    
+typedlist_arguments: typedlist_argument comma_option_argument_star;
+
+comma_option_argument_star: comma_option_argument_star COMMA typedlist_argument 
+    |
+    ;
+
+// comma_option_argument_star: COMMA typedlist_argument comma_option_argument_star
+//     |COMMA TYPE_HINT typedlist_argument comma_option_argument_star
+//     | 
+//     ;        
+
+
+
+
+typedarglist:
+    typedlist_arguments
+    ;
+
+
+/* comma_option_argument_star: COMMA typedlist_argument comma_option_argument_star
+    |COMMA TYPE_HINT typedlist_argument comma_option_argument_star
+    | 
+    ;        
+
+poskeyword_args_kwonly_kwargs : typedlist_arguments TYPE_HINT
+    |typedlist_arguments
+    |typedlist_arguments COMMA
+    |typedlist_arguments COMMA TYPE_HINT
+    ;
+
+typedargslist_no_posonly : poskeyword_args_kwonly_kwargs ;
+
+typedarglist : typedlist_arguments COMMA DIV
+    |typedlist_arguments COMMA TYPE_HINT DIV 
+    |typedlist_arguments COMMA DIV COMMA typedarglist_option1
+    |typedlist_arguments COMMA TYPE_HINT DIV COMMA typedarglist_option1
+    |typedargslist_no_posonly
+    ; */
+
+
+
+
+tfpdef: NAME {cout<<"tfpdef is first used here";}
+    | NAME TYPE_HINT {cout<<"tfpdef is begin used here";}
+    | NAME COLON test {cout<<"tfpdef is begin used here";}
+    ;
 
 func_body_suite: simple_stmt 
     | NEWLINE INDENT stmt_plus DEDENT
-    | NEWLINE TYPE_COMMENT NEWLINE INDENT stmt_plus DEDENT;
 
 suite: simple_stmt 
     | NEWLINE INDENT stmt_plus DEDENT
@@ -159,7 +221,6 @@ expr_stmt: testlist_star_expr annassign
     | testlist_star_expr augassign testlist
     |testlist_star_expr  
     |testlist_star_expr expr_stmt_option1_plus  
-    |testlist_star_expr expr_stmt_option1_plus TYPE_COMMENT
     ;
 
 testlist:  test symbol_test_star    ;
@@ -177,7 +238,8 @@ symbol_test_star: COMMA test symbol_test_star
     ; */
     
 expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus
-    |EQUAL testlist_star_expr
+    // |TYPE_HINT EQUAL testlist_star_expr
+    | EQUAL testlist_star_expr
     ;
 
 annassign: COLON test
@@ -217,8 +279,8 @@ testlist_star_expr_option1_star: COMMA test testlist_star_expr_option1_star
     
     ; */
 
-augassign: ADD_ASSIGN | SUB_ASSIGN | MUL_ASSIGN | AT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | AND_ASSIGN | OR_ASSIGN | XOR_ASSIGN |
-            LEFT_SHIFT_ASSIGN | RIGHT_SHIFT_ASSIGN | POW_ASSIGN | FLOOR_DIV_ASSIGN ;
+augassign: ADD_EQUAL | SUB_EQUAL | MUL_EQUAL | AT_EQUAL | DIV_EQUAL | MOD_EQUAL | BITWISE_AND_EQUAL | BITWISE_OR_EQUAL | BITWISE_XOR_EQUAL |
+            SHIFT_LEFT_EQUAL | SHIFT_RIGHT_EQUAL | POW_EQUAL | FLOOR_DIV_EQUAL ;
 
 expr: xor_expr symbol_xor_expr_star;
 
@@ -256,14 +318,15 @@ symbol_term_star: /*empty*/
 
 term: factor symbol_factor_star ;
 
-symbol_factor_star : /*empty*/
+symbol_factor_star: /*empty*/
     | symbol_factor symbol_factor_star
     ;
 
-symbol_factor: MUL factor
+symbol_factor: MUL factor 
     | AT factor
     | DIV factor
     | FLOOR_DIV factor
+    | MOD factor
     ;
 
 factor: ADD factor
@@ -280,15 +343,24 @@ atom_expr: AWAIT atom trailer_star
     | atom trailer_star
     ;
 
-trailer_star: trailer trailer_star
+trailer_star:  trailer trailer_star 
     | /*empty*/
     ;
+
+/* trailer: SMALL_OPEN arglist SMALL_CLOSE 
+    |SMALL_OPEN SMALL_CLOSE
+    |BOX_OPEN subscriptlist BOX_CLOSE 
+    |DOT NAME TYPE_HINT //yahan optional TYPE_HINT nahi chal raha hai
+    |DOT NAME
+    ; */
 
 trailer: SMALL_OPEN arglist SMALL_CLOSE 
     |SMALL_OPEN SMALL_CLOSE
     |BOX_OPEN subscriptlist BOX_CLOSE 
-    |DOT NAME
+    |DOT NAME TYPE_HINT
+    |DOT NAME 
     ;
+
 
 classdef: CLASS NAME bracket_arglist_optional COLON suite;
 
@@ -321,7 +393,7 @@ subscript: test
 
 argument: test 
     | test comp_for 
-    | test EQUAL test 
+    | test EQUAL test  
     | POW test 
     | MUL test
     ;
@@ -432,11 +504,12 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE
     | BOX_OPEN BOX_CLOSE
     | CURLY_OPEN CURLY_CLOSE
     | NAME 
+    | NAME TYPE_HINT
     | number 
     | string_plus
-    | NONE 
     | TRUE 
     | FALSE
+    | NONE
     ;
 // dictionary , setliterals are to be ignored
 

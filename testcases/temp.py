@@ -1,6 +1,9 @@
-for x in range(10):
-    for y in range(10):
-        for z in range(10):
-            print(x, y, z)
-    
-    print(x)
+v = 0
+asd = [6+5, 
+       "astr",
+       v == 6]
+
+
+print(
+    asd
+)

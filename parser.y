@@ -24,20 +24,20 @@
 %%
 /* operators*/
 
-single_input: NEWLINE 
+/* single_input: NEWLINE 
     | simple_stmt 
     | compound_stmt NEWLINE
-    ;
+    ; */
     
 /* file_input: NEWLINE file_input
     | stmt file_input
     | 
     ; */
 
-eval_input: testlist NEWLINE
+/* eval_input: testlist NEWLINE
     | testlist
-    ;
-
+    ; */
+/* 
 decorator: AT dotted_name SMALL_OPEN arglist SMALL_CLOSE NEWLINE
     | AT dotted_name SMALL_OPEN SMALL_CLOSE NEWLINE
     | AT dotted_name NEWLINE
@@ -50,9 +50,9 @@ decorators: decorator decorators
 decorated: decorators classdef
     | decorators funcdef 
     | decorators async_funcdef
-    ;
+    ; */
 
-async_funcdef: ASYNC funcdef;
+// async_funcdef: ASYNC funcdef;
 
 /* funcdef: DEF NAME parameters ARROW test COLON TYPE_COMMENT func_body_suite
     | DEF NAME parameters ARROW test COLON  func_body_suite
@@ -61,9 +61,9 @@ async_funcdef: ASYNC funcdef;
     ; */
 
 // Written only to run START ye dono document se dekhna hai
-parameters: SMALL_OPEN typedargslist SMALL_CLOSE ;
+/* parameters: SMALL_OPEN typedargslist SMALL_CLOSE ;
 
-typedargslist: NAME comma_name_star COMMA  DIV 
+typedargslist: NAME comma_name_star COMMA  DIV  */
 
 // Written only to run END
 
@@ -134,7 +134,7 @@ annassign: COLON test
     | RAISE test 
     | RAISE test FROM test
     ; */
-
+/* 
 dotted_as_name: dotted_name 
     |dotted_name AS NAME
     ;
@@ -149,7 +149,7 @@ dotted_name: NAME dot_name_star;
 
 dot_name_star: DOT NAME dot_name_star
     | 
-    ;
+    ; */
 
 /* global_stmt: GLOBAL NAME comma_name_star ; */
 
@@ -163,21 +163,18 @@ dot_name_star: DOT NAME dot_name_star
     | ASSERT test
     ; */
 
-compound_stmt: if_stmt 
+/* compound_stmt: if_stmt 
     | while_stmt 
     | for_stmt 
     | try_stmt 
     | funcdef 
     | classdef 
-    | decorated 
-    | async_stmt
-    ;
+    | async_stmt -> // this is giving 33 shift/reduce errors
+    ; */
     
-async_stmt: ASYNC funcdef
-    | ASYNC with_stmt
+/* async_stmt: ASYNC funcdef
     | ASYNC for_stmt
-    | ASYNC for_stmt
-    ;
+    ; */
 
 /* if_stmt: IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star ELSE COLON suite
     | IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star
@@ -474,36 +471,11 @@ bracket_arglist_optional: SMALL_OPEN SMALL_CLOSE
     | IF test_nocond comp_iter
     ; */
 
-encoding_decl: NAME ;
 
-func_body_suite: simple_stmt 
+/* func_body_suite: simple_stmt 
     | NEWLINE INDENT stmt_plus DEDENT
-    | NEWLINE TYPE_COMMENT NEWLINE INDENT stmt_plus DEDENT
+    | NEWLINE TYPE_COMMENT NEWLINE INDENT stmt_plus DEDENT */
 
-func_type_input: func_type
-    | func_type NEWLINE
-    ;
-
-func_type: SMALL_OPEN SMALL_CLOSE ARROW test
-    | SMALL_OPEN typelist SMALL_CLOSE ARROW test
-    ;
-
-typelist: test comma_test_star
-    | test comma_test_star COMMA typelist_options
-    |  typelist_options
-    ;
-
-typelist_options: MUL test_optional comma_test_star COMMA POW test 
-    | MUL test_optional comma_test_star 
-    | POW test
-    ;
-
-comma_test_star: COMMA test comma_test_star
-    | 
-    ;
-test_optional: test
-    | 
-    ;
 
 %%
 
