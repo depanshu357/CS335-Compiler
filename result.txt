@@ -1,11 +1,10 @@
-KEYWORD if
-INTEGER 1900
-IDENTIFIER year
-INTEGER 2100
-KEYWORD and
-INTEGER 1
-IDENTIFIER month
-INTEGER 12
-COMMENT #hehe
-NEWLINE
-Error: syntax error,line: 2
+DELIMITER [
+DELIMITER ]
+run huahua kya
+	2		[ style = solid label = "Atom"  ];
+	2 -> 0
+hua kya
+	0		[ style = solid label = "["  ];
+	2 -> 1
+hua kya
+	1		[ style = solid label = "]"  ];

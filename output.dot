@@ -1,0 +1,10 @@
+	4		[ style = solid label = "string"  ];
+	4 -> 0
+	0		[ style = solid label = "\"aryan\""  ];
+	4 -> 3
+	3		[ style = solid label = "string"  ];
+	3 -> 1
+	1		[ style = solid label = "\"maurya\""  ];
+	3 -> 2
+	2		[ style = solid label = "\"damn\""  ];
+}

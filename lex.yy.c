@@ -771,6 +771,8 @@ char *yytext;
     #include<bits/stdc++.h>
     #include <iostream>
     #include <stack>
+    #include "data.h"
+    #include "data.cpp"
     #include "test.tab.h"
     using namespace std;
 
@@ -778,9 +780,9 @@ char *yytext;
     stack<int> indent_stack;
     int temp_count=0;
 
-#line 782 "lex.yy.c"
-
 #line 784 "lex.yy.c"
+
+#line 786 "lex.yy.c"
 
 #define INITIAL 0
 #define STATE 1
@@ -1006,10 +1008,10 @@ YY_DECL
 		}
 
 	{
-#line 75 "lexer_for_parser.l"
+#line 79 "lexer_for_parser.l"
 
 
-#line 1013 "lex.yy.c"
+#line 1015 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1080,7 +1082,7 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 77 "lexer_for_parser.l"
+#line 81 "lexer_for_parser.l"
 {
     if(temp_count==0){
         BEGIN(INITIAL);
@@ -1099,7 +1101,7 @@ YY_LINENO_REWIND_TO(yy_cp - 1);
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 89 "lexer_for_parser.l"
+#line 93 "lexer_for_parser.l"
 {
     BEGIN(INITIAL);
     
@@ -1108,7 +1110,7 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 93 "lexer_for_parser.l"
+#line 97 "lexer_for_parser.l"
 {
     temp_count--; 
     if(temp_count==0){
@@ -1123,8 +1125,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 106 "lexer_for_parser.l"
+#line 110 "lexer_for_parser.l"
 { 
+    yylval.elem = create_node(1, strdup(yytext));
     cout<<"KEYWORD"<<" "<<yytext<<endl; ; 
     string oper = yytext;
     if(oper=="is") return IS;
@@ -1167,43 +1170,69 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 147 "lexer_for_parser.l"
-{ cout<<"TYPE"<<": "<<yytext<<endl; return TYPE_HINT; }
+#line 152 "lexer_for_parser.l"
+{
+    yylval.elem = create_node(1, strdup(yytext));
+     cout<<"TYPE"<<": "<<yytext<<endl; 
+     return TYPE_HINT; 
+     }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 148 "lexer_for_parser.l"
-{ cout<<"TYPE"<<": "<<yytext<<endl; return FUNC_TYPE_HINT; }
+#line 158 "lexer_for_parser.l"
+{
+    yylval.elem = create_node(1, strdup(yytext));
+    cout<<"TYPE"<<": "<<yytext<<endl; 
+    return FUNC_TYPE_HINT; 
+    }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 150 "lexer_for_parser.l"
-{ cout<<"IDENTIFIER"<<" "<<yytext<<endl; return NAME; }
+#line 164 "lexer_for_parser.l"
+{ 
+    yylval.elem = create_node(1, strdup(yytext));
+    cout<<"IDENTIFIER"<<" "<<yytext<<endl; 
+    return NAME; 
+    }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 151 "lexer_for_parser.l"
-{ cout<<"INTEGER"<<" "<<yytext<<endl;return INTEGER;}
+#line 170 "lexer_for_parser.l"
+{ 
+    yylval.elem = create_node(1, strdup(yytext));
+    cout<<"INTEGER"<<" "<<yytext<<endl;
+    return INTEGER;
+    }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 152 "lexer_for_parser.l"
-{ cout<<"FLOAT"<<" "<<yytext<<endl;return FLOAT;}
+#line 175 "lexer_for_parser.l"
+{ 
+    yylval.elem = create_node(1, strdup(yytext));
+    cout<<"FLOAT"<<" "<<yytext<<endl;
+    return FLOAT;
+    }
 	YY_BREAK
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 153 "lexer_for_parser.l"
-{ cout<<"STRING"<<" "<<yytext<<endl;return STRING;}
+#line 180 "lexer_for_parser.l"
+{ 
+    yylval.elem = create_node(1, strdup(yytext));
+    cout<<"STRING"<<" "<<yytext<<endl;
+    return STRING;
+    }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 154 "lexer_for_parser.l"
-{ cout<<"COMMENT"<<" "<<yytext<<endl;}
+#line 185 "lexer_for_parser.l"
+{ 
+    cout<<"COMMENT"<<" "<<yytext<<endl;
+    }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 156 "lexer_for_parser.l"
+#line 189 "lexer_for_parser.l"
 {
             int new_indent = strlen(yytext); 
             if(new_indent%2==1){
@@ -1237,8 +1266,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 189 "lexer_for_parser.l"
+#line 222 "lexer_for_parser.l"
 { 
+    yylval.elem = create_node(1, strdup(yytext));
     string oper = yytext;
     if(oper=="**") return POW;
     else if(oper=="//") return FLOOR_DIV;
@@ -1246,26 +1276,31 @@ YY_RULE_SETUP
     else if(oper=="*") return MUL;
     else if(oper=="+") return ADD;
     else if(oper=="-") return SUB;
-    else if(oper=="%") {return MOD;}
+    else if(oper=="%") return MOD;
 }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 200 "lexer_for_parser.l"
+#line 234 "lexer_for_parser.l"
 { 
+    yylval.elem = create_node(1, strdup(yytext));
     string oper = yytext;
     if(oper=="<<") return SHIFT_LEFT;
     else if(oper==">>") return SHIFT_RIGHT;
     else if(oper=="&") return BITWISE_AND;
     else if(oper=="|") return BITWISE_OR;
     else if(oper=="^") return BITWISE_XOR;
-    else if(oper=="~") {cout<<"sending ~"<<endl;return TILDE;}
+    else if(oper=="~") {
+        cout<<"sending ~"<<endl;
+        return TILDE;
+    }
 }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 210 "lexer_for_parser.l"
+#line 248 "lexer_for_parser.l"
 {
+    yylval.elem = create_node(1, strdup(yytext));
     string oper = yytext;
     if(oper=="==") return DOUBLE_EQUAL;
     else if(oper=="!=") return NE;
@@ -1277,8 +1312,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 220 "lexer_for_parser.l"
+#line 259 "lexer_for_parser.l"
 {
+    yylval.elem = create_node(1, strdup(yytext));
     string oper = yytext;
     if(oper==":=") return WAL_OP;
     else if(oper=="=") return EQUAL;
@@ -1300,14 +1336,15 @@ YY_RULE_SETUP
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 239 "lexer_for_parser.l"
+#line 279 "lexer_for_parser.l"
 {
 }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 243 "lexer_for_parser.l"
+#line 283 "lexer_for_parser.l"
 { 
+    yylval.elem = create_node(1, strdup(yytext));
     cout<<"DELIMITER"<<" "<<yytext<<endl;
     string oper = yytext;
 
@@ -1327,7 +1364,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 261 "lexer_for_parser.l"
+#line 302 "lexer_for_parser.l"
 {
     cout<<"Error: Unexpected character "<<yytext<< " at line "<<yylineno<< endl;
     return 0;
@@ -1340,7 +1377,7 @@ YY_LINENO_REWIND_TO(yy_cp - 1);
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 267 "lexer_for_parser.l"
+#line 308 "lexer_for_parser.l"
 {
       while (indent_stack.top()!=0) {
             indent_stack.pop();
@@ -1368,7 +1405,7 @@ YY_LINENO_REWIND_TO(yy_cp - 1);
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 289 "lexer_for_parser.l"
+#line 330 "lexer_for_parser.l"
 {
     cout<<"NEWLINE"<<endl;
     return NEWLINE;
@@ -1381,7 +1418,7 @@ YY_LINENO_REWIND_TO(yy_cp - 1);
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 294 "lexer_for_parser.l"
+#line 335 "lexer_for_parser.l"
 {
     cout<<"EMpty line";
 }
@@ -1389,7 +1426,7 @@ YY_RULE_SETUP
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 298 "lexer_for_parser.l"
+#line 339 "lexer_for_parser.l"
 {
     cout<<"comment detected"<<endl;
 }
@@ -1397,7 +1434,7 @@ YY_RULE_SETUP
 case 24:
 /* rule 24 can match eol */
 YY_RULE_SETUP
-#line 302 "lexer_for_parser.l"
+#line 343 "lexer_for_parser.l"
 {
      while (indent_stack.top()!=0) {
             indent_stack.pop();
@@ -1417,23 +1454,24 @@ YY_RULE_SETUP
 
 }
 	YY_BREAK
+/*explicit line joining*/
 case 25:
 /* rule 25 can match eol */
 YY_RULE_SETUP
-#line 320 "lexer_for_parser.l"
+#line 362 "lexer_for_parser.l"
 {}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 321 "lexer_for_parser.l"
+#line 363 "lexer_for_parser.l"
 { }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 322 "lexer_for_parser.l"
+#line 364 "lexer_for_parser.l"
 ECHO;
 	YY_BREAK
-#line 1437 "lex.yy.c"
+#line 1475 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(STATE):
 case YY_STATE_EOF(DEDENT_STATE):
@@ -2458,7 +2496,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 322 "lexer_for_parser.l"
+#line 364 "lexer_for_parser.l"
 
 
 // int main(){
