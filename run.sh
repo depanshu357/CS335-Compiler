@@ -5,4 +5,4 @@
 bison -t -d -v test.y -Wcounterexamples
 flex lexer_for_parser.l
 g++ lex.yy.c test.tab.c 
-./a.out < input.txt >temp.dot
+./a.out < input.txt > result.txt

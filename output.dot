@@ -1,10 +1,36 @@
-	4		[ style = solid label = "string"  ];
-	4 -> 0
-	0		[ style = solid label = "\"aryan\""  ];
+digraph G{
+
+label     = "AST"
+fontname  = "Cascadia code"
+fontsize  = 30
+labelloc  = t
+
+node   [ fontname="Cascadia code" ]
+	13		[ style = solid label = "START"  ];
+	13 -> 12
+	12		[ style = solid label = "file_input"  ];
+	12 -> 11
+	11		[ style = solid label = "simple_stmt"  ];
+	11 -> 10
+	10		[ style = solid label = "testlist_expr"  ];
+	10 -> 9
+	9		[ style = solid label = "or_test"  ];
+	9 -> 8
+	8		[ style = solid label = "and_test"  ];
+	8 -> 7
+	7		[ style = solid label = "expr"  ];
+	7 -> 6
+	6		[ style = solid label = "xor_expr"  ];
+	6 -> 5
+	5		[ style = solid label = "and_expr"  ];
+	5 -> 4
+	4		[ style = solid label = "shift_expr"  ];
 	4 -> 3
-	3		[ style = solid label = "string"  ];
-	3 -> 1
-	1		[ style = solid label = "\"maurya\""  ];
+	3		[ style = solid label = "arith_expr"  ];
 	3 -> 2
-	2		[ style = solid label = "\"damn\""  ];
+	2		[ style = solid label = "term"  ];
+	2 -> 1
+	1		[ style = solid label = "atom_expr"  ];
+	1 -> 0
+	0		[ style = solid label = "\"aditya\""  ];
 }

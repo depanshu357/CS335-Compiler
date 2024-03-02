@@ -1,10 +1,2 @@
-DELIMITER [
-DELIMITER ]
-run huahua kya
-	2		[ style = solid label = "Atom"  ];
-	2 -> 0
-hua kya
-	0		[ style = solid label = "["  ];
-	2 -> 1
-hua kya
-	1		[ style = solid label = "]"  ];
+STRING "aditya"
+Last NEWLINE

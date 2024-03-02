@@ -9,6 +9,9 @@
     NODE *start_node;
 	fstream fout;
 	extern FILE *yyin;
+
+    
+
 %}
 
 %union {
@@ -30,80 +33,78 @@
 
 %%
 
-atom_expr: AWAIT atom trailer_star
-    | atom trailer_star{start_node=$1;}
+
+
+start : file_input {$$ = create_node(2,"START", $1); start_node=$$;}
     ;
 
-start : file_input
-    ;
-
-file_input: NEWLINE file_input 
-    | stmt file_input 
-    | { /* action */ }	
+file_input: NEWLINE file_input {$$ = $2;}
+    | stmt file_input {$$ = create_node(3,"file_input",$1,$2);}
+    | { /* action */}	
     ;
 
 
-stmt: simple_stmt 
-    |compound_stmt
+stmt: simple_stmt  {$$ = $1;}
+    |compound_stmt {$$ = $1;}
     ;
 
-compound_stmt: if_stmt
-    |  while_stmt
-    | for_stmt
-    | try_stmt
-    | funcdef 
-    | classdef 
-    | async_stmt
+compound_stmt: if_stmt { $$ = $1;}
+    |  while_stmt { $$ = $1;}
+    | for_stmt { $$ = $1;}
+    | try_stmt { $$ = $1;}
+    | funcdef  {  $$ = $1;}
+    | classdef { $$ = $1;}
+    | async_stmt { $$ = $1;}
     ;
     
-async_stmt: ASYNC funcdef
-    | ASYNC for_stmt
+async_stmt: ASYNC funcdef { $$ = create_node(3,"async_stmt",$1,$2);}
+    | ASYNC for_stmt { $$ = create_node(3,"async_stmt",$1,$2);}
     ;
 
-if_stmt: IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star ELSE COLON suite
-    | IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star
+if_stmt: IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star ELSE COLON suite { $$ = create_node(9,"if_stmt",$1,$2,$3,$4,$5,$6,$7,$8);}
+    | IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star { $$ = create_node(6,"if_stmt",$1,$2,$3,$4,$5);}
     ;
 
-elif_namedexpr_test_colon_suite_star: ELIF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star
-    | 
+elif_namedexpr_test_colon_suite_star: ELIF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star {$$ = create_node(5,"elif_namedexpr",$1,$2,$3,$4);}
+    | { $$ = NULL;}
     ;
 
-while_stmt: WHILE namedexpr_test COLON suite ELSE COLON suite
-    | WHILE namedexpr_test COLON suite
+while_stmt: WHILE namedexpr_test COLON suite ELSE COLON suite { $$ = create_node(8,"while_stmt",$1,$2,$3,$4,$5,$6,$7);}
+    | WHILE namedexpr_test COLON suite {$$ = create_node(5,"while_stmt",$1,$2,$3,$4);}
     ;
 
-for_stmt:  FOR exprlist IN testlist COLON suite ELSE COLON suite
-    | FOR exprlist IN testlist COLON suite
+for_stmt:  FOR exprlist IN testlist COLON suite ELSE COLON suite { $$ = create_node(10,"for_stmt",$1,$2,$3,$4,$5,$6,$7,$8,$9);}
+    | FOR exprlist IN testlist COLON suite {$$ = create_node(7,"for_stmt",$1,$2,$3,$4,$5,$6);}
     ; 
 
-try_stmt: TRY COLON suite FINALLY COLON suite
-    | TRY COLON suite except_clause_colon_suite try_stmt_options 
+try_stmt: TRY COLON suite FINALLY COLON suite {$$ = create_node(7,"try_stmt",$1,$2,$3,$4,$5,$6);}
+    | TRY COLON suite except_clause_colon_suite try_stmt_options { $$ = create_node(6,"try_stmt",$1,$2,$3,$4,$5);}
     ;
 
-except_clause_colon_suite: except_clause COLON suite except_clause_colon_suite
-    | except_clause COLON suite
+except_clause_colon_suite: except_clause COLON suite except_clause_colon_suite {$$ = create_node(5,"except_clause_colon_suite",$1,$2,$3,$4);}
+    | except_clause COLON suite { $$ = create_node(4,"except_clause_colon_suite",$1,$2,$3);}
     ;
 
-try_stmt_options: ELSE COLON suite FINALLY COLON suite
-    | ELSE COLON suite
-    | FINALLY COLON suite
-    | 
+try_stmt_options: ELSE COLON suite FINALLY COLON suite { $$ = create_node(7,"try_stmt_options",$1,$2,$3,$4,$5,$6);}
+    | ELSE COLON suite {$$ = create_node(4,"try_stmt_options",$1,$2,$3);}
+    | FINALLY COLON suite { $$ = create_node(4,"try_stmt_options",$1,$2,$3);}
+    | { $$ = NULL;{}}
     ;
 
-except_clause: EXCEPT test_as_name_optional
+except_clause: EXCEPT test_as_name_optional {$$ = create_node(3,"except_clause",$1,$2);}
 
-test_as_name_optional: test
-    | test AS NAME
-    | 
+test_as_name_optional: test {$$=$1;}
+    | test AS NAME {$$ = create_node(4,"test_as_name",$1,$2,$3);}
+    | {$$ = NULL;}
     ;
 
 /*using this notation instead of below one*/
 funcdef:  DEF NAME parameters  FUNC_TYPE_HINT COLON  func_body_suite { $$ = create_node(7,"funcdef",$1,$2,$3,$4,$5,$6);}
-    | DEF NAME parameters  COLON  func_body_suite { $$ = create_node(7,"funcdef",$1,$2,$3,$4,$5,$6);}
+    | DEF NAME parameters  COLON  func_body_suite { $$ = create_node(6,"funcdef",$1,$2,$3,$4,$5);}
     ;
 
 // Written only to run START ye dono document se dekhna hai
-parameters: SMALL_OPEN typedarglist SMALL_CLOSE {$$ = create_node(4,"parameters",$1,$2);}
+parameters: SMALL_OPEN typedarglist SMALL_CLOSE {$$ = create_node(4,"parameters",$1,$2,$3);}
     |SMALL_OPEN SMALL_CLOSE {$$ = create_node(3,"parameters",$1,$2);}
     ;
 
@@ -117,7 +118,7 @@ typedlist_argument: tfpdef  { $$ = $1;}
 typedlist_arguments: typedlist_argument comma_option_argument_star {$$ = create_node(3,"typedlist_arguments",$1,$2);};
 
 comma_option_argument_star: comma_option_argument_star COMMA typedlist_argument {$$ = create_node(4,"comma_option_argument_star",$1,$2,$3);}
-    |
+    | { $$ = NULL;}
     ;
 
 typedarglist:
@@ -130,22 +131,22 @@ tfpdef: NAME { $$ = $1;}
     ;
 
 func_body_suite: simple_stmt {$$ = $1;}
-    | NEWLINE INDENT stmt_plus DEDENT { $$ = $1;}
+    | NEWLINE INDENT stmt_plus DEDENT { $$ = $3;}
 
 suite: simple_stmt {$$ = $1;}
-    | NEWLINE INDENT stmt_plus DEDENT { $$ = $1;}
+    | NEWLINE INDENT stmt_plus DEDENT { $$ = $3;}
     ;
 
 stmt_plus: stmt stmt_plus {$$ = create_node(3,"stmt_plus",$1,$2);}
     | stmt {$$ = $1;}
     ;
 
-simple_stmt: small_stmt semi_colon_small_stmt_star NEWLINE {$$ = create_node(4,"simple_stmt",$1,$2,$3);}
+simple_stmt: small_stmt semi_colon_small_stmt_star NEWLINE {$$ = create_node(3,"simple_stmt",$1,$2);}
     ;
 
 semi_colon_small_stmt_star: SEMI_COLON small_stmt semi_colon_small_stmt_star {$$ = create_node(4,"semi_colon_small_stmt_star",$1,$2,$3);}
     | SEMI_COLON {$$ = $1;}
-    |
+    | { $$ = NULL;}
     ;
 
 small_stmt: expr_stmt {$$ = $1;}
@@ -179,7 +180,7 @@ global_stmt: GLOBAL NAME comma_name_star {$$ = create_node(4,"global_stmt",$1,$2
 nonlocal_stmt: NONLOCAL NAME comma_name_star {$$ = create_node(4,"nonlocal_stmt",$1,$2,$3);};
 
 comma_name_star: COMMA NAME comma_name_star {$$ = create_node(4,"comma_name_star",$1,$2,$3);}
-    | 
+    | { $$ = NULL;}
     ;
 
 assert_stmt: ASSERT test COMMA test {$$ = create_node(5,"assert_stmt",$1,$2,$3,$4);}
@@ -194,30 +195,30 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"expr_stmt",$1,$2);}
 
 testlist:  test symbol_test_star  {$$ = create_node(3,"testlist",$1,$2);}  ;
 
-symbol_test_star: COMMA test symbol_test_star {$$ = create_node(3,"symbol_test",$1,$2,$3);}
+symbol_test_star: COMMA test symbol_test_star {$$ = create_node(4,"symbol_test",$1,$2,$3);}
     | COMMA {$$ = $1;}
-    |
+    |{$$=NULL;} 
     ;
 
 
     
-expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus {$$ = create_node(3,"expr_stmt",$1,$2,$3);}
+expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus {$$ = create_node(4,"expr_stmt",$1,$2,$3);}
     // |TYPE_HINT EQUAL testlist_star_expr
     | EQUAL testlist_star_expr {$$ = create_node(3,"expr_stmt",$1,$2);}
     ;
 
 annassign: COLON test {$$ = create_node(3,"annassign",$1,$2);}
-    | COLON test EQUAL testlist_star_expr {$$ = create_node(4,"annassign",$1,$2,$3,$4);}
+    | COLON test EQUAL testlist_star_expr {$$ = create_node(5,"annassign",$1,$2,$3,$4);}
     ;
 
-testlist_star_expr: test testlist_star_expr_option1_star {$$ = create_node(3,"testlist_expr",$1,$2,$3);}
-    | star_expr testlist_star_expr_option1_star {$$ = create_node(3,"testlist_expr",$1,$2,$3);}
+testlist_star_expr: test testlist_star_expr_option1_star {$$ = create_node(3,"testlist_expr",$1,$2);}
+    | star_expr testlist_star_expr_option1_star {$$ = create_node(3,"testlist_expr",$1,$2);}
     ;
 
-testlist_star_expr_option1_star: COMMA test testlist_star_expr_option1_star {$$ = create_node(3,"testlist_expr",$1,$2,$3);}
-    | COMMA star_expr testlist_star_expr_option1_star {$$ = create_node(3,"testlist_expr",$1,$2,$3);}
+testlist_star_expr_option1_star: COMMA test testlist_star_expr_option1_star {$$ = create_node(4,"testlist_expr",$1,$2,$3);}
+    | COMMA star_expr testlist_star_expr_option1_star {$$ = create_node(4,"testlist_expr",$1,$2,$3);}
     | COMMA {$$ = $1;}
-    |
+    |{$$=NULL;}
     ;
 
 augassign: ADD_EQUAL {$$ = $1;} 
@@ -239,39 +240,39 @@ expr: xor_expr symbol_xor_expr_star {$$ = create_node(3,"expr",$1,$2);}
 
 star_expr: MUL expr {$$ = create_node(3,"star_expr",$1,$2);};
 
-symbol_xor_expr_star: BITWISE_OR xor_expr symbol_xor_expr_star {$$ = create_node(3,"symbol_xor_expr",$1,$2,$3);}
-    | /*empty*/
+symbol_xor_expr_star: BITWISE_OR xor_expr symbol_xor_expr_star {$$ = create_node(4,"symbol_xor_expr",$1,$2,$3);}
+    | /*empty*/ {$$=NULL;}
     ;
 
 xor_expr: and_expr symbol_and_expr_star {$$ = create_node(3,"xor_expr",$1,$2);};
 
-symbol_and_expr_star: BITWISE_XOR and_expr symbol_and_expr_star {$$ = create_node(3,"symbol_and_expr",$1,$2,$3);}
-    | /*empty*/
+symbol_and_expr_star: BITWISE_XOR and_expr symbol_and_expr_star {$$ = create_node(4,"symbol_and_expr",$1,$2,$3);}
+    | /*empty*/ {$$=NULL;}
     ;
 
 and_expr: shift_expr symbol_shift_expr_star {$$ = create_node(3,"and_expr",$1,$2);};
 
-symbol_shift_expr_star: BITWISE_AND shift_expr symbol_shift_expr_star {$$ = create_node(3,"symbol_shift_expr",$1,$2,$3);}
-    | /*empty*/
+symbol_shift_expr_star: BITWISE_AND shift_expr symbol_shift_expr_star {$$ = create_node(4,"symbol_shift_expr",$1,$2,$3);}
+    | /*empty*/ {$$=NULL;}
     ;
 
 shift_expr: arith_expr shift_arith_expr_star {$$ = create_node(3,"shift_expr",$1,$2);};
 
-shift_arith_expr_star: /*empty*/
-    | SHIFT_LEFT arith_expr shift_arith_expr_star {$$ = create_node(3,"shift_arith_expr",$1,$2,$3);}
-    | SHIFT_RIGHT arith_expr shift_arith_expr_star {$$ = create_node(3,"shift_arith_expr",$1,$2,$3);}
+shift_arith_expr_star: /*empty*/ {$$=NULL;}
+    | SHIFT_LEFT arith_expr shift_arith_expr_star {$$ = create_node(4,"shift_arith_expr",$1,$2,$3);}
+    | SHIFT_RIGHT arith_expr shift_arith_expr_star {$$ = create_node(4,"shift_arith_expr",$1,$2,$3);}
     ;
 
 arith_expr: term symbol_term_star  {$$ = create_node(3,"arith_expr",$1,$2);} ;
 
-symbol_term_star: /*empty*/
-    | ADD term symbol_term_star {$$ = create_node(3,"symbol_term",$1,$2);}
-    | SUB term symbol_term_star {$$ = create_node(3,"symbol_term",$1,$2);}
+symbol_term_star: /*empty*/ {$$=NULL;}
+    | ADD term symbol_term_star {$$ = create_node(4,"symbol_term",$1,$2,$3);}
+    | SUB term symbol_term_star {$$ = create_node(4,"symbol_term",$1,$2,$3);}
     ;
 
 term: factor symbol_factor_star {$$ = create_node(3,"term",$1,$2);};
 
-symbol_factor_star: /*empty*/
+symbol_factor_star: /*empty*/ {$$=NULL;}
     | symbol_factor symbol_factor_star {$$ = create_node(3,"symbol_factor",$1,$2);}
     ;
 
@@ -282,115 +283,117 @@ symbol_factor: MUL factor {$$ = create_node(3,"symbol_factor",$1,$2);}
     | MOD factor {$$ = create_node(3,"symbol_factor",$1,$2);}
     ;
 
-factor: ADD factor {$$ = create_node(3,$2->val,$1,$2);}
-    | SUB factor {$$ = create_node(3,$2->val,$1,$2);}
-    | TILDE factor {$$ = create_node(3,$2->val,$1,$2);}
+factor: ADD factor {$$ = create_node(3,"Factor",$1,$2);}
+    | SUB factor {$$ = create_node(3,"Factor",$1,$2);}
+    | TILDE factor {$$ = create_node(3,"Factor",$1,$2);}
     | power {$$ = $1;}
     ;
     
 power: atom_expr {$$ = $1;}
-    | atom_expr POW factor {$$ = create_node(3,$2->val,$1,$3);}
+    | atom_expr POW factor {
+        $$ = create_node(4,"Power",$1,$2,$3);
+    }
     ;
 
-/* atom_expr: AWAIT atom trailer_star
-    | atom trailer_star{cout << "run hua";start_node=$1;}
-    ; */
-
-trailer_star:  trailer trailer_star 
-    | /*empty*/
+atom_expr: AWAIT atom trailer_star {$$=create_node(4,"atom_expr",$1,$2,$3);}
+    | atom trailer_star{$$=create_node(3,"atom_expr", $1,$2);}
     ;
 
-
-trailer: SMALL_OPEN arglist SMALL_CLOSE 
-    |SMALL_OPEN SMALL_CLOSE
-    |BOX_OPEN subscriptlist BOX_CLOSE 
-    |DOT NAME TYPE_HINT
-    |DOT NAME 
+trailer_star:  trailer trailer_star  {$$ = create_node(3,"trailer_star",$1,$2);}
+    | /*empty*/{$$=NULL;}
     ;
 
 
-classdef: CLASS NAME bracket_arglist_optional COLON suite;
-
-bracket_arglist_optional: SMALL_OPEN SMALL_CLOSE
-    | SMALL_OPEN arglist SMALL_CLOSE
-    | 
-    ;
-
-arglist: argument_list COMMA
-    | argument_list
-    ;
-
-argument_list: argument_list COMMA argument
-    | argument
-    ;
-
-subscriptlist: subscript_list COMMA
-    | subscript_list
-    ;
-
-subscript_list: subscript_list COMMA subscript
-    | subscript
+trailer: SMALL_OPEN arglist SMALL_CLOSE  {$$ = create_node(4,"trailer",$1,$2,$3);}
+    |SMALL_OPEN SMALL_CLOSE { $$ = create_node(3,"trailer",$1,$2);}
+    |BOX_OPEN subscriptlist BOX_CLOSE {$$ = create_node(4,"trailer",$1,$2,$3);}
+    |DOT NAME TYPE_HINT {$$ = create_node(4,"trailer",$1,$2,$3);}
+    |DOT NAME { $$ = create_node(3,"trailer",$1,$2);}
     ;
 
 
-subscript: test 
-    | optional_test COLON optional_test
+classdef: CLASS NAME bracket_arglist_optional COLON suite {$$=create_node(6,"classdef",$1,$2,$3,$4,$5);};
+
+bracket_arglist_optional: SMALL_OPEN SMALL_CLOSE {$$=create_node(3,"bracket_arglist_optional",$1,$2);}
+    | SMALL_OPEN arglist SMALL_CLOSE {$$=create_node(4,"bracket_arglist_optional",$1,$2,$3);}
+    | {$$=NULL;}
+    ;
+
+arglist: argument_list COMMA {$$=create_node(3,"arglist",$1,$2);}
+    | argument_list {$$=$1;}
+    ;
+
+argument_list: argument_list COMMA argument { $$=create_node(4,"argument_list",$1,$2,$3);}
+    | argument { $$=$1;}
+    ;
+
+subscriptlist: subscript_list COMMA {$$=create_node(3,"subscriptlist",$1,$2);}
+    | subscript_list { $$=$1;}
+    ;
+
+subscript_list: subscript_list COMMA subscript { $$=create_node(4,"subscript_list",$1,$2,$3);}
+    | subscript { $$=$1;}
     ;
 
 
-argument: test 
-    | test comp_for 
-    | test EQUAL test  
-    | POW test 
-    | MUL test
-    ;
-
-optional_test: test 
-    | /*empty*/
-    ;
-
-comp_iter: comp_for 
-    | comp_if
-    ;
-
-sync_comp_for: FOR exprlist IN or_test
-    | FOR exprlist IN or_test comp_iter
+subscript: test {$$=$1;}
+    | optional_test COLON optional_test{ $$=create_node(4,"subscript",$1,$2,$3);}
     ;
 
 
-comp_for:  sync_comp_for
-    | ASYNC sync_comp_for
+argument: test { $$ = $1;}
+    | test comp_for {$$=create_node(3,"argument",$1,$2);}
+    | test EQUAL test  {$$=create_node(4,"argument",$1,$2,$3);}
+    | POW test {$$=create_node(3,"argument",$1,$2);}
+    | MUL test {$$=create_node(3,"argument",$1,$2);}
     ;
 
-comp_if: IF test_nocond
-    | IF test_nocond comp_iter
+optional_test: test {$$=$1;}
+    | /*empty*/ {$$=NULL;}
+    ; 
+
+comp_iter: comp_for {$$=$1;}
+    | comp_if {$$=$1;}
     ;
 
-test_nocond: or_test;
+sync_comp_for: FOR exprlist IN or_test {$$=create_node(5,"sync_comp_for",$1,$2,$3,$4);}
+    | FOR exprlist IN or_test comp_iter {$$=create_node(6,"sync_comp_for",$1,$2,$3,$4,$5);}
+    ;
 
-or_test: and_test or_and_test_star;
 
-or_and_test_star:OR and_test or_and_test_star 
-    | 
+comp_for:  sync_comp_for {$$=$1;}
+    | ASYNC sync_comp_for {$$=create_node(3,"comp_for",$1,$2);}
+    ;
+
+comp_if: IF test_nocond {$$=create_node(3,"comp_if",$1,$2);}
+    | IF test_nocond comp_iter {$$ = create_node(4,"comp_if",$1,$2,$3);}
+    ;
+
+test_nocond: or_test {$$=$1;};
+
+or_test: and_test or_and_test_star{$$=create_node(3,"or_test",$1,$2);};
+
+or_and_test_star:OR and_test or_and_test_star {$$=create_node(4,"or_and_test_star",$1,$2,$3);}
+    | { $$ = NULL;}
     ;
     
-and_test: not_test and_not_test_star;
+and_test: not_test and_not_test_star {$$=create_node(3,"and_test",$1,$2);};
 
-and_not_test_star: AND not_test and_not_test_star
-    | 
+and_not_test_star: AND not_test and_not_test_star {$$=create_node(4,"and_not_test_star",$1,$2,$3);}
+    | { $$ = NULL;}
     ;
 
-not_test: NOT not_test
-    | comparison
+not_test: NOT not_test {$$=create_node(3,"not_test",$1,$2);}
+    | comparison {$$=$1;}
     ;
     
 /* still not implemented comp_op_expr_star properly but currently forms valid grammar*/    
-comparison: expr comp_op_expr_plus
-    |expr
+comparison: expr comp_op_expr_plus {$$=create_node(3,"comparison",$1,$2);}
+    |expr {$$=$1;}
    ;
 
-comp_op_expr_plus: comp_op expr comp_op_expr_plus
-    | comp_op expr {}
+comp_op_expr_plus: comp_op expr comp_op_expr_plus {$$=create_node(3,"comp_op_expr_plus",$1,$2);}
+    | comp_op expr {$$=create_node(3,"comp_op_expr_plus",$1,$2);}
     ;
 
 
@@ -424,6 +427,7 @@ expr_star_expr_option_list: expr_star_expr_option COMMA expr_star_expr_option_li
 testlist_comp: namedexpr_test_star_expr_option comp_for {$$=create_node(3,"testlist_comp",$1,$2);} 
     | namedexpr_test_star_expr_option_list  {$$=$1;}
     ; 
+
 
 namedexpr_test_star_expr_option_list: namedexpr_test_star_expr_option COMMA namedexpr_test_star_expr_option_list {$$=create_node(4,"namedexpr_test_star_expr_option_list",$1,$2,$3);}
     | namedexpr_test_star_expr_option COMMA {$$=create_node(3,"namedexpr_test_star_expr_option",$1,$2);}
@@ -466,11 +470,11 @@ string_plus: STRING string_plus {$$=create_node(3,"string", $1, $2);}
 
 
 %%
-
 void MakeDOTFile(NODE*cell)
 {
     if(!cell)
         return;
+    
     string value = string(cell->val);
     if(value.length()>2 && value[0]=='"' && value[value.length()-1]=='"')
     {
@@ -478,36 +482,49 @@ void MakeDOTFile(NODE*cell)
         value="\\\""+value+"\\\"";
     }
     fout << "\t" << cell->id << "\t\t[ style = solid label = \"" + value + "\"  ];" << endl;
+
     for(int i=0;i<cell->children.size();i++)
     {
         if(!cell->children[i])
             continue;
+        
         fout << "\t" << cell->id << " -> " << cell->children[i]->id << endl;
         MakeDOTFile(cell->children[i]);
     }
 }
 
-
 int main(){
     indent_stack.push(0);
     /* yylex(); */
-    string output_file = "";
-    output_file = "output.dot";
-    /* ofstream fout("output.dot", ios::app); */
-
+    
     yyparse();
  
     // Open the output file
-	fout.open(output_file.c_str(),ios::out);
-    ifstream infile("./DOT_Template.txt");
+    string output_file = "";
+    output_file = "output.dot";
+	fout.open(output_file.c_str());
 
+    // clear any text in this file
+    fout.clear();
+    
+
+    fout<<"digraph G{"<<endl;
+    fout << endl;
+    fout<<"label     = \"AST\""<<endl;
+    fout<<"fontname  = \"Cascadia code\""<<endl;
+    fout<<"fontsize  = 30"<<endl;
+    fout<<"labelloc  = t"<<endl;
+    fout << endl;
+    fout<<"node   [ fontname=\"Cascadia code\" ]"<<endl;
+    
     MakeDOTFile(start_node);
-    cout<<"}";
     fout<<"}";
-    /* fout.close(); */
+    fout.close();
 
     return 0;
 }
+
+
 int yyerror(const char *s){
     cout << "Error: " << s << ",line: "<< yylineno << endl;
     return 0;
