@@ -6,31 +6,469 @@ fontsize  = 30
 labelloc  = t
 
 node   [ fontname="Cascadia code" ]
-	13		[ style = solid label = "START"  ];
-	13 -> 12
-	12		[ style = solid label = "file_input"  ];
-	12 -> 11
-	11		[ style = solid label = "simple_stmt"  ];
-	11 -> 10
-	10		[ style = solid label = "testlist_expr"  ];
-	10 -> 9
-	9		[ style = solid label = "or_test"  ];
-	9 -> 8
-	8		[ style = solid label = "and_test"  ];
-	8 -> 7
-	7		[ style = solid label = "expr"  ];
-	7 -> 6
-	6		[ style = solid label = "xor_expr"  ];
-	6 -> 5
-	5		[ style = solid label = "and_expr"  ];
-	5 -> 4
-	4		[ style = solid label = "shift_expr"  ];
-	4 -> 3
-	3		[ style = solid label = "arith_expr"  ];
-	3 -> 2
-	2		[ style = solid label = "term"  ];
-	2 -> 1
-	1		[ style = solid label = "atom_expr"  ];
-	1 -> 0
-	0		[ style = solid label = "\"aditya\""  ];
+	670		[ style = solid label = "START"  ];
+	670 -> 669
+	669		[ style = solid label = "file_input"  ];
+	669 -> 301
+	301		[ style = solid label = "funcdef"  ];
+	301 -> 0
+	0		[ style = solid label = "def"  ];
+	301 -> 1
+	1		[ style = solid label = "binarySearch"  ];
+	301 -> 47
+	47		[ style = solid label = "parameters"  ];
+	47 -> 2
+	2		[ style = solid label = "("  ];
+	47 -> 46
+	46		[ style = solid label = "typedlist_arguments"  ];
+	46 -> 30
+	30		[ style = solid label = "tfpdef"  ];
+	30 -> 3
+	3		[ style = solid label = "array"  ];
+	30 -> 4
+	4		[ style = solid label = ":"  ];
+	30 -> 21
+	21		[ style = solid label = "atom_expr"  ];
+	21 -> 5
+	5		[ style = solid label = "list"  ];
+	21 -> 18
+	18		[ style = solid label = "trailer"  ];
+	18 -> 6
+	6		[ style = solid label = "["  ];
+	18 -> 7
+	7		[ style = solid label = "int"  ];
+	18 -> 8
+	8		[ style = solid label = "]"  ];
+	46 -> 45
+	45		[ style = solid label = "comma_option_argument_star"  ];
+	45 -> 40
+	40		[ style = solid label = "comma_option_argument_star"  ];
+	40 -> 35
+	35		[ style = solid label = "comma_option_argument_star"  ];
+	35 -> 19
+	19		[ style = solid label = ","  ];
+	35 -> 33
+	33		[ style = solid label = "tfpdef"  ];
+	33 -> 31
+	31		[ style = solid label = "x"  ];
+	33 -> 32
+	32		[ style = solid label = ": int"  ];
+	40 -> 34
+	34		[ style = solid label = ","  ];
+	40 -> 38
+	38		[ style = solid label = "tfpdef"  ];
+	38 -> 36
+	36		[ style = solid label = "low"  ];
+	38 -> 37
+	37		[ style = solid label = ": int"  ];
+	45 -> 39
+	39		[ style = solid label = ","  ];
+	45 -> 43
+	43		[ style = solid label = "tfpdef"  ];
+	43 -> 41
+	41		[ style = solid label = "high"  ];
+	43 -> 42
+	42		[ style = solid label = ": int"  ];
+	47 -> 44
+	44		[ style = solid label = ")"  ];
+	301 -> 48
+	48		[ style = solid label = "-> int"  ];
+	301 -> 49
+	49		[ style = solid label = ":"  ];
+	301 -> 300
+	300		[ style = solid label = "stmt_plus"  ];
+	300 -> 284
+	284		[ style = solid label = "while_stmt"  ];
+	284 -> 50
+	50		[ style = solid label = "while"  ];
+	284 -> 70
+	70		[ style = solid label = "comparison"  ];
+	70 -> 51
+	51		[ style = solid label = "low"  ];
+	70 -> 69
+	69		[ style = solid label = "comp_op_expr_plus"  ];
+	69 -> 52
+	52		[ style = solid label = "<="  ];
+	69 -> 60
+	60		[ style = solid label = "high"  ];
+	284 -> 61
+	61		[ style = solid label = ":"  ];
+	284 -> 282
+	282		[ style = solid label = "stmt_plus"  ];
+	282 -> 126
+	126		[ style = solid label = "expr_stmt"  ];
+	126 -> 75
+	75		[ style = solid label = "Atom"  ];
+	75 -> 73
+	73		[ style = solid label = "mid"  ];
+	75 -> 74
+	74		[ style = solid label = ": int"  ];
+	126 -> 125
+	125		[ style = solid label = "expr_stmt"  ];
+	125 -> 76
+	76		[ style = solid label = "="  ];
+	125 -> 117
+	117		[ style = solid label = "arith_expr"  ];
+	117 -> 87
+	87		[ style = solid label = "low"  ];
+	117 -> 116
+	116		[ style = solid label = "symbol_term"  ];
+	116 -> 88
+	88		[ style = solid label = "+"  ];
+	116 -> 115
+	115		[ style = solid label = "term"  ];
+	115 -> 108
+	108		[ style = solid label = "Atom"  ];
+	108 -> 91
+	91		[ style = solid label = "("  ];
+	108 -> 101
+	101		[ style = solid label = "arith_expr"  ];
+	101 -> 92
+	92		[ style = solid label = "high"  ];
+	101 -> 100
+	100		[ style = solid label = "symbol_term"  ];
+	100 -> 93
+	93		[ style = solid label = "-"  ];
+	100 -> 96
+	96		[ style = solid label = "low"  ];
+	108 -> 97
+	97		[ style = solid label = ")"  ];
+	115 -> 113
+	113		[ style = solid label = "symbol_factor"  ];
+	113 -> 109
+	109		[ style = solid label = "//"  ];
+	113 -> 111
+	111		[ style = solid label = "2"  ];
+	282 -> 281
+	281		[ style = solid label = "if_stmt"  ];
+	281 -> 128
+	128		[ style = solid label = "if"  ];
+	281 -> 162
+	162		[ style = solid label = "comparison"  ];
+	162 -> 145
+	145		[ style = solid label = "atom_expr"  ];
+	145 -> 129
+	129		[ style = solid label = "array"  ];
+	145 -> 142
+	142		[ style = solid label = "trailer"  ];
+	142 -> 130
+	130		[ style = solid label = "["  ];
+	142 -> 131
+	131		[ style = solid label = "mid"  ];
+	142 -> 132
+	132		[ style = solid label = "]"  ];
+	162 -> 161
+	161		[ style = solid label = "comp_op_expr_plus"  ];
+	161 -> 143
+	143		[ style = solid label = "=="  ];
+	161 -> 152
+	152		[ style = solid label = "x"  ];
+	281 -> 153
+	153		[ style = solid label = ":"  ];
+	281 -> 177
+	177		[ style = solid label = "return_stmt"  ];
+	177 -> 165
+	165		[ style = solid label = "return"  ];
+	177 -> 166
+	166		[ style = solid label = "mid"  ];
+	281 -> 248
+	248		[ style = solid label = "elif_namedexpr"  ];
+	248 -> 179
+	179		[ style = solid label = "elif"  ];
+	248 -> 213
+	213		[ style = solid label = "comparison"  ];
+	213 -> 196
+	196		[ style = solid label = "atom_expr"  ];
+	196 -> 180
+	180		[ style = solid label = "array"  ];
+	196 -> 193
+	193		[ style = solid label = "trailer"  ];
+	193 -> 181
+	181		[ style = solid label = "["  ];
+	193 -> 182
+	182		[ style = solid label = "mid"  ];
+	193 -> 183
+	183		[ style = solid label = "]"  ];
+	213 -> 212
+	212		[ style = solid label = "comp_op_expr_plus"  ];
+	212 -> 194
+	194		[ style = solid label = "<"  ];
+	212 -> 203
+	203		[ style = solid label = "x"  ];
+	248 -> 204
+	204		[ style = solid label = ":"  ];
+	248 -> 245
+	245		[ style = solid label = "expr_stmt"  ];
+	245 -> 216
+	216		[ style = solid label = "low"  ];
+	245 -> 244
+	244		[ style = solid label = "expr_stmt"  ];
+	244 -> 217
+	217		[ style = solid label = "="  ];
+	244 -> 236
+	236		[ style = solid label = "arith_expr"  ];
+	236 -> 228
+	228		[ style = solid label = "mid"  ];
+	236 -> 235
+	235		[ style = solid label = "symbol_term"  ];
+	235 -> 229
+	229		[ style = solid label = "+"  ];
+	235 -> 232
+	232		[ style = solid label = "1"  ];
+	281 -> 247
+	247		[ style = solid label = "else"  ];
+	281 -> 249
+	249		[ style = solid label = ":"  ];
+	281 -> 279
+	279		[ style = solid label = "expr_stmt"  ];
+	279 -> 250
+	250		[ style = solid label = "high"  ];
+	279 -> 278
+	278		[ style = solid label = "expr_stmt"  ];
+	278 -> 251
+	251		[ style = solid label = "="  ];
+	278 -> 270
+	270		[ style = solid label = "arith_expr"  ];
+	270 -> 262
+	262		[ style = solid label = "mid"  ];
+	270 -> 269
+	269		[ style = solid label = "symbol_term"  ];
+	269 -> 263
+	263		[ style = solid label = "-"  ];
+	269 -> 266
+	266		[ style = solid label = "1"  ];
+	300 -> 298
+	298		[ style = solid label = "return_stmt"  ];
+	298 -> 283
+	283		[ style = solid label = "return"  ];
+	298 -> 288
+	288		[ style = solid label = "Factor"  ];
+	288 -> 285
+	285		[ style = solid label = "-"  ];
+	288 -> 286
+	286		[ style = solid label = "1"  ];
+	669 -> 668
+	668		[ style = solid label = "file_input"  ];
+	668 -> 626
+	626		[ style = solid label = "funcdef"  ];
+	626 -> 302
+	302		[ style = solid label = "def"  ];
+	626 -> 303
+	303		[ style = solid label = "main"  ];
+	626 -> 306
+	306		[ style = solid label = "parameters"  ];
+	306 -> 304
+	304		[ style = solid label = "("  ];
+	306 -> 305
+	305		[ style = solid label = ")"  ];
+	626 -> 307
+	307		[ style = solid label = ":"  ];
+	626 -> 625
+	625		[ style = solid label = "stmt_plus"  ];
+	625 -> 418
+	418		[ style = solid label = "expr_stmt"  ];
+	418 -> 310
+	310		[ style = solid label = "Atom"  ];
+	310 -> 308
+	308		[ style = solid label = "array"  ];
+	310 -> 309
+	309		[ style = solid label = ": list[int]"  ];
+	418 -> 417
+	417		[ style = solid label = "expr_stmt"  ];
+	417 -> 311
+	311		[ style = solid label = "="  ];
+	417 -> 406
+	406		[ style = solid label = "Atom"  ];
+	406 -> 322
+	322		[ style = solid label = "["  ];
+	406 -> 405
+	405		[ style = solid label = "namedexpr_test_star_expr_option_list"  ];
+	405 -> 323
+	323		[ style = solid label = "3"  ];
+	405 -> 324
+	324		[ style = solid label = ","  ];
+	405 -> 404
+	404		[ style = solid label = "namedexpr_test_star_expr_option_list"  ];
+	404 -> 334
+	334		[ style = solid label = "4"  ];
+	404 -> 335
+	335		[ style = solid label = ","  ];
+	404 -> 403
+	403		[ style = solid label = "namedexpr_test_star_expr_option_list"  ];
+	403 -> 345
+	345		[ style = solid label = "5"  ];
+	403 -> 346
+	346		[ style = solid label = ","  ];
+	403 -> 402
+	402		[ style = solid label = "namedexpr_test_star_expr_option_list"  ];
+	402 -> 356
+	356		[ style = solid label = "6"  ];
+	402 -> 357
+	357		[ style = solid label = ","  ];
+	402 -> 401
+	401		[ style = solid label = "namedexpr_test_star_expr_option_list"  ];
+	401 -> 367
+	367		[ style = solid label = "7"  ];
+	401 -> 368
+	368		[ style = solid label = ","  ];
+	401 -> 400
+	400		[ style = solid label = "namedexpr_test_star_expr_option_list"  ];
+	400 -> 378
+	378		[ style = solid label = "8"  ];
+	400 -> 379
+	379		[ style = solid label = ","  ];
+	400 -> 389
+	389		[ style = solid label = "9"  ];
+	406 -> 390
+	390		[ style = solid label = "]"  ];
+	625 -> 624
+	624		[ style = solid label = "stmt_plus"  ];
+	624 -> 515
+	515		[ style = solid label = "expr_stmt"  ];
+	515 -> 422
+	422		[ style = solid label = "Atom"  ];
+	422 -> 420
+	420		[ style = solid label = "result"  ];
+	422 -> 421
+	421		[ style = solid label = ": int"  ];
+	515 -> 514
+	514		[ style = solid label = "expr_stmt"  ];
+	514 -> 423
+	423		[ style = solid label = "="  ];
+	514 -> 504
+	504		[ style = solid label = "atom_expr"  ];
+	504 -> 434
+	434		[ style = solid label = "binarySearch"  ];
+	504 -> 502
+	502		[ style = solid label = "trailer"  ];
+	502 -> 435
+	435		[ style = solid label = "("  ];
+	502 -> 501
+	501		[ style = solid label = "argument_list"  ];
+	501 -> 470
+	470		[ style = solid label = "argument_list"  ];
+	470 -> 458
+	458		[ style = solid label = "argument_list"  ];
+	458 -> 436
+	436		[ style = solid label = "array"  ];
+	458 -> 437
+	437		[ style = solid label = ","  ];
+	458 -> 447
+	447		[ style = solid label = "4"  ];
+	470 -> 448
+	448		[ style = solid label = ","  ];
+	470 -> 459
+	459		[ style = solid label = "0"  ];
+	501 -> 460
+	460		[ style = solid label = ","  ];
+	501 -> 494
+	494		[ style = solid label = "arith_expr"  ];
+	494 -> 487
+	487		[ style = solid label = "atom_expr"  ];
+	487 -> 471
+	471		[ style = solid label = "len"  ];
+	487 -> 484
+	484		[ style = solid label = "trailer"  ];
+	484 -> 472
+	472		[ style = solid label = "("  ];
+	484 -> 473
+	473		[ style = solid label = "array"  ];
+	484 -> 474
+	474		[ style = solid label = ")"  ];
+	494 -> 493
+	493		[ style = solid label = "symbol_term"  ];
+	493 -> 485
+	485		[ style = solid label = "-"  ];
+	493 -> 489
+	489		[ style = solid label = "1"  ];
+	502 -> 490
+	490		[ style = solid label = ")"  ];
+	624 -> 623
+	623		[ style = solid label = "if_stmt"  ];
+	623 -> 517
+	517		[ style = solid label = "if"  ];
+	623 -> 539
+	539		[ style = solid label = "comparison"  ];
+	539 -> 518
+	518		[ style = solid label = "result"  ];
+	539 -> 538
+	538		[ style = solid label = "comp_op_expr_plus"  ];
+	538 -> 519
+	519		[ style = solid label = "!="  ];
+	538 -> 531
+	531		[ style = solid label = "Factor"  ];
+	531 -> 527
+	527		[ style = solid label = "-"  ];
+	531 -> 528
+	528		[ style = solid label = "1"  ];
+	623 -> 529
+	529		[ style = solid label = ":"  ];
+	623 -> 594
+	594		[ style = solid label = "stmt_plus"  ];
+	594 -> 557
+	557		[ style = solid label = "atom_expr"  ];
+	557 -> 542
+	542		[ style = solid label = "print"  ];
+	557 -> 555
+	555		[ style = solid label = "trailer"  ];
+	555 -> 543
+	543		[ style = solid label = "("  ];
+	555 -> 544
+	544		[ style = solid label = "\"Element is present at index:\""  ];
+	555 -> 545
+	545		[ style = solid label = ")"  ];
+	594 -> 583
+	583		[ style = solid label = "atom_expr"  ];
+	583 -> 568
+	568		[ style = solid label = "print"  ];
+	583 -> 581
+	581		[ style = solid label = "trailer"  ];
+	581 -> 569
+	569		[ style = solid label = "("  ];
+	581 -> 570
+	570		[ style = solid label = "result"  ];
+	581 -> 571
+	571		[ style = solid label = ")"  ];
+	623 -> 595
+	595		[ style = solid label = "else"  ];
+	623 -> 596
+	596		[ style = solid label = ":"  ];
+	623 -> 612
+	612		[ style = solid label = "atom_expr"  ];
+	612 -> 597
+	597		[ style = solid label = "print"  ];
+	612 -> 610
+	610		[ style = solid label = "trailer"  ];
+	610 -> 598
+	598		[ style = solid label = "("  ];
+	610 -> 599
+	599		[ style = solid label = "\"Element is not present\""  ];
+	610 -> 600
+	600		[ style = solid label = ")"  ];
+	668 -> 666
+	666		[ style = solid label = "if_stmt"  ];
+	666 -> 627
+	627		[ style = solid label = "if"  ];
+	666 -> 647
+	647		[ style = solid label = "comparison"  ];
+	647 -> 628
+	628		[ style = solid label = "__name__"  ];
+	647 -> 646
+	646		[ style = solid label = "comp_op_expr_plus"  ];
+	646 -> 629
+	629		[ style = solid label = "=="  ];
+	646 -> 637
+	637		[ style = solid label = "\"__main__\""  ];
+	666 -> 638
+	638		[ style = solid label = ":"  ];
+	666 -> 655
+	655		[ style = solid label = "atom_expr"  ];
+	655 -> 650
+	650		[ style = solid label = "main"  ];
+	655 -> 653
+	653		[ style = solid label = "trailer"  ];
+	653 -> 651
+	651		[ style = solid label = "("  ];
+	653 -> 652
+	652		[ style = solid label = ")"  ];
 }
