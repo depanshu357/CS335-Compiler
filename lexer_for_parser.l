@@ -109,6 +109,7 @@ ERRORCHAR "$"|"?"|"`"
 
 {KEYWORD} { 
     yylval.elem = create_node(1, strdup(yytext));
+    yylval.elem->is_terminal = true;
     cout<<"KEYWORD"<<" "<<yytext<<endl; ; 
     string oper = yytext;
     if(oper=="is") return IS;
@@ -151,34 +152,40 @@ ERRORCHAR "$"|"?"|"`"
 
 ":"[ \t]*{TYPE_HINT} {
     yylval.elem = create_node(1, strdup(yytext));
-     cout<<"TYPE"<<": "<<yytext<<endl; 
+    yylval.elem->is_terminal = true;     
+    cout<<"TYPE"<<": "<<yytext<<endl; 
      return TYPE_HINT; 
      }
      
 "->"[ \t]*({TYPE_HINT}|"None") {
     yylval.elem = create_node(1, strdup(yytext));
+    yylval.elem->is_terminal = true;    
     cout<<"TYPE"<<": "<<yytext<<endl; 
     return FUNC_TYPE_HINT; 
     }
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{IDENTIFIER} { 
     yylval.elem = create_node(1, strdup(yytext));
+    yylval.elem->is_terminal = true;    
     cout<<"IDENTIFIER"<<" "<<yytext<<endl; 
     return NAME; 
     }
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{INTEGER} { 
     yylval.elem = create_node(1, strdup(yytext));
+    yylval.elem->is_terminal = true;    
     cout<<"INTEGER"<<" "<<yytext<<endl;
     return INTEGER;
     }
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{FLOATNUMBER} { 
     yylval.elem = create_node(1, strdup(yytext));
+    yylval.elem->is_terminal = true;    
     cout<<"FLOAT"<<" "<<yytext<<endl;
     return FLOAT;
     }
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{STRINGLITERAL} { 
     yylval.elem = create_node(1, strdup(yytext));
+    yylval.elem->is_terminal = true;    
     cout<<"STRING"<<" "<<yytext<<endl;
     return STRING;
     }
@@ -221,6 +228,7 @@ ERRORCHAR "$"|"?"|"`"
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{ARITHMETIC_OP} { 
     yylval.elem = create_node(1, strdup(yytext));
+    yylval.elem->is_terminal = true;    
     string oper = yytext;
     if(oper=="**") return POW;
     else if(oper=="//") return FLOOR_DIV;
@@ -233,6 +241,7 @@ ERRORCHAR "$"|"?"|"`"
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{BITWISE_OP} { 
     yylval.elem = create_node(1, strdup(yytext));
+    yylval.elem->is_terminal = true;    
     string oper = yytext;
     if(oper=="<<") return SHIFT_LEFT;
     else if(oper==">>") return SHIFT_RIGHT;
@@ -247,6 +256,7 @@ ERRORCHAR "$"|"?"|"`"
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{RELATIONAL_OP} {
     yylval.elem = create_node(1, strdup(yytext));
+    yylval.elem->is_terminal = true;    
     string oper = yytext;
     if(oper=="==") return DOUBLE_EQUAL;
     else if(oper=="!=") return NE;
@@ -258,6 +268,7 @@ ERRORCHAR "$"|"?"|"`"
 
 {ASSIGNMENT_OP} {
     yylval.elem = create_node(1, strdup(yytext));
+    yylval.elem->is_terminal = true;
     string oper = yytext;
     if(oper==":=") return WAL_OP;
     else if(oper=="=") return EQUAL;
@@ -282,6 +293,7 @@ ERRORCHAR "$"|"?"|"`"
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{DELIMITER} { 
     yylval.elem = create_node(1, strdup(yytext));
+    yylval.elem->is_terminal = true;
     cout<<"DELIMITER"<<" "<<yytext<<endl;
     string oper = yytext;
 
