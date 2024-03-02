@@ -700,26 +700,26 @@ static const yytype_int16 yyrline[] =
       53,    54,    55,    56,    57,    60,    61,    64,    65,    68,
       69,    72,    73,    76,    77,    80,    81,    84,    85,    88,
       89,    90,    91,    94,    96,    97,    98,   102,   103,   107,
-     108,   112,   115,   118,   120,   121,   125,   128,   129,   130,
-     133,   134,   136,   137,   140,   141,   144,   147,   148,   149,
-     152,   153,   154,   155,   156,   159,   160,   161,   162,   165,
-     167,   169,   170,   173,   174,   175,   178,   180,   182,   183,
-     186,   187,   190,   191,   192,   193,   196,   198,   199,   200,
-     205,   207,   210,   211,   214,   215,   218,   219,   220,   221,
-     224,   225,   226,   227,   228,   229,   230,   231,   232,   233,
-     234,   235,   236,   239,   241,   243,   244,   247,   249,   250,
-     253,   255,   256,   259,   261,   262,   263,   266,   268,   269,
-     270,   273,   275,   276,   279,   280,   281,   282,   283,   286,
-     287,   288,   289,   292,   293,   298,   299,   302,   303,   307,
-     308,   309,   310,   311,   315,   317,   318,   319,   322,   323,
-     326,   327,   330,   331,   334,   335,   339,   340,   344,   345,
-     346,   347,   348,   351,   352,   355,   356,   359,   360,   364,
-     365,   368,   369,   372,   374,   376,   377,   380,   382,   383,
-     386,   387,   391,   392,   395,   396,   400,   401,   402,   403,
-     404,   405,   406,   407,   408,   409,   415,   418,   419,   422,
-     423,   424,   427,   428,   432,   433,   434,   437,   438,   441,
-     443,   444,   446,   447,   448,   449,   450,   451,   452,   453,
-     454,   455,   456,   457,   461,   462,   465,   466
+     108,   112,   113,   116,   118,   119,   123,   126,   127,   128,
+     131,   132,   134,   135,   138,   139,   142,   145,   146,   147,
+     150,   151,   152,   153,   154,   157,   158,   159,   160,   163,
+     165,   167,   168,   171,   172,   173,   176,   178,   180,   181,
+     184,   185,   188,   189,   190,   191,   194,   196,   197,   198,
+     203,   205,   208,   209,   212,   213,   216,   217,   218,   219,
+     222,   223,   224,   225,   226,   227,   228,   229,   230,   231,
+     232,   233,   234,   237,   239,   241,   242,   245,   247,   248,
+     251,   253,   254,   257,   259,   260,   261,   264,   266,   267,
+     268,   271,   273,   274,   277,   278,   279,   280,   281,   284,
+     285,   286,   287,   290,   291,   294,   295,   298,   299,   303,
+     304,   305,   306,   307,   311,   313,   314,   315,   318,   319,
+     322,   323,   326,   327,   330,   331,   335,   336,   340,   341,
+     342,   343,   344,   347,   348,   351,   352,   355,   356,   360,
+     361,   364,   365,   368,   370,   372,   373,   376,   378,   379,
+     382,   383,   387,   388,   391,   392,   396,   397,   398,   399,
+     400,   401,   402,   403,   404,   405,   411,   414,   415,   418,
+     419,   420,   423,   424,   428,   429,   430,   433,   434,   437,
+     439,   440,   442,   443,   444,   445,   446,   447,   448,   449,
+     450,   451,   452,   453,   457,   458,   461,   462
 };
 #endif
 
@@ -1663,7 +1663,7 @@ yyreduce:
 
   case 4: /* file_input: stmt file_input  */
 #line 42 "test.y"
-                      {(yyval.elem) = create_node(3,"file_input",(yyvsp[-1].elem),(yyvsp[0].elem));}
+                      {(yyval.elem) = create_node(3,"File Input",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1668 "test.tab.c"
     break;
 
@@ -1729,31 +1729,31 @@ yyreduce:
 
   case 15: /* async_stmt: ASYNC funcdef  */
 #line 60 "test.y"
-                          { (yyval.elem) = create_node(3,"async_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
+                          { (yyval.elem) = create_node(3,"Async_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1734 "test.tab.c"
     break;
 
   case 16: /* async_stmt: ASYNC for_stmt  */
 #line 61 "test.y"
-                     { (yyval.elem) = create_node(3,"async_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
+                     { (yyval.elem) = create_node(3,"Async_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1740 "test.tab.c"
     break;
 
   case 17: /* if_stmt: IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star ELSE COLON suite  */
 #line 64 "test.y"
-                                                                                             { (yyval.elem) = create_node(9,"if_stmt",(yyvsp[-7].elem),(yyvsp[-6].elem),(yyvsp[-5].elem),(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                                                                             { (yyval.elem) = create_node(9,"If_stmt",(yyvsp[-7].elem),(yyvsp[-6].elem),(yyvsp[-5].elem),(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1746 "test.tab.c"
     break;
 
   case 18: /* if_stmt: IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star  */
 #line 65 "test.y"
-                                                                         { (yyval.elem) = create_node(6,"if_stmt",(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                                                         { (yyval.elem) = create_node(6,"If_stmt",(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1752 "test.tab.c"
     break;
 
   case 19: /* elif_namedexpr_test_colon_suite_star: ELIF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star  */
 #line 68 "test.y"
-                                                                                                           {(yyval.elem) = create_node(5,"elif_namedexpr",(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem));}
+                                                                                                           {(yyval.elem) = create_node(5,"Elif_block",(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem));}
 #line 1758 "test.tab.c"
     break;
 
@@ -1765,67 +1765,67 @@ yyreduce:
 
   case 21: /* while_stmt: WHILE namedexpr_test COLON suite ELSE COLON suite  */
 #line 72 "test.y"
-                                                              { (yyval.elem) = create_node(8,"while_stmt",(yyvsp[-6].elem),(yyvsp[-5].elem),(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                                              { (yyval.elem) = create_node(8,"While_stmt",(yyvsp[-6].elem),(yyvsp[-5].elem),(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1770 "test.tab.c"
     break;
 
   case 22: /* while_stmt: WHILE namedexpr_test COLON suite  */
 #line 73 "test.y"
-                                       {(yyval.elem) = create_node(5,"while_stmt",(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                       {(yyval.elem) = create_node(5,"While_stmt",(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1776 "test.tab.c"
     break;
 
   case 23: /* for_stmt: FOR exprlist IN testlist COLON suite ELSE COLON suite  */
 #line 76 "test.y"
-                                                                 { (yyval.elem) = create_node(10,"for_stmt",(yyvsp[-8].elem),(yyvsp[-7].elem),(yyvsp[-6].elem),(yyvsp[-5].elem),(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                                                 { (yyval.elem) = create_node(10,"For_stmt",(yyvsp[-8].elem),(yyvsp[-7].elem),(yyvsp[-6].elem),(yyvsp[-5].elem),(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1782 "test.tab.c"
     break;
 
   case 24: /* for_stmt: FOR exprlist IN testlist COLON suite  */
 #line 77 "test.y"
-                                           {(yyval.elem) = create_node(7,"for_stmt",(yyvsp[-5].elem),(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                           {(yyval.elem) = create_node(7,"For_stmt",(yyvsp[-5].elem),(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1788 "test.tab.c"
     break;
 
   case 25: /* try_stmt: TRY COLON suite FINALLY COLON suite  */
 #line 80 "test.y"
-                                              {(yyval.elem) = create_node(7,"try_stmt",(yyvsp[-5].elem),(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                              {(yyval.elem) = create_node(7,"Try_stmt",(yyvsp[-5].elem),(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1794 "test.tab.c"
     break;
 
   case 26: /* try_stmt: TRY COLON suite except_clause_colon_suite try_stmt_options  */
 #line 81 "test.y"
-                                                                 { (yyval.elem) = create_node(6,"try_stmt",(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                                                 { (yyval.elem) = create_node(6,"Try_stmt",(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1800 "test.tab.c"
     break;
 
   case 27: /* except_clause_colon_suite: except_clause COLON suite except_clause_colon_suite  */
 #line 84 "test.y"
-                                                                               {(yyval.elem) = create_node(5,"except_clause_colon_suite",(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                                                               {(yyval.elem) = create_node(5,"Except_block",(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1806 "test.tab.c"
     break;
 
   case 28: /* except_clause_colon_suite: except_clause COLON suite  */
 #line 85 "test.y"
-                                { (yyval.elem) = create_node(4,"except_clause_colon_suite",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                { (yyval.elem) = create_node(4,"Except_block",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1812 "test.tab.c"
     break;
 
   case 29: /* try_stmt_options: ELSE COLON suite FINALLY COLON suite  */
 #line 88 "test.y"
-                                                       { (yyval.elem) = create_node(7,"try_stmt_options",(yyvsp[-5].elem),(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                                       { (yyval.elem) = create_node(7,"Else_finally_block",(yyvsp[-5].elem),(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1818 "test.tab.c"
     break;
 
   case 30: /* try_stmt_options: ELSE COLON suite  */
 #line 89 "test.y"
-                       {(yyval.elem) = create_node(4,"try_stmt_options",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                       {(yyval.elem) = create_node(4,"Else_block",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1824 "test.tab.c"
     break;
 
   case 31: /* try_stmt_options: FINALLY COLON suite  */
 #line 90 "test.y"
-                          { (yyval.elem) = create_node(4,"try_stmt_options",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                          { (yyval.elem) = create_node(4,"Finally_block",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1830 "test.tab.c"
     break;
 
@@ -1837,7 +1837,7 @@ yyreduce:
 
   case 33: /* except_clause: EXCEPT test_as_name_optional  */
 #line 94 "test.y"
-                                            {(yyval.elem) = create_node(3,"except_clause",(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                            {(yyval.elem) = create_node(3,"Except_block",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1842 "test.tab.c"
     break;
 
@@ -1849,7 +1849,7 @@ yyreduce:
 
   case 35: /* test_as_name_optional: test AS NAME  */
 #line 97 "test.y"
-                   {(yyval.elem) = create_node(4,"test_as_name",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                   {(yyval.elem) = create_node(4,"Expressions_block",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1854 "test.tab.c"
     break;
 
@@ -1861,25 +1861,25 @@ yyreduce:
 
   case 37: /* funcdef: DEF NAME parameters FUNC_TYPE_HINT COLON func_body_suite  */
 #line 102 "test.y"
-                                                                     { (yyval.elem) = create_node(7,"funcdef",(yyvsp[-5].elem),(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                                                     { (yyval.elem) = create_node(7,"Func_def",(yyvsp[-5].elem),(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1866 "test.tab.c"
     break;
 
   case 38: /* funcdef: DEF NAME parameters COLON func_body_suite  */
 #line 103 "test.y"
-                                                  { (yyval.elem) = create_node(6,"funcdef",(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                                  { (yyval.elem) = create_node(6,"Func_def",(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1872 "test.tab.c"
     break;
 
   case 39: /* parameters: SMALL_OPEN typedarglist SMALL_CLOSE  */
 #line 107 "test.y"
-                                                {(yyval.elem) = create_node(4,"parameters",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+                                                {(yyval.elem) = create_node(4,"Arguments",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1878 "test.tab.c"
     break;
 
   case 40: /* parameters: SMALL_OPEN SMALL_CLOSE  */
 #line 108 "test.y"
-                            {(yyval.elem) = create_node(3,"parameters",(yyvsp[-1].elem),(yyvsp[0].elem));}
+                            {(yyval.elem) = create_node(3,"Parantheses",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1884 "test.tab.c"
     break;
 
@@ -1890,1185 +1890,1183 @@ yyreduce:
     break;
 
   case 42: /* typedlist_argument: tfpdef EQUAL test  */
-#line 115 "test.y"
-                          { (yyval.elem) = create_node(4,"typedlist_argument",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 113 "test.y"
+                          { (yyval.elem) = create_node(4,"Assign_expr",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1896 "test.tab.c"
     break;
 
   case 43: /* typedlist_arguments: typedlist_argument comma_option_argument_star  */
-#line 118 "test.y"
-                                                                   {(yyval.elem) = create_node(3,"typedlist_arguments",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 116 "test.y"
+                                                                   {(yyval.elem) = create_node(3,"Arguments",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1902 "test.tab.c"
     break;
 
   case 44: /* comma_option_argument_star: comma_option_argument_star COMMA typedlist_argument  */
-#line 120 "test.y"
-                                                                                {(yyval.elem) = create_node(4,"comma_option_argument_star",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 118 "test.y"
+                                                                                {(yyval.elem) = create_node(4,"Arguments",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1908 "test.tab.c"
     break;
 
   case 45: /* comma_option_argument_star: %empty  */
-#line 121 "test.y"
+#line 119 "test.y"
       { (yyval.elem) = NULL;}
 #line 1914 "test.tab.c"
     break;
 
   case 46: /* typedarglist: typedlist_arguments  */
-#line 125 "test.y"
+#line 123 "test.y"
                         {(yyval.elem) = (yyvsp[0].elem);}
 #line 1920 "test.tab.c"
     break;
 
   case 47: /* tfpdef: NAME  */
-#line 128 "test.y"
+#line 126 "test.y"
              { (yyval.elem) = (yyvsp[0].elem);}
 #line 1926 "test.tab.c"
     break;
 
   case 48: /* tfpdef: NAME TYPE_HINT  */
-#line 129 "test.y"
-                     { (yyval.elem) = create_node(3,"tfpdef",(yyvsp[-1].elem),(yyvsp[0].elem)); }
+#line 127 "test.y"
+                     { (yyval.elem) = create_node(3,"Identifier",(yyvsp[-1].elem),(yyvsp[0].elem)); }
 #line 1932 "test.tab.c"
     break;
 
   case 49: /* tfpdef: NAME COLON test  */
-#line 130 "test.y"
-                      {(yyval.elem) = create_node(4,"tfpdef",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 128 "test.y"
+                      {(yyval.elem) = create_node(4,"Identifier",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1938 "test.tab.c"
     break;
 
   case 50: /* func_body_suite: simple_stmt  */
-#line 133 "test.y"
+#line 131 "test.y"
                              {(yyval.elem) = (yyvsp[0].elem);}
 #line 1944 "test.tab.c"
     break;
 
   case 51: /* func_body_suite: NEWLINE INDENT stmt_plus DEDENT  */
-#line 134 "test.y"
+#line 132 "test.y"
                                       { (yyval.elem) = (yyvsp[-1].elem);}
 #line 1950 "test.tab.c"
     break;
 
   case 52: /* suite: simple_stmt  */
-#line 136 "test.y"
+#line 134 "test.y"
                    {(yyval.elem) = (yyvsp[0].elem);}
 #line 1956 "test.tab.c"
     break;
 
   case 53: /* suite: NEWLINE INDENT stmt_plus DEDENT  */
-#line 137 "test.y"
+#line 135 "test.y"
                                       { (yyval.elem) = (yyvsp[-1].elem);}
 #line 1962 "test.tab.c"
     break;
 
   case 54: /* stmt_plus: stmt stmt_plus  */
-#line 140 "test.y"
-                          {(yyval.elem) = create_node(3,"stmt_plus",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 138 "test.y"
+                          {(yyval.elem) = create_node(3,"Stmts",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1968 "test.tab.c"
     break;
 
   case 55: /* stmt_plus: stmt  */
-#line 141 "test.y"
+#line 139 "test.y"
            {(yyval.elem) = (yyvsp[0].elem);}
 #line 1974 "test.tab.c"
     break;
 
   case 56: /* simple_stmt: small_stmt semi_colon_small_stmt_star NEWLINE  */
-#line 144 "test.y"
-                                                           {(yyval.elem) = create_node(3,"simple_stmt",(yyvsp[-2].elem),(yyvsp[-1].elem));}
+#line 142 "test.y"
+                                                           {(yyval.elem) = create_node(3,"Simple_stmts",(yyvsp[-2].elem),(yyvsp[-1].elem));}
 #line 1980 "test.tab.c"
     break;
 
   case 57: /* semi_colon_small_stmt_star: SEMI_COLON small_stmt semi_colon_small_stmt_star  */
-#line 147 "test.y"
-                                                                             {(yyval.elem) = create_node(4,"semi_colon_small_stmt_star",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 145 "test.y"
+                                                                             {(yyval.elem) = create_node(4,"Small_stmts",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 1986 "test.tab.c"
     break;
 
   case 58: /* semi_colon_small_stmt_star: SEMI_COLON  */
-#line 148 "test.y"
+#line 146 "test.y"
                  {(yyval.elem) = (yyvsp[0].elem);}
 #line 1992 "test.tab.c"
     break;
 
   case 59: /* semi_colon_small_stmt_star: %empty  */
-#line 149 "test.y"
+#line 147 "test.y"
       { (yyval.elem) = NULL;}
 #line 1998 "test.tab.c"
     break;
 
   case 60: /* small_stmt: expr_stmt  */
-#line 152 "test.y"
+#line 150 "test.y"
                       {(yyval.elem) = (yyvsp[0].elem);}
 #line 2004 "test.tab.c"
     break;
 
   case 61: /* small_stmt: flow_stmt  */
-#line 153 "test.y"
+#line 151 "test.y"
                 {(yyval.elem) = (yyvsp[0].elem);}
 #line 2010 "test.tab.c"
     break;
 
   case 62: /* small_stmt: global_stmt  */
-#line 154 "test.y"
+#line 152 "test.y"
                   {(yyval.elem) = (yyvsp[0].elem);}
 #line 2016 "test.tab.c"
     break;
 
   case 63: /* small_stmt: nonlocal_stmt  */
-#line 155 "test.y"
+#line 153 "test.y"
                     {(yyval.elem) = (yyvsp[0].elem);}
 #line 2022 "test.tab.c"
     break;
 
   case 64: /* small_stmt: assert_stmt  */
-#line 156 "test.y"
+#line 154 "test.y"
                   {(yyval.elem) = (yyvsp[0].elem);}
 #line 2028 "test.tab.c"
     break;
 
   case 65: /* flow_stmt: break_stmt  */
-#line 159 "test.y"
+#line 157 "test.y"
                       {(yyval.elem) = (yyvsp[0].elem);}
 #line 2034 "test.tab.c"
     break;
 
   case 66: /* flow_stmt: continue_stmt  */
-#line 160 "test.y"
+#line 158 "test.y"
                     {(yyval.elem) = (yyvsp[0].elem);}
 #line 2040 "test.tab.c"
     break;
 
   case 67: /* flow_stmt: return_stmt  */
-#line 161 "test.y"
+#line 159 "test.y"
                   {(yyval.elem) = (yyvsp[0].elem);}
 #line 2046 "test.tab.c"
     break;
 
   case 68: /* flow_stmt: raise_stmt  */
-#line 162 "test.y"
+#line 160 "test.y"
                  {(yyval.elem) = (yyvsp[0].elem);}
 #line 2052 "test.tab.c"
     break;
 
   case 69: /* break_stmt: BREAK  */
-#line 165 "test.y"
+#line 163 "test.y"
                   {(yyval.elem)  = (yyvsp[0].elem);}
 #line 2058 "test.tab.c"
     break;
 
   case 70: /* continue_stmt: CONTINUE  */
-#line 167 "test.y"
+#line 165 "test.y"
                         {(yyval.elem) = (yyvsp[0].elem);}
 #line 2064 "test.tab.c"
     break;
 
   case 71: /* return_stmt: RETURN testlist_star_expr  */
-#line 169 "test.y"
-                                       {(yyval.elem) = create_node(3,"return_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 167 "test.y"
+                                       {(yyval.elem) = create_node(3,"Return_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2070 "test.tab.c"
     break;
 
   case 72: /* return_stmt: RETURN  */
-#line 170 "test.y"
+#line 168 "test.y"
              {(yyval.elem) = (yyvsp[0].elem);}
 #line 2076 "test.tab.c"
     break;
 
   case 73: /* raise_stmt: RAISE  */
-#line 173 "test.y"
+#line 171 "test.y"
                   {(yyval.elem) = (yyvsp[0].elem);}
 #line 2082 "test.tab.c"
     break;
 
   case 74: /* raise_stmt: RAISE test  */
-#line 174 "test.y"
-                 {(yyval.elem) = create_node(3,"raise_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 172 "test.y"
+                 {(yyval.elem) = create_node(3,"Raise_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2088 "test.tab.c"
     break;
 
   case 75: /* raise_stmt: RAISE test FROM test  */
-#line 175 "test.y"
-                           {(yyval.elem) = create_node(5,"raise_stmt",(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 173 "test.y"
+                           {(yyval.elem) = create_node(5,"Raise_stmt",(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2094 "test.tab.c"
     break;
 
   case 76: /* global_stmt: GLOBAL NAME comma_name_star  */
-#line 178 "test.y"
-                                         {(yyval.elem) = create_node(4,"global_stmt",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 176 "test.y"
+                                         {(yyval.elem) = create_node(4,"Global_stmt",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2100 "test.tab.c"
     break;
 
   case 77: /* nonlocal_stmt: NONLOCAL NAME comma_name_star  */
-#line 180 "test.y"
-                                             {(yyval.elem) = create_node(4,"nonlocal_stmt",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 178 "test.y"
+                                             {(yyval.elem) = create_node(4,"Nonlocal_stmt",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2106 "test.tab.c"
     break;
 
   case 78: /* comma_name_star: COMMA NAME comma_name_star  */
-#line 182 "test.y"
-                                            {(yyval.elem) = create_node(4,"comma_name_star",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 180 "test.y"
+                                            {(yyval.elem) = create_node(4,"Identifiers",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2112 "test.tab.c"
     break;
 
   case 79: /* comma_name_star: %empty  */
-#line 183 "test.y"
+#line 181 "test.y"
       { (yyval.elem) = NULL;}
 #line 2118 "test.tab.c"
     break;
 
   case 80: /* assert_stmt: ASSERT test COMMA test  */
-#line 186 "test.y"
-                                    {(yyval.elem) = create_node(5,"assert_stmt",(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 184 "test.y"
+                                    {(yyval.elem) = create_node(5,"Assert_stmt",(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2124 "test.tab.c"
     break;
 
   case 81: /* assert_stmt: ASSERT test  */
-#line 187 "test.y"
-                  {(yyval.elem) = create_node(3,"assert_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 185 "test.y"
+                  {(yyval.elem) = create_node(3,"Assert_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2130 "test.tab.c"
     break;
 
   case 82: /* expr_stmt: testlist_star_expr annassign  */
-#line 190 "test.y"
-                                        {(yyval.elem) = create_node(3,"expr_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 188 "test.y"
+                                        {(yyval.elem) = create_node(3,"Expr_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2136 "test.tab.c"
     break;
 
   case 83: /* expr_stmt: testlist_star_expr augassign testlist  */
-#line 191 "test.y"
-                                            {(yyval.elem) = create_node(4,"expr_stmt",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 189 "test.y"
+                                            {(yyval.elem) = create_node(4,"Expr_stmt",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2142 "test.tab.c"
     break;
 
   case 84: /* expr_stmt: testlist_star_expr  */
-#line 192 "test.y"
+#line 190 "test.y"
                          {(yyval.elem) = (yyvsp[0].elem);}
 #line 2148 "test.tab.c"
     break;
 
   case 85: /* expr_stmt: testlist_star_expr expr_stmt_option1_plus  */
-#line 193 "test.y"
-                                                {(yyval.elem) = create_node(3,"expr_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 191 "test.y"
+                                                {(yyval.elem) = create_node(3,"Expr_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2154 "test.tab.c"
     break;
 
   case 86: /* testlist: test symbol_test_star  */
-#line 196 "test.y"
-                                  {(yyval.elem) = create_node(3,"testlist",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 194 "test.y"
+                                  {(yyval.elem) = create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2160 "test.tab.c"
     break;
 
   case 87: /* symbol_test_star: COMMA test symbol_test_star  */
-#line 198 "test.y"
-                                              {(yyval.elem) = create_node(4,"symbol_test",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 196 "test.y"
+                                              {(yyval.elem) = create_node(4,"Expressions",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2166 "test.tab.c"
     break;
 
   case 88: /* symbol_test_star: COMMA  */
-#line 199 "test.y"
+#line 197 "test.y"
             {(yyval.elem) = (yyvsp[0].elem);}
 #line 2172 "test.tab.c"
     break;
 
   case 89: /* symbol_test_star: %empty  */
-#line 200 "test.y"
+#line 198 "test.y"
      {(yyval.elem)=NULL;}
 #line 2178 "test.tab.c"
     break;
 
   case 90: /* expr_stmt_option1_plus: EQUAL testlist_star_expr expr_stmt_option1_plus  */
-#line 205 "test.y"
-                                                                       {(yyval.elem) = create_node(4,"expr_stmt",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 203 "test.y"
+                                                                       {(yyval.elem) = create_node(4,"Expr_stmt",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2184 "test.tab.c"
     break;
 
   case 91: /* expr_stmt_option1_plus: EQUAL testlist_star_expr  */
-#line 207 "test.y"
-                               {(yyval.elem) = create_node(3,"expr_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 205 "test.y"
+                               {(yyval.elem) = create_node(3,"Expr_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2190 "test.tab.c"
     break;
 
   case 92: /* annassign: COLON test  */
-#line 210 "test.y"
-                      {(yyval.elem) = create_node(3,"annassign",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 208 "test.y"
+                      {(yyval.elem) = create_node(3,"Identifiers",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2196 "test.tab.c"
     break;
 
   case 93: /* annassign: COLON test EQUAL testlist_star_expr  */
-#line 211 "test.y"
-                                          {(yyval.elem) = create_node(5,"annassign",(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 209 "test.y"
+                                          {(yyval.elem) = create_node(5,"Identifiers",(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2202 "test.tab.c"
     break;
 
   case 94: /* testlist_star_expr: test testlist_star_expr_option1_star  */
-#line 214 "test.y"
-                                                         {(yyval.elem) = create_node(3,"testlist_expr",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 212 "test.y"
+                                                         {(yyval.elem) = create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2208 "test.tab.c"
     break;
 
   case 95: /* testlist_star_expr: star_expr testlist_star_expr_option1_star  */
-#line 215 "test.y"
-                                                {(yyval.elem) = create_node(3,"testlist_expr",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 213 "test.y"
+                                                {(yyval.elem) = create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2214 "test.tab.c"
     break;
 
   case 96: /* testlist_star_expr_option1_star: COMMA test testlist_star_expr_option1_star  */
-#line 218 "test.y"
-                                                                            {(yyval.elem) = create_node(4,"testlist_expr",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 216 "test.y"
+                                                                            {(yyval.elem) = create_node(4,"Expressions",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2220 "test.tab.c"
     break;
 
   case 97: /* testlist_star_expr_option1_star: COMMA star_expr testlist_star_expr_option1_star  */
-#line 219 "test.y"
-                                                      {(yyval.elem) = create_node(4,"testlist_expr",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 217 "test.y"
+                                                      {(yyval.elem) = create_node(4,"Expressions",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2226 "test.tab.c"
     break;
 
   case 98: /* testlist_star_expr_option1_star: COMMA  */
-#line 220 "test.y"
+#line 218 "test.y"
             {(yyval.elem) = (yyvsp[0].elem);}
 #line 2232 "test.tab.c"
     break;
 
   case 99: /* testlist_star_expr_option1_star: %empty  */
-#line 221 "test.y"
+#line 219 "test.y"
      {(yyval.elem)=NULL;}
 #line 2238 "test.tab.c"
     break;
 
   case 100: /* augassign: ADD_EQUAL  */
-#line 224 "test.y"
+#line 222 "test.y"
                      {(yyval.elem) = (yyvsp[0].elem);}
 #line 2244 "test.tab.c"
     break;
 
   case 101: /* augassign: SUB_EQUAL  */
-#line 225 "test.y"
+#line 223 "test.y"
                 {(yyval.elem) = (yyvsp[0].elem);}
 #line 2250 "test.tab.c"
     break;
 
   case 102: /* augassign: MUL_EQUAL  */
-#line 226 "test.y"
+#line 224 "test.y"
                 {(yyval.elem) = (yyvsp[0].elem);}
 #line 2256 "test.tab.c"
     break;
 
   case 103: /* augassign: AT_EQUAL  */
-#line 227 "test.y"
+#line 225 "test.y"
                {(yyval.elem) = (yyvsp[0].elem);}
 #line 2262 "test.tab.c"
     break;
 
   case 104: /* augassign: DIV_EQUAL  */
-#line 228 "test.y"
+#line 226 "test.y"
                 {(yyval.elem) = (yyvsp[0].elem);}
 #line 2268 "test.tab.c"
     break;
 
   case 105: /* augassign: MOD_EQUAL  */
-#line 229 "test.y"
+#line 227 "test.y"
                 {(yyval.elem) = (yyvsp[0].elem);}
 #line 2274 "test.tab.c"
     break;
 
   case 106: /* augassign: BITWISE_AND_EQUAL  */
-#line 230 "test.y"
+#line 228 "test.y"
                         {(yyval.elem) = (yyvsp[0].elem);}
 #line 2280 "test.tab.c"
     break;
 
   case 107: /* augassign: BITWISE_OR_EQUAL  */
-#line 231 "test.y"
+#line 229 "test.y"
                        {(yyval.elem) = (yyvsp[0].elem);}
 #line 2286 "test.tab.c"
     break;
 
   case 108: /* augassign: BITWISE_XOR_EQUAL  */
-#line 232 "test.y"
+#line 230 "test.y"
                         {(yyval.elem) = (yyvsp[0].elem);}
 #line 2292 "test.tab.c"
     break;
 
   case 109: /* augassign: SHIFT_LEFT_EQUAL  */
-#line 233 "test.y"
+#line 231 "test.y"
                        {(yyval.elem) = (yyvsp[0].elem);}
 #line 2298 "test.tab.c"
     break;
 
   case 110: /* augassign: SHIFT_RIGHT_EQUAL  */
-#line 234 "test.y"
+#line 232 "test.y"
                         {(yyval.elem) = (yyvsp[0].elem);}
 #line 2304 "test.tab.c"
     break;
 
   case 111: /* augassign: POW_EQUAL  */
-#line 235 "test.y"
+#line 233 "test.y"
                 {(yyval.elem) = (yyvsp[0].elem);}
 #line 2310 "test.tab.c"
     break;
 
   case 112: /* augassign: FLOOR_DIV_EQUAL  */
-#line 236 "test.y"
+#line 234 "test.y"
                       {(yyval.elem) = (yyvsp[0].elem);}
 #line 2316 "test.tab.c"
     break;
 
   case 113: /* expr: xor_expr symbol_xor_expr_star  */
-#line 239 "test.y"
-                                    {(yyval.elem) = create_node(3,"expr",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 237 "test.y"
+                                    {(yyval.elem) = create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2322 "test.tab.c"
     break;
 
   case 114: /* star_expr: MUL expr  */
-#line 241 "test.y"
-                    {(yyval.elem) = create_node(3,"star_expr",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 239 "test.y"
+                    {(yyval.elem) = create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2328 "test.tab.c"
     break;
 
   case 115: /* symbol_xor_expr_star: BITWISE_OR xor_expr symbol_xor_expr_star  */
-#line 243 "test.y"
-                                                               {(yyval.elem) = create_node(4,"symbol_xor_expr",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 241 "test.y"
+                                                               {(yyval.elem) = create_node(4,"Or_exprs",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2334 "test.tab.c"
     break;
 
   case 116: /* symbol_xor_expr_star: %empty  */
-#line 244 "test.y"
+#line 242 "test.y"
                 {(yyval.elem)=NULL;}
 #line 2340 "test.tab.c"
     break;
 
   case 117: /* xor_expr: and_expr symbol_and_expr_star  */
-#line 247 "test.y"
-                                        {(yyval.elem) = create_node(3,"xor_expr",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 245 "test.y"
+                                        {(yyval.elem) = create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2346 "test.tab.c"
     break;
 
   case 118: /* symbol_and_expr_star: BITWISE_XOR and_expr symbol_and_expr_star  */
-#line 249 "test.y"
-                                                                {(yyval.elem) = create_node(4,"symbol_and_expr",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 247 "test.y"
+                                                                {(yyval.elem) = create_node(4,"Xor_exprs",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2352 "test.tab.c"
     break;
 
   case 119: /* symbol_and_expr_star: %empty  */
-#line 250 "test.y"
+#line 248 "test.y"
                 {(yyval.elem)=NULL;}
 #line 2358 "test.tab.c"
     break;
 
   case 120: /* and_expr: shift_expr symbol_shift_expr_star  */
-#line 253 "test.y"
-                                            {(yyval.elem) = create_node(3,"and_expr",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 251 "test.y"
+                                            {(yyval.elem) = create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2364 "test.tab.c"
     break;
 
   case 121: /* symbol_shift_expr_star: BITWISE_AND shift_expr symbol_shift_expr_star  */
-#line 255 "test.y"
-                                                                      {(yyval.elem) = create_node(4,"symbol_shift_expr",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 253 "test.y"
+                                                                      {(yyval.elem) = create_node(4,"And_exprs",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2370 "test.tab.c"
     break;
 
   case 122: /* symbol_shift_expr_star: %empty  */
-#line 256 "test.y"
+#line 254 "test.y"
                 {(yyval.elem)=NULL;}
 #line 2376 "test.tab.c"
     break;
 
   case 123: /* shift_expr: arith_expr shift_arith_expr_star  */
-#line 259 "test.y"
-                                             {(yyval.elem) = create_node(3,"shift_expr",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 257 "test.y"
+                                             {(yyval.elem) = create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2382 "test.tab.c"
     break;
 
   case 124: /* shift_arith_expr_star: %empty  */
-#line 261 "test.y"
+#line 259 "test.y"
                                  {(yyval.elem)=NULL;}
 #line 2388 "test.tab.c"
     break;
 
   case 125: /* shift_arith_expr_star: SHIFT_LEFT arith_expr shift_arith_expr_star  */
-#line 262 "test.y"
-                                                  {(yyval.elem) = create_node(4,"shift_arith_expr",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 260 "test.y"
+                                                  {(yyval.elem) = create_node(4,"Shift_left_expr",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2394 "test.tab.c"
     break;
 
   case 126: /* shift_arith_expr_star: SHIFT_RIGHT arith_expr shift_arith_expr_star  */
-#line 263 "test.y"
-                                                   {(yyval.elem) = create_node(4,"shift_arith_expr",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 261 "test.y"
+                                                   {(yyval.elem) = create_node(4,"Shift_right_expr",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2400 "test.tab.c"
     break;
 
   case 127: /* arith_expr: term symbol_term_star  */
-#line 266 "test.y"
-                                   {(yyval.elem) = create_node(3,"arith_expr",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 264 "test.y"
+                                   {(yyval.elem) = create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2406 "test.tab.c"
     break;
 
   case 128: /* symbol_term_star: %empty  */
-#line 268 "test.y"
+#line 266 "test.y"
                             {(yyval.elem)=NULL;}
 #line 2412 "test.tab.c"
     break;
 
   case 129: /* symbol_term_star: ADD term symbol_term_star  */
-#line 269 "test.y"
-                                {(yyval.elem) = create_node(4,"symbol_term",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 267 "test.y"
+                                {(yyval.elem) = create_node(4,"Operator_expr",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2418 "test.tab.c"
     break;
 
   case 130: /* symbol_term_star: SUB term symbol_term_star  */
-#line 270 "test.y"
-                                {(yyval.elem) = create_node(4,"symbol_term",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 268 "test.y"
+                                {(yyval.elem) = create_node(4,"Operator_expr",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2424 "test.tab.c"
     break;
 
   case 131: /* term: factor symbol_factor_star  */
-#line 273 "test.y"
-                                {(yyval.elem) = create_node(3,"term",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 271 "test.y"
+                                {(yyval.elem) = create_node(3,"Terms",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2430 "test.tab.c"
     break;
 
   case 132: /* symbol_factor_star: %empty  */
-#line 275 "test.y"
+#line 273 "test.y"
                               {(yyval.elem)=NULL;}
 #line 2436 "test.tab.c"
     break;
 
   case 133: /* symbol_factor_star: symbol_factor symbol_factor_star  */
-#line 276 "test.y"
-                                       {(yyval.elem) = create_node(3,"symbol_factor",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 274 "test.y"
+                                       {(yyval.elem) = create_node(3,"Terms",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2442 "test.tab.c"
     break;
 
   case 134: /* symbol_factor: MUL factor  */
-#line 279 "test.y"
-                          {(yyval.elem) = create_node(3,"symbol_factor",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 277 "test.y"
+                          {(yyval.elem) = create_node(3,"Mul_term",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2448 "test.tab.c"
     break;
 
   case 135: /* symbol_factor: AT factor  */
-#line 280 "test.y"
-                {(yyval.elem) = create_node(3,"symbol_factor",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 278 "test.y"
+                {(yyval.elem) = create_node(3,"At_term",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2454 "test.tab.c"
     break;
 
   case 136: /* symbol_factor: DIV factor  */
-#line 281 "test.y"
-                 {(yyval.elem) = create_node(3,"symbol_factor",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 279 "test.y"
+                 {(yyval.elem) = create_node(3,"Div_term",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2460 "test.tab.c"
     break;
 
   case 137: /* symbol_factor: FLOOR_DIV factor  */
-#line 282 "test.y"
-                       {(yyval.elem) = create_node(3,"symbol_factor",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 280 "test.y"
+                       {(yyval.elem) = create_node(3,"Div_term",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2466 "test.tab.c"
     break;
 
   case 138: /* symbol_factor: MOD factor  */
-#line 283 "test.y"
-                 {(yyval.elem) = create_node(3,"symbol_factor",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 281 "test.y"
+                 {(yyval.elem) = create_node(3,"Mod_term",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2472 "test.tab.c"
     break;
 
   case 139: /* factor: ADD factor  */
-#line 286 "test.y"
-                   {(yyval.elem) = create_node(3,"Factor",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 284 "test.y"
+                   {(yyval.elem) = create_node(3,"Add_term",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2478 "test.tab.c"
     break;
 
   case 140: /* factor: SUB factor  */
-#line 287 "test.y"
-                 {(yyval.elem) = create_node(3,"Factor",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 285 "test.y"
+                 {(yyval.elem) = create_node(3,"Sub_term",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2484 "test.tab.c"
     break;
 
   case 141: /* factor: TILDE factor  */
-#line 288 "test.y"
-                   {(yyval.elem) = create_node(3,"Factor",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 286 "test.y"
+                   {(yyval.elem) = create_node(3,"Tilde_term",(yyvsp[-1].elem),(yyvsp[0].elem));}
 #line 2490 "test.tab.c"
     break;
 
   case 142: /* factor: power  */
-#line 289 "test.y"
+#line 287 "test.y"
             {(yyval.elem) = (yyvsp[0].elem);}
 #line 2496 "test.tab.c"
     break;
 
   case 143: /* power: atom_expr  */
-#line 292 "test.y"
+#line 290 "test.y"
                  {(yyval.elem) = (yyvsp[0].elem);}
 #line 2502 "test.tab.c"
     break;
 
   case 144: /* power: atom_expr POW factor  */
-#line 293 "test.y"
-                           {
-        (yyval.elem) = create_node(4,"Power",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));
-    }
-#line 2510 "test.tab.c"
+#line 291 "test.y"
+                           {(yyval.elem) = create_node(4,"Power_term",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2508 "test.tab.c"
     break;
 
   case 145: /* atom_expr: AWAIT atom trailer_star  */
-#line 298 "test.y"
-                                   {(yyval.elem)=create_node(4,"atom_expr",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2516 "test.tab.c"
+#line 294 "test.y"
+                                   {(yyval.elem)=create_node(4,"Await_stmt",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2514 "test.tab.c"
     break;
 
   case 146: /* atom_expr: atom trailer_star  */
-#line 299 "test.y"
-                       {(yyval.elem)=create_node(3,"atom_expr", (yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2522 "test.tab.c"
+#line 295 "test.y"
+                       {(yyval.elem)=create_node(3,"Terms", (yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2520 "test.tab.c"
     break;
 
   case 147: /* trailer_star: trailer trailer_star  */
-#line 302 "test.y"
-                                     {(yyval.elem) = create_node(3,"trailer_star",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2528 "test.tab.c"
+#line 298 "test.y"
+                                     {(yyval.elem) = create_node(3,"Stmts",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2526 "test.tab.c"
     break;
 
   case 148: /* trailer_star: %empty  */
-#line 303 "test.y"
+#line 299 "test.y"
                {(yyval.elem)=NULL;}
-#line 2534 "test.tab.c"
+#line 2532 "test.tab.c"
     break;
 
   case 149: /* trailer: SMALL_OPEN arglist SMALL_CLOSE  */
-#line 307 "test.y"
-                                         {(yyval.elem) = create_node(4,"trailer",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2540 "test.tab.c"
+#line 303 "test.y"
+                                         {(yyval.elem) = create_node(4,"Arguments",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2538 "test.tab.c"
     break;
 
   case 150: /* trailer: SMALL_OPEN SMALL_CLOSE  */
-#line 308 "test.y"
-                            { (yyval.elem) = create_node(3,"trailer",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2546 "test.tab.c"
+#line 304 "test.y"
+                            { (yyval.elem) = create_node(3,"Parantheses",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2544 "test.tab.c"
     break;
 
   case 151: /* trailer: BOX_OPEN subscriptlist BOX_CLOSE  */
-#line 309 "test.y"
-                                      {(yyval.elem) = create_node(4,"trailer",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2552 "test.tab.c"
+#line 305 "test.y"
+                                      {(yyval.elem) = create_node(4,"Square_bracket",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2550 "test.tab.c"
     break;
 
   case 152: /* trailer: DOT NAME TYPE_HINT  */
-#line 310 "test.y"
-                        {(yyval.elem) = create_node(4,"trailer",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2558 "test.tab.c"
+#line 306 "test.y"
+                        {(yyval.elem) = create_node(4,"Identifier",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2556 "test.tab.c"
     break;
 
   case 153: /* trailer: DOT NAME  */
-#line 311 "test.y"
-              { (yyval.elem) = create_node(3,"trailer",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2564 "test.tab.c"
+#line 307 "test.y"
+              { (yyval.elem) = create_node(3,"Identifier",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2562 "test.tab.c"
     break;
 
   case 154: /* classdef: CLASS NAME bracket_arglist_optional COLON suite  */
-#line 315 "test.y"
-                                                          {(yyval.elem)=create_node(6,"classdef",(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2570 "test.tab.c"
+#line 311 "test.y"
+                                                          {(yyval.elem)=create_node(6,"Class_def",(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2568 "test.tab.c"
     break;
 
   case 155: /* bracket_arglist_optional: SMALL_OPEN SMALL_CLOSE  */
-#line 317 "test.y"
-                                                 {(yyval.elem)=create_node(3,"bracket_arglist_optional",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2576 "test.tab.c"
+#line 313 "test.y"
+                                                 {(yyval.elem)=create_node(3,"Parantheses",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2574 "test.tab.c"
     break;
 
   case 156: /* bracket_arglist_optional: SMALL_OPEN arglist SMALL_CLOSE  */
-#line 318 "test.y"
-                                     {(yyval.elem)=create_node(4,"bracket_arglist_optional",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2582 "test.tab.c"
+#line 314 "test.y"
+                                     {(yyval.elem)=create_node(4,"Arguments",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2580 "test.tab.c"
     break;
 
   case 157: /* bracket_arglist_optional: %empty  */
-#line 319 "test.y"
+#line 315 "test.y"
       {(yyval.elem)=NULL;}
-#line 2588 "test.tab.c"
+#line 2586 "test.tab.c"
     break;
 
   case 158: /* arglist: argument_list COMMA  */
-#line 322 "test.y"
-                             {(yyval.elem)=create_node(3,"arglist",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2594 "test.tab.c"
+#line 318 "test.y"
+                             {(yyval.elem)=create_node(3,"Arguments",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2592 "test.tab.c"
     break;
 
   case 159: /* arglist: argument_list  */
-#line 323 "test.y"
+#line 319 "test.y"
                     {(yyval.elem)=(yyvsp[0].elem);}
-#line 2600 "test.tab.c"
+#line 2598 "test.tab.c"
     break;
 
   case 160: /* argument_list: argument_list COMMA argument  */
-#line 326 "test.y"
-                                            { (yyval.elem)=create_node(4,"argument_list",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2606 "test.tab.c"
+#line 322 "test.y"
+                                            { (yyval.elem)=create_node(4,"Arguments",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2604 "test.tab.c"
     break;
 
   case 161: /* argument_list: argument  */
-#line 327 "test.y"
+#line 323 "test.y"
                { (yyval.elem)=(yyvsp[0].elem);}
-#line 2612 "test.tab.c"
+#line 2610 "test.tab.c"
     break;
 
   case 162: /* subscriptlist: subscript_list COMMA  */
-#line 330 "test.y"
-                                    {(yyval.elem)=create_node(3,"subscriptlist",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2618 "test.tab.c"
+#line 326 "test.y"
+                                    {(yyval.elem)=create_node(3,"Terms",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2616 "test.tab.c"
     break;
 
   case 163: /* subscriptlist: subscript_list  */
-#line 331 "test.y"
+#line 327 "test.y"
                      { (yyval.elem)=(yyvsp[0].elem);}
-#line 2624 "test.tab.c"
+#line 2622 "test.tab.c"
     break;
 
   case 164: /* subscript_list: subscript_list COMMA subscript  */
-#line 334 "test.y"
-                                               { (yyval.elem)=create_node(4,"subscript_list",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2630 "test.tab.c"
+#line 330 "test.y"
+                                               { (yyval.elem)=create_node(4,"Terms",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2628 "test.tab.c"
     break;
 
   case 165: /* subscript_list: subscript  */
-#line 335 "test.y"
+#line 331 "test.y"
                 { (yyval.elem)=(yyvsp[0].elem);}
-#line 2636 "test.tab.c"
+#line 2634 "test.tab.c"
     break;
 
   case 166: /* subscript: test  */
-#line 339 "test.y"
+#line 335 "test.y"
                 {(yyval.elem)=(yyvsp[0].elem);}
-#line 2642 "test.tab.c"
+#line 2640 "test.tab.c"
     break;
 
   case 167: /* subscript: optional_test COLON optional_test  */
-#line 340 "test.y"
-                                       { (yyval.elem)=create_node(4,"subscript",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2648 "test.tab.c"
+#line 336 "test.y"
+                                       { (yyval.elem)=create_node(4,"Terms",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2646 "test.tab.c"
     break;
 
   case 168: /* argument: test  */
-#line 344 "test.y"
+#line 340 "test.y"
                { (yyval.elem) = (yyvsp[0].elem);}
-#line 2654 "test.tab.c"
+#line 2652 "test.tab.c"
     break;
 
   case 169: /* argument: test comp_for  */
-#line 345 "test.y"
-                    {(yyval.elem)=create_node(3,"argument",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2660 "test.tab.c"
+#line 341 "test.y"
+                    {(yyval.elem)=create_node(3,"Terms",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2658 "test.tab.c"
     break;
 
   case 170: /* argument: test EQUAL test  */
-#line 346 "test.y"
-                       {(yyval.elem)=create_node(4,"argument",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2666 "test.tab.c"
+#line 342 "test.y"
+                       {(yyval.elem)=create_node(4,"Assign_term",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2664 "test.tab.c"
     break;
 
   case 171: /* argument: POW test  */
-#line 347 "test.y"
-               {(yyval.elem)=create_node(3,"argument",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2672 "test.tab.c"
+#line 343 "test.y"
+               {(yyval.elem)=create_node(3,"Power_term",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2670 "test.tab.c"
     break;
 
   case 172: /* argument: MUL test  */
-#line 348 "test.y"
-               {(yyval.elem)=create_node(3,"argument",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2678 "test.tab.c"
+#line 344 "test.y"
+               {(yyval.elem)=create_node(3,"Mul_term",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2676 "test.tab.c"
     break;
 
   case 173: /* optional_test: test  */
-#line 351 "test.y"
+#line 347 "test.y"
                     {(yyval.elem)=(yyvsp[0].elem);}
-#line 2684 "test.tab.c"
+#line 2682 "test.tab.c"
     break;
 
   case 174: /* optional_test: %empty  */
-#line 352 "test.y"
+#line 348 "test.y"
                 {(yyval.elem)=NULL;}
-#line 2690 "test.tab.c"
+#line 2688 "test.tab.c"
     break;
 
   case 175: /* comp_iter: comp_for  */
-#line 355 "test.y"
+#line 351 "test.y"
                     {(yyval.elem)=(yyvsp[0].elem);}
-#line 2696 "test.tab.c"
+#line 2694 "test.tab.c"
     break;
 
   case 176: /* comp_iter: comp_if  */
-#line 356 "test.y"
+#line 352 "test.y"
               {(yyval.elem)=(yyvsp[0].elem);}
-#line 2702 "test.tab.c"
+#line 2700 "test.tab.c"
     break;
 
   case 177: /* sync_comp_for: FOR exprlist IN or_test  */
-#line 359 "test.y"
-                                       {(yyval.elem)=create_node(5,"sync_comp_for",(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2708 "test.tab.c"
+#line 355 "test.y"
+                                       {(yyval.elem)=create_node(5,"For_stmt",(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2706 "test.tab.c"
     break;
 
   case 178: /* sync_comp_for: FOR exprlist IN or_test comp_iter  */
-#line 360 "test.y"
-                                        {(yyval.elem)=create_node(6,"sync_comp_for",(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2714 "test.tab.c"
+#line 356 "test.y"
+                                        {(yyval.elem)=create_node(6,"For_stmt",(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2712 "test.tab.c"
     break;
 
   case 179: /* comp_for: sync_comp_for  */
-#line 364 "test.y"
+#line 360 "test.y"
                          {(yyval.elem)=(yyvsp[0].elem);}
-#line 2720 "test.tab.c"
+#line 2718 "test.tab.c"
     break;
 
   case 180: /* comp_for: ASYNC sync_comp_for  */
-#line 365 "test.y"
-                          {(yyval.elem)=create_node(3,"comp_for",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2726 "test.tab.c"
+#line 361 "test.y"
+                          {(yyval.elem)=create_node(3,"Async_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2724 "test.tab.c"
     break;
 
   case 181: /* comp_if: IF test_nocond  */
-#line 368 "test.y"
-                        {(yyval.elem)=create_node(3,"comp_if",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2732 "test.tab.c"
+#line 364 "test.y"
+                        {(yyval.elem)=create_node(3,"IF_stmt",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2730 "test.tab.c"
     break;
 
   case 182: /* comp_if: IF test_nocond comp_iter  */
-#line 369 "test.y"
-                               {(yyval.elem) = create_node(4,"comp_if",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2738 "test.tab.c"
+#line 365 "test.y"
+                               {(yyval.elem) = create_node(4,"IF_stmt",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2736 "test.tab.c"
     break;
 
   case 183: /* test_nocond: or_test  */
-#line 372 "test.y"
+#line 368 "test.y"
                      {(yyval.elem)=(yyvsp[0].elem);}
-#line 2744 "test.tab.c"
+#line 2742 "test.tab.c"
     break;
 
   case 184: /* or_test: and_test or_and_test_star  */
-#line 374 "test.y"
-                                  {(yyval.elem)=create_node(3,"or_test",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2750 "test.tab.c"
+#line 370 "test.y"
+                                  {(yyval.elem)=create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2748 "test.tab.c"
     break;
 
   case 185: /* or_and_test_star: OR and_test or_and_test_star  */
-#line 376 "test.y"
-                                              {(yyval.elem)=create_node(4,"or_and_test_star",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2756 "test.tab.c"
+#line 372 "test.y"
+                                              {(yyval.elem)=create_node(4,"OR_term",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2754 "test.tab.c"
     break;
 
   case 186: /* or_and_test_star: %empty  */
-#line 377 "test.y"
+#line 373 "test.y"
       { (yyval.elem) = NULL;}
-#line 2762 "test.tab.c"
+#line 2760 "test.tab.c"
     break;
 
   case 187: /* and_test: not_test and_not_test_star  */
-#line 380 "test.y"
-                                     {(yyval.elem)=create_node(3,"and_test",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2768 "test.tab.c"
+#line 376 "test.y"
+                                     {(yyval.elem)=create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2766 "test.tab.c"
     break;
 
   case 188: /* and_not_test_star: AND not_test and_not_test_star  */
-#line 382 "test.y"
-                                                  {(yyval.elem)=create_node(4,"and_not_test_star",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2774 "test.tab.c"
+#line 378 "test.y"
+                                                  {(yyval.elem)=create_node(4,"And_term",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2772 "test.tab.c"
     break;
 
   case 189: /* and_not_test_star: %empty  */
-#line 383 "test.y"
+#line 379 "test.y"
       { (yyval.elem) = NULL;}
-#line 2780 "test.tab.c"
+#line 2778 "test.tab.c"
     break;
 
   case 190: /* not_test: NOT not_test  */
-#line 386 "test.y"
-                       {(yyval.elem)=create_node(3,"not_test",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2786 "test.tab.c"
+#line 382 "test.y"
+                       {(yyval.elem)=create_node(3,"Not_term",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2784 "test.tab.c"
     break;
 
   case 191: /* not_test: comparison  */
-#line 387 "test.y"
+#line 383 "test.y"
                  {(yyval.elem)=(yyvsp[0].elem);}
-#line 2792 "test.tab.c"
+#line 2790 "test.tab.c"
     break;
 
   case 192: /* comparison: expr comp_op_expr_plus  */
-#line 391 "test.y"
-                                   {(yyval.elem)=create_node(3,"comparison",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2798 "test.tab.c"
+#line 387 "test.y"
+                                   {(yyval.elem)=create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2796 "test.tab.c"
     break;
 
   case 193: /* comparison: expr  */
-#line 392 "test.y"
+#line 388 "test.y"
           {(yyval.elem)=(yyvsp[0].elem);}
-#line 2804 "test.tab.c"
+#line 2802 "test.tab.c"
     break;
 
   case 194: /* comp_op_expr_plus: comp_op expr comp_op_expr_plus  */
-#line 395 "test.y"
-                                                  {(yyval.elem)=create_node(3,"comp_op_expr_plus",(yyvsp[-2].elem),(yyvsp[-1].elem));}
-#line 2810 "test.tab.c"
+#line 391 "test.y"
+                                                  {(yyval.elem)=create_node(3,"Expresions",(yyvsp[-2].elem),(yyvsp[-1].elem));}
+#line 2808 "test.tab.c"
     break;
 
   case 195: /* comp_op_expr_plus: comp_op expr  */
-#line 396 "test.y"
-                   {(yyval.elem)=create_node(3,"comp_op_expr_plus",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2816 "test.tab.c"
+#line 392 "test.y"
+                   {(yyval.elem)=create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2814 "test.tab.c"
     break;
 
   case 196: /* comp_op: LT  */
-#line 400 "test.y"
+#line 396 "test.y"
             {(yyval.elem)=(yyvsp[0].elem);}
-#line 2822 "test.tab.c"
+#line 2820 "test.tab.c"
     break;
 
   case 197: /* comp_op: GT  */
-#line 401 "test.y"
+#line 397 "test.y"
         {(yyval.elem)=(yyvsp[0].elem);}
-#line 2828 "test.tab.c"
+#line 2826 "test.tab.c"
     break;
 
   case 198: /* comp_op: DOUBLE_EQUAL  */
-#line 402 "test.y"
+#line 398 "test.y"
                   {(yyval.elem)=(yyvsp[0].elem);}
-#line 2834 "test.tab.c"
+#line 2832 "test.tab.c"
     break;
 
   case 199: /* comp_op: GE  */
-#line 403 "test.y"
+#line 399 "test.y"
         {(yyval.elem)=(yyvsp[0].elem);}
-#line 2840 "test.tab.c"
+#line 2838 "test.tab.c"
     break;
 
   case 200: /* comp_op: LE  */
-#line 404 "test.y"
+#line 400 "test.y"
         {(yyval.elem)=(yyvsp[0].elem);}
-#line 2846 "test.tab.c"
+#line 2844 "test.tab.c"
     break;
 
   case 201: /* comp_op: NE  */
-#line 405 "test.y"
+#line 401 "test.y"
         {(yyval.elem)=(yyvsp[0].elem);}
-#line 2852 "test.tab.c"
+#line 2850 "test.tab.c"
     break;
 
   case 202: /* comp_op: IN  */
-#line 406 "test.y"
+#line 402 "test.y"
         {(yyval.elem)=(yyvsp[0].elem);}
-#line 2858 "test.tab.c"
+#line 2856 "test.tab.c"
     break;
 
   case 203: /* comp_op: NOT IN  */
-#line 407 "test.y"
+#line 403 "test.y"
              {(yyval.elem)=create_node(3, "Not In", (yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2864 "test.tab.c"
+#line 2862 "test.tab.c"
     break;
 
   case 204: /* comp_op: IS  */
-#line 408 "test.y"
+#line 404 "test.y"
         {(yyval.elem)=(yyvsp[0].elem);}
-#line 2870 "test.tab.c"
+#line 2868 "test.tab.c"
     break;
 
   case 205: /* comp_op: IS NOT  */
-#line 409 "test.y"
+#line 405 "test.y"
             {(yyval.elem)=create_node(3, "Is Not", (yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2876 "test.tab.c"
+#line 2874 "test.tab.c"
     break;
 
   case 206: /* exprlist: expr_star_expr_option_list  */
-#line 415 "test.y"
+#line 411 "test.y"
                                 {(yyval.elem)=(yyvsp[0].elem);}
-#line 2882 "test.tab.c"
+#line 2880 "test.tab.c"
     break;
 
   case 207: /* expr_star_expr_option: expr  */
-#line 418 "test.y"
+#line 414 "test.y"
                             {(yyval.elem)=(yyvsp[0].elem);}
-#line 2888 "test.tab.c"
+#line 2886 "test.tab.c"
     break;
 
   case 208: /* expr_star_expr_option: star_expr  */
-#line 419 "test.y"
+#line 415 "test.y"
                 {(yyval.elem)=(yyvsp[0].elem);}
-#line 2894 "test.tab.c"
+#line 2892 "test.tab.c"
     break;
 
   case 209: /* expr_star_expr_option_list: expr_star_expr_option COMMA expr_star_expr_option_list  */
-#line 422 "test.y"
-                                                                                   {(yyval.elem)=create_node(4,"expr_star_expr_option_list",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2900 "test.tab.c"
+#line 418 "test.y"
+                                                                                   {(yyval.elem)=create_node(4,"Expressions",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2898 "test.tab.c"
     break;
 
   case 210: /* expr_star_expr_option_list: expr_star_expr_option COMMA  */
-#line 423 "test.y"
-                                  {(yyval.elem)=create_node(3,"expr_star_expr_option",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2906 "test.tab.c"
+#line 419 "test.y"
+                                  {(yyval.elem)=create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2904 "test.tab.c"
     break;
 
   case 211: /* expr_star_expr_option_list: expr_star_expr_option  */
-#line 424 "test.y"
+#line 420 "test.y"
                             {(yyval.elem)=(yyvsp[0].elem);}
-#line 2912 "test.tab.c"
+#line 2910 "test.tab.c"
     break;
 
   case 212: /* testlist_comp: namedexpr_test_star_expr_option comp_for  */
-#line 427 "test.y"
-                                                        {(yyval.elem)=create_node(3,"testlist_comp",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2918 "test.tab.c"
+#line 423 "test.y"
+                                                        {(yyval.elem)=create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2916 "test.tab.c"
     break;
 
   case 213: /* testlist_comp: namedexpr_test_star_expr_option_list  */
-#line 428 "test.y"
+#line 424 "test.y"
                                             {(yyval.elem)=(yyvsp[0].elem);}
-#line 2924 "test.tab.c"
+#line 2922 "test.tab.c"
     break;
 
   case 214: /* namedexpr_test_star_expr_option_list: namedexpr_test_star_expr_option COMMA namedexpr_test_star_expr_option_list  */
-#line 432 "test.y"
-                                                                                                                 {(yyval.elem)=create_node(4,"namedexpr_test_star_expr_option_list",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2930 "test.tab.c"
+#line 428 "test.y"
+                                                                                                                 {(yyval.elem)=create_node(4,"Expressions",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2928 "test.tab.c"
     break;
 
   case 215: /* namedexpr_test_star_expr_option_list: namedexpr_test_star_expr_option COMMA  */
-#line 433 "test.y"
-                                            {(yyval.elem)=create_node(3,"namedexpr_test_star_expr_option",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2936 "test.tab.c"
+#line 429 "test.y"
+                                            {(yyval.elem)=create_node(3,"Expressions",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2934 "test.tab.c"
     break;
 
   case 216: /* namedexpr_test_star_expr_option_list: namedexpr_test_star_expr_option  */
-#line 434 "test.y"
+#line 430 "test.y"
                                       {(yyval.elem)=(yyvsp[0].elem);}
-#line 2942 "test.tab.c"
+#line 2940 "test.tab.c"
     break;
 
   case 217: /* namedexpr_test_star_expr_option: namedexpr_test  */
-#line 437 "test.y"
+#line 433 "test.y"
                                                 {(yyval.elem)=(yyvsp[0].elem);}
-#line 2948 "test.tab.c"
+#line 2946 "test.tab.c"
     break;
 
   case 218: /* namedexpr_test_star_expr_option: star_expr  */
-#line 438 "test.y"
+#line 434 "test.y"
                 {(yyval.elem)=(yyvsp[0].elem);}
-#line 2954 "test.tab.c"
+#line 2952 "test.tab.c"
     break;
 
   case 219: /* namedexpr_test: test  */
-#line 441 "test.y"
+#line 437 "test.y"
                      {(yyval.elem)=(yyvsp[0].elem);}
-#line 2960 "test.tab.c"
+#line 2958 "test.tab.c"
     break;
 
   case 220: /* test: or_test  */
-#line 443 "test.y"
+#line 439 "test.y"
               {(yyval.elem)=(yyvsp[0].elem);}
-#line 2966 "test.tab.c"
+#line 2964 "test.tab.c"
     break;
 
   case 221: /* test: or_test IF or_test ELSE test  */
-#line 444 "test.y"
-                                  {(yyval.elem)=create_node(6,"test",(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2972 "test.tab.c"
+#line 440 "test.y"
+                                  {(yyval.elem)=create_node(6,"Expressions",(yyvsp[-4].elem),(yyvsp[-3].elem),(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2970 "test.tab.c"
     break;
 
   case 222: /* atom: SMALL_OPEN testlist_comp SMALL_CLOSE  */
-#line 446 "test.y"
-                                           {(yyval.elem)=create_node(4,"Atom",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2978 "test.tab.c"
+#line 442 "test.y"
+                                           {(yyval.elem)=create_node(4,"Arguments",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2976 "test.tab.c"
     break;
 
   case 223: /* atom: SMALL_OPEN SMALL_CLOSE  */
-#line 447 "test.y"
-                             {(yyval.elem)=create_node(3,"Atom",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2984 "test.tab.c"
+#line 443 "test.y"
+                             {(yyval.elem)=create_node(3,"Parantheses",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2982 "test.tab.c"
     break;
 
   case 224: /* atom: BOX_OPEN testlist_comp BOX_CLOSE  */
-#line 448 "test.y"
-                                       {(yyval.elem)=create_node(4,"Atom",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2990 "test.tab.c"
+#line 444 "test.y"
+                                       {(yyval.elem)=create_node(4,"Square_bracket",(yyvsp[-2].elem),(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2988 "test.tab.c"
     break;
 
   case 225: /* atom: BOX_OPEN BOX_CLOSE  */
-#line 449 "test.y"
-                         {(yyval.elem)=create_node(3,"Atom",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 2996 "test.tab.c"
+#line 445 "test.y"
+                         {(yyval.elem)=create_node(3,"Square_bracket",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 2994 "test.tab.c"
     break;
 
   case 226: /* atom: CURLY_OPEN CURLY_CLOSE  */
-#line 450 "test.y"
-                             {(yyval.elem)=create_node(3,"Atom",(yyvsp[-1].elem),(yyvsp[0].elem));}
-#line 3002 "test.tab.c"
+#line 446 "test.y"
+                             {(yyval.elem)=create_node(3,"Curly_bracket",(yyvsp[-1].elem),(yyvsp[0].elem));}
+#line 3000 "test.tab.c"
     break;
 
   case 227: /* atom: NAME  */
-#line 451 "test.y"
+#line 447 "test.y"
            {(yyval.elem)=(yyvsp[0].elem);}
-#line 3008 "test.tab.c"
+#line 3006 "test.tab.c"
     break;
 
   case 228: /* atom: NAME TYPE_HINT  */
-#line 452 "test.y"
-                     {(yyval.elem)=create_node(3,"Atom", (yyvsp[-1].elem), (yyvsp[0].elem));}
-#line 3014 "test.tab.c"
+#line 448 "test.y"
+                     {(yyval.elem)=create_node(3,"Identifier", (yyvsp[-1].elem), (yyvsp[0].elem));}
+#line 3012 "test.tab.c"
     break;
 
   case 229: /* atom: number  */
-#line 453 "test.y"
+#line 449 "test.y"
              {(yyval.elem)=(yyvsp[0].elem);}
-#line 3020 "test.tab.c"
+#line 3018 "test.tab.c"
     break;
 
   case 230: /* atom: string_plus  */
-#line 454 "test.y"
+#line 450 "test.y"
                   {(yyval.elem)=(yyvsp[0].elem);}
-#line 3026 "test.tab.c"
+#line 3024 "test.tab.c"
     break;
 
   case 231: /* atom: TRUE  */
-#line 455 "test.y"
+#line 451 "test.y"
            {(yyval.elem)=(yyvsp[0].elem);}
-#line 3032 "test.tab.c"
+#line 3030 "test.tab.c"
     break;
 
   case 232: /* atom: FALSE  */
-#line 456 "test.y"
+#line 452 "test.y"
             {(yyval.elem)=(yyvsp[0].elem);}
-#line 3038 "test.tab.c"
+#line 3036 "test.tab.c"
     break;
 
   case 233: /* atom: NONE  */
-#line 457 "test.y"
+#line 453 "test.y"
            {(yyval.elem)=(yyvsp[0].elem);}
-#line 3044 "test.tab.c"
+#line 3042 "test.tab.c"
     break;
 
   case 234: /* number: INTEGER  */
-#line 461 "test.y"
+#line 457 "test.y"
                 {(yyval.elem) = (yyvsp[0].elem);}
-#line 3050 "test.tab.c"
+#line 3048 "test.tab.c"
     break;
 
   case 235: /* number: FLOAT  */
-#line 462 "test.y"
+#line 458 "test.y"
             {(yyval.elem) = (yyvsp[0].elem);}
-#line 3056 "test.tab.c"
+#line 3054 "test.tab.c"
     break;
 
   case 236: /* string_plus: STRING string_plus  */
-#line 465 "test.y"
-                                {(yyval.elem)=create_node(3,"string", (yyvsp[-1].elem), (yyvsp[0].elem));}
-#line 3062 "test.tab.c"
+#line 461 "test.y"
+                                {(yyval.elem)=create_node(3,"Strings", (yyvsp[-1].elem), (yyvsp[0].elem));}
+#line 3060 "test.tab.c"
     break;
 
   case 237: /* string_plus: STRING  */
-#line 466 "test.y"
+#line 462 "test.y"
              {(yyval.elem)=(yyvsp[0].elem);}
-#line 3068 "test.tab.c"
+#line 3066 "test.tab.c"
     break;
 
 
-#line 3072 "test.tab.c"
+#line 3070 "test.tab.c"
 
       default: break;
     }
@@ -3261,7 +3259,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 472 "test.y"
+#line 468 "test.y"
 
 
 NODE* convertParseTreeToAST(NODE* parseTree) {
@@ -3290,6 +3288,7 @@ NODE* convertParseTreeToAST(NODE* parseTree) {
     NODE* astNode = new NODE;
     astNode->id = parseTree->id;
     astNode->val = parseTree->val;
+    astNode->is_terminal = parseTree->is_terminal;
 
     for (NODE* child : parseTree->children) {
         NODE* astChild = convertParseTreeToAST(child);
@@ -3312,7 +3311,11 @@ void MakeDOTFile(NODE*cell)
         value = value.substr(1,value.length()-2);
         value="\\\""+value+"\\\"";
     }
-    fout << "\t" << cell->id << "\t\t[ style = solid label = \"" + value + "\"  ];" << endl;
+    if(cell->is_terminal){
+        fout << "\t" << cell->id << "\t\t[ style = solid label = \"" + value + "\" color = red shape = rectangle ];" << endl;
+    }
+    else
+        fout << "\t" << cell->id << "\t\t[ style = solid label = \"" + value + "\"  ];" << endl;
 
     for(int i=0;i<cell->children.size();i++)
     {

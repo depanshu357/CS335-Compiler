@@ -9,6 +9,7 @@ using namespace std;
 typedef struct node{
     int id;
     char* val;
+    bool is_terminal;
     vector<struct node*> children;
 }NODE;
 
