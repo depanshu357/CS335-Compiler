@@ -1669,7 +1669,7 @@ yyreduce:
 
   case 5: /* file_input: %empty  */
 #line 43 "test.y"
-      { /* action */}
+      {(yyval.elem) = NULL;}
 #line 1674 "test.tab.c"
     break;
 
@@ -3263,6 +3263,44 @@ yyreturnlab:
 
 #line 472 "test.y"
 
+
+NODE* convertParseTreeToAST(NODE* parseTree) {
+    if (parseTree == nullptr) {
+        return nullptr;
+    }
+
+    // If the node is a non-terminal, then skip this node and directly return the AST of the child.
+    if (parseTree != start_node){
+        NODE* temp = NULL;
+        int temp_count = 0;
+        for(int i=0;i<parseTree->children.size();i++)
+        {
+            if(parseTree->children[i]!=NULL){
+                temp = parseTree->children[i];
+                temp_count++;
+            }
+        }
+        if(temp_count==1){
+            //delete the current node and return the child node
+            parseTree = NULL;
+            return convertParseTreeToAST(temp);
+        }
+    }
+
+    NODE* astNode = new NODE;
+    astNode->id = parseTree->id;
+    astNode->val = parseTree->val;
+
+    for (NODE* child : parseTree->children) {
+        NODE* astChild = convertParseTreeToAST(child);
+        astNode->children.push_back(astChild);
+
+    }
+
+    return astNode;
+}
+
+
 void MakeDOTFile(NODE*cell)
 {
     if(!cell)
@@ -3284,7 +3322,7 @@ void MakeDOTFile(NODE*cell)
         fout << "\t" << cell->id << " -> " << cell->children[i]->id << endl;
         MakeDOTFile(cell->children[i]);
     }
-}
+} 
 
 int main(){
     indent_stack.push(0);
@@ -3295,10 +3333,7 @@ int main(){
     // Open the output file
     string output_file = "";
     output_file = "output.dot";
-	fout.open(output_file.c_str());
-
-    // clear any text in this file
-    fout.clear();
+	fout.open(output_file.c_str() , ios::out | ios::trunc);
     
 
     fout<<"digraph G{"<<endl;
@@ -3310,7 +3345,10 @@ int main(){
     fout << endl;
     fout<<"node   [ fontname=\"Cascadia code\" ]"<<endl;
     
-    MakeDOTFile(start_node);
+    NODE* ast = convertParseTreeToAST(start_node);
+
+    MakeDOTFile(ast);
+
     fout<<"}";
     fout.close();
 
