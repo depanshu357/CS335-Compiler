@@ -1,65 +1,61 @@
 class Node:
-    def __init__(self, key):
-        self.left = None
-        self.right = None
-        self.val = key
+    def __init__(self, data = None):
+        self.data = data
+        self.next = None
+        self.prev = None
 
-class BST:
+class Queue:
     def __init__(self):
-        self.root = None
+        self.head = None
+        self.tail = None
+        self.count = 0
 
-    def insert(self, key):
-        if self.root is None:
-            self.root = Node(key)
+    def is_empty(self):
+        return self.count == 0
+
+    def enqueue(self, data):
+        new_node = Node(data)
+        if self.tail:
+            new_node.prev = self.tail
+            self.tail.next = new_node
+            self.tail = new_node
         else:
-            self._insert(self.root, key)
+            self.tail = new_node
+            self.head = new_node
+        self.count += 1
 
-    def _insert(self, node, key):
-        if key < node.val:
-            if node.left is None:
-                node.left = Node(key)
-            else:
-                self._insert(node.left, key)
-        elif key > node.val:
-            if node.right is None:
-                node.right = Node(key)
-            else:
-                self._insert(node.right, key)
+    def dequeue(self):
+        if not self.head:
+            return None
+        ret = self.head.data
+        self.head = self.head.next
+        if self.head:
+            self.head.prev = None
+        else:
+            self.tail = None
+        self.count -= 1
+        return ret
 
-    def search(self, key):
-        return self._search(self.root, key)
-
-    def _search(self, node, key):
-        if node is None or node.val == key:
-            return node
-        if key < node.val:
-            return self._search(node.left, key)
-        return self._search(node.right, key)
+    def size(self):
+        return self.count
 
 # Test cases
-def test_bst():
-    bst = BST()
+def test_queue():
+    queue = Queue()
 
-    # Test inserting into an empty tree
-    bst.insert(50)
-    assert bst.root.val == 50
+    # Test enqueueing to an empty queue
+    queue.enqueue(1)
+    assert queue.size() == 1
 
-    # Test inserting values less than the root
-    bst.insert(30)
-    assert bst.root.left.val == 30
+    # Test dequeueing from the queue
+    assert queue.dequeue() == 1
+    assert queue.is_empty()
 
-    # Test inserting values greater than the root
-    bst.insert(70)
-    assert bst.root.right.val == 70
+    # Test dequeueing from an empty queue
+    assert queue.dequeue() is None
 
-    # Test inserting duplicate values
-    bst.insert(70)
-    assert bst.root.right.val == 70
+    # Test checking the size of an empty queue
+    assert queue.size() == 0
 
-    # Test searching for a value in the tree
-    assert bst.search(70) is not None
-
-    # Test searching for a value not in the tree
-    assert bst.search(100) is None
-
-test_bst()
+if __name__ == "__main__":
+  test_queue()

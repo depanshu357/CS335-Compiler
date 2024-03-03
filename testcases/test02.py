@@ -43,4 +43,5 @@ def test_stack():
     # Test checking the size of an empty stack
     assert stack.size() == 0
 
-test_stack()
+if __name__ == "__main__":
+  test_stack()

@@ -298,7 +298,7 @@ string lexeme_out=string(yytext);
     else if(oper=="<=") return LE;
 }
 
-{ASSIGNMENT_OP} {
+<INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{ASSIGNMENT_OP} {
     string lexeme_out=string(yytext);
     lexeme_out="ASSIGNMENT_OP \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
@@ -306,7 +306,7 @@ string lexeme_out=string(yytext);
     yylval.elem->is_terminal = true;
     string oper = yytext;
     if(oper==":=") return WAL_OP;
-    else if(oper=="=") return EQUAL;
+    else if(oper=="=") {return EQUAL;}
     else if(oper=="+=") return ADD_EQUAL;
     else if(oper=="-=") return SUB_EQUAL;
     else if(oper=="*=") return MUL_EQUAL;

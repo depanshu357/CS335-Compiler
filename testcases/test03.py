@@ -24,9 +24,16 @@ def quick_sort(lst):
     if len(lst) <= 1:
         return lst
     pivot = lst[len(lst) // 2]
-    left = [x for x in lst if x < pivot]
-    middle = [x for x in lst if x == pivot]
-    right = [x for x in lst if x > pivot]
+    left = []
+    middle = []
+    right = []
+    for x in lst:
+        if x < pivot:
+            left.append(x)
+        elif x == pivot:
+            middle.append(x)
+        else:
+            right.append(x)
     return quick_sort(left) + middle + quick_sort(right)
 
 # Test cases
@@ -47,4 +54,5 @@ def test_sorting_algorithms():
     assert merge_sort([3, -1, 4, 1, -5, 9, 2, -6, 5, 3, 5]) == [-6, -5, -1, 1, 2, 3, 3, 4, 5, 5, 9]
     assert quick_sort([3, -1, 4, 1, -5, 9, 2, -6, 5, 3, 5]) == [-6, -5, -1, 1, 2, 3, 3, 4, 5, 5, 9]
 
-test_sorting_algorithms()
+if __name__ == "__main__":
+  test_sorting_algorithms()

@@ -1,59 +1,62 @@
-class Node:
-    def __init__(self, data=None):
-        self.data = data
-        self.next = None
-
-class LinkedList:
+class HashTable:
     def __init__(self):
-        self.head = None
+        self.size = 10
+        self.table = [[] for _ in range(self.size)]
 
-    def add(self, data):
-        if not self.head:
-            self.head = Node(data)
+    def hash_function(self, key):
+        return key % self.size
+
+    def insert(self, key, value):
+        key_hash = self.hash_function(key)
+        key_value = [key, value]
+
+        if self.table[key_hash] is None:
+            self.table[key_hash] = list([key_value])
+            return True
         else:
-            current = self.head
-            while current.next:
-                current = current.next
-            current.next = Node(data)
+            for pair in self.table[key_hash]:
+                if pair[0] == key:
+                    pair[1] = value
+                    return True
+            self.table[key_hash].append(key_value)
+            return True
 
-    def remove(self, data):
-        if self.head is None:
-            return
-        if self.head.data == data:
-            self.head = self.head.next
-            return
-        current = self.head
-        while current.next:
-            if current.next.data == data:
-                current.next = current.next.next
-                return
-            current = current.next
+    def search(self, key):
+        key_hash = self.hash_function(key)
+        if self.table[key_hash] is not None:
+            for pair in self.table[key_hash]:
+                if pair[0] == key:
+                    return pair[1]
+        return None
 
-    def search(self, data):
-        current = self.head
-        while current:
-            if current.data == data:
+    def delete(self, key):
+        key_hash = self.hash_function(key)
+
+        if self.table[key_hash] is None:
+            return False
+        for i in range (0, len(self.table[key_hash])):
+            if self.table[key_hash][i][0] == key:
+                self.table[key_hash].pop(i)
                 return True
-            current = current.next
         return False
 
 # Test cases
-def test_linked_list():
-    linked_list = LinkedList()
+def test_hash_table():
+    hash_table = HashTable()
 
-    # Test adding to an empty list
-    linked_list.add(1)
-    assert linked_list.search(1)
+    # Test inserting into an empty hash table
+    hash_table.insert(1, 'one')
+    assert hash_table.search(1) == 'one'
 
-    # Test removing from the list
-    linked_list.remove(1)
-    assert not linked_list.search(1)
+    # Test deleting from the hash table
+    assert hash_table.delete(1)
+    assert hash_table.search(1) is None
 
-    # Test removing from an empty list
-    linked_list.remove(1)
-    assert not linked_list.search(1)
+    # Test deleting from an empty hash table
+    assert not hash_table.delete(1)
 
-    # Test searching in an empty list
-    assert not linked_list.search(1)
+    # Test searching in an empty hash table
+    assert hash_table.search(1) is None
 
-test_linked_list()
+if __name__ == "__main__":
+  test_hash_table()
