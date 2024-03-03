@@ -16,7 +16,7 @@ class Graph:
             while self.graph[vertex] != []:
                 adjacent_vertex = self.graph[vertex][0]
                 self.remove_edge(vertex, adjacent_vertex)
-            del self.graph[vertex]
+            self.graph[vertex]
 
     def remove_edge(self, vertex1, vertex2):
         if vertex1 in self.graph and vertex2 in self.graph:

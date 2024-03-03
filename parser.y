@@ -611,7 +611,7 @@ int main(int argc, char* argv[]){
 	fclose(fp);
     
     // Open the output file
-    output_file = "output.dot";
+    // output_file = "output.dot";
 	fout.open(output_file.c_str() , ios::out | ios::trunc);
     
 

@@ -1,11 +1,11 @@
 class Stack:
-    def __init__(self):
+    def __init__(self) -> None:
         self.stack = []
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         return len(self.stack) == 0
 
-    def push(self, data):
+    def push(self, data) -> None:
         self.stack.append(data)
 
     def pop(self):
@@ -18,11 +18,11 @@ class Stack:
             return None
         return self.stack[-1]
 
-    def size(self):
+    def size(self) -> int:
         return len(self.stack)
 
 # Test cases
-def test_stack():
+def test_stack() -> None:
     stack = Stack()
 
     # Test pushing onto the stack

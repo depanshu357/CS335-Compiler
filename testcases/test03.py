@@ -1,4 +1,4 @@
-def merge_sort(lst):
+def merge_sort(lst: list[int]) -> list[int]:
     if len(lst) <= 1:
         return lst
     mid = len(lst) // 2
@@ -6,7 +6,7 @@ def merge_sort(lst):
     right = merge_sort(lst[mid:])
     return merge(left, right)
 
-def merge(left, right):
+def merge(left: list[int], right: list[int]) -> list[int]:
     merged = []
     left_index = right_index = 0
     while left_index < len(left) and right_index < len(right):
@@ -20,7 +20,7 @@ def merge(left, right):
     merged.extend(right[right_index:])
     return merged
 
-def quick_sort(lst):
+def quick_sort(lst: list[int]) -> list[int]:
     if len(lst) <= 1:
         return lst
     pivot = lst[len(lst) // 2]
@@ -47,11 +47,23 @@ def test_sorting_algorithms():
     assert quick_sort([1]) == [1]
 
     # Test sorting a list with multiple elements
-    assert merge_sort([3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]) == [1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9]
+    #to show implicit line joining
+    assert merge_sort([3, 1, 4,
+                        1, 5, 9, 
+                        2, 6, 5, 
+                        3, 5]) == [1, 1, 2, 3, 
+                                   3, 4, 5, 5, 
+                                   5, 6, 9]
+    
     assert quick_sort([3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]) == [1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9]
 
     # Test sorting a list with negative elements
-    assert merge_sort([3, -1, 4, 1, -5, 9, 2, -6, 5, 3, 5]) == [-6, -5, -1, 1, 2, 3, 3, 4, 5, 5, 9]
+    #to show explicit line joining
+    assert merge_sort([3, -1, 4,\
+                        1, -5, 9,\
+                        2, -6, 5,\
+                        3, 5]) == [-6, -5, -1, 1, 2, 3, 3, 4, 5, 5, 9]
+    
     assert quick_sort([3, -1, 4, 1, -5, 9, 2, -6, 5, 3, 5]) == [-6, -5, -1, 1, 2, 3, 3, 4, 5, 5, 9]
 
 if __name__ == "__main__":
