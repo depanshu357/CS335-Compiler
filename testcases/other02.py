@@ -62,4 +62,5 @@ def test_graph():
     # Test searching for non-existent vertices
     assert not graph.search(1)
 
-test_graph()
+if __name__ == "__main__":
+  test_graph()

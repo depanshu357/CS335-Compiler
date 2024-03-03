@@ -32,7 +32,7 @@
 %type <elem> start file_input stmt compound_stmt async_stmt if_stmt elif_namedexpr_test_colon_suite_star while_stmt for_stmt try_stmt except_clause_colon_suite try_stmt_options except_clause test_as_name_optional funcdef parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr star_expr symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr symbol_term_star term symbol_factor_star symbol_factor factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument optional_test comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option expr_star_expr_option_list testlist_comp namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option namedexpr_test test atom number string_plus  
 
 %%
-
+    
 
 
 start : file_input {$$ = create_node(2,"START", $1); start_node=$$;}
@@ -110,7 +110,7 @@ parameters: SMALL_OPEN typedarglist SMALL_CLOSE {$$ = create_node(4,"Arguments",
 
 
 typedlist_argument: tfpdef  { $$ = $1;}
-    |  tfpdef  EQUAL test { $$ = create_node(4,"Assign_expr",$1,$2,$3);}
+    |  tfpdef EQUAL test { $$ = create_node(4,"Assign_expr",$1,$2,$3);}
     ;
     
 typedlist_arguments: typedlist_argument comma_option_argument_star {$$ = create_node(3,"Arguments",$1,$2);};
@@ -627,6 +627,10 @@ int main(int argc, char* argv[]){
     NODE* ast = convertParseTreeToAST(start_node);
 
     MakeDOTFile(ast);
+
+    /* MakeDOTFile(start_node); */
+
+
 
     fout<<"}";
     fout.close();
