@@ -1127,7 +1127,10 @@ case 4:
 YY_RULE_SETUP
 #line 110 "lexer_for_parser.l"
 { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="KEYWORD ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;
     cout<<"KEYWORD"<<" "<<yytext<<endl; ; 
     string oper = yytext;
@@ -1171,9 +1174,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 153 "lexer_for_parser.l"
+#line 156 "lexer_for_parser.l"
 {
-    yylval.elem = create_node(1, strdup(yytext));
+string lexeme_out=string(yytext);
+    lexeme_out="TYPE_HINT ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;     
     cout<<"TYPE"<<": "<<yytext<<endl; 
      return TYPE_HINT; 
@@ -1181,9 +1187,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 160 "lexer_for_parser.l"
+#line 166 "lexer_for_parser.l"
 {
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="TYPE_HINT ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     cout<<"TYPE"<<": "<<yytext<<endl; 
     return FUNC_TYPE_HINT; 
@@ -1191,9 +1200,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 167 "lexer_for_parser.l"
+#line 176 "lexer_for_parser.l"
 { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="IDENTIFIER ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     cout<<"IDENTIFIER"<<" "<<yytext<<endl; 
     return NAME; 
@@ -1201,9 +1213,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 174 "lexer_for_parser.l"
+#line 186 "lexer_for_parser.l"
 { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="INTEGER ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     cout<<"INTEGER"<<" "<<yytext<<endl;
     return INTEGER;
@@ -1211,9 +1226,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 180 "lexer_for_parser.l"
+#line 195 "lexer_for_parser.l"
 { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="FLOATNUMBER ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     cout<<"FLOAT"<<" "<<yytext<<endl;
     return FLOAT;
@@ -1222,9 +1240,14 @@ YY_RULE_SETUP
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 186 "lexer_for_parser.l"
+#line 204 "lexer_for_parser.l"
 { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out = lexeme_out.substr(1,lexeme_out.length()-2);
+    lexeme_out="\\\""+lexeme_out+"\\\"";
+    lexeme_out="STRING_LITERAL ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     cout<<"STRING"<<" "<<yytext<<endl;
     return STRING;
@@ -1232,14 +1255,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 192 "lexer_for_parser.l"
+#line 215 "lexer_for_parser.l"
 { 
     cout<<"COMMENT"<<" "<<yytext<<endl;
     }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 196 "lexer_for_parser.l"
+#line 219 "lexer_for_parser.l"
 {
             int new_indent = strlen(yytext); 
             if(new_indent%2==1){
@@ -1273,9 +1296,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 229 "lexer_for_parser.l"
+#line 252 "lexer_for_parser.l"
 { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="ARITHMETIC_OP ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     string oper = yytext;
     if(oper=="**") return POW;
@@ -1289,9 +1315,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 242 "lexer_for_parser.l"
+#line 268 "lexer_for_parser.l"
 { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="BITWISE_OP ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     string oper = yytext;
     if(oper=="<<") return SHIFT_LEFT;
@@ -1307,9 +1336,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 257 "lexer_for_parser.l"
+#line 286 "lexer_for_parser.l"
 {
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="RELATIONAL_OP ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     string oper = yytext;
     if(oper=="==") return DOUBLE_EQUAL;
@@ -1322,9 +1354,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 269 "lexer_for_parser.l"
+#line 301 "lexer_for_parser.l"
 {
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="ASSIGNMENT_OP ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;
     string oper = yytext;
     if(oper==":=") return WAL_OP;
@@ -1347,15 +1382,18 @@ YY_RULE_SETUP
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 290 "lexer_for_parser.l"
+#line 325 "lexer_for_parser.l"
 {
 }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 294 "lexer_for_parser.l"
+#line 329 "lexer_for_parser.l"
 { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="DELIMITER ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;
     cout<<"DELIMITER"<<" "<<yytext<<endl;
     string oper = yytext;
@@ -1376,7 +1414,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 314 "lexer_for_parser.l"
+#line 352 "lexer_for_parser.l"
 {
     cout<<"Error: Unexpected character "<<yytext<< " at line "<<yylineno<< endl;
     return 0;
@@ -1389,7 +1427,7 @@ YY_LINENO_REWIND_TO(yy_cp - 1);
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 320 "lexer_for_parser.l"
+#line 358 "lexer_for_parser.l"
 {
       while (indent_stack.top()!=0) {
             indent_stack.pop();
@@ -1417,7 +1455,7 @@ YY_LINENO_REWIND_TO(yy_cp - 1);
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 342 "lexer_for_parser.l"
+#line 380 "lexer_for_parser.l"
 {
     cout<<"NEWLINE"<<endl;
     return NEWLINE;
@@ -1430,15 +1468,15 @@ YY_LINENO_REWIND_TO(yy_cp - 1);
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 347 "lexer_for_parser.l"
+#line 385 "lexer_for_parser.l"
 {
-    cout<<"EMpty line";
+    cout<<"Empty line";
 }
 	YY_BREAK
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 351 "lexer_for_parser.l"
+#line 389 "lexer_for_parser.l"
 {
     cout<<"comment detected"<<endl;
 }
@@ -1446,7 +1484,7 @@ YY_RULE_SETUP
 case 24:
 /* rule 24 can match eol */
 YY_RULE_SETUP
-#line 355 "lexer_for_parser.l"
+#line 393 "lexer_for_parser.l"
 {
      while (indent_stack.top()!=0) {
             indent_stack.pop();
@@ -1470,20 +1508,20 @@ YY_RULE_SETUP
 case 25:
 /* rule 25 can match eol */
 YY_RULE_SETUP
-#line 374 "lexer_for_parser.l"
+#line 412 "lexer_for_parser.l"
 {}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 375 "lexer_for_parser.l"
+#line 413 "lexer_for_parser.l"
 { }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 376 "lexer_for_parser.l"
+#line 414 "lexer_for_parser.l"
 ECHO;
 	YY_BREAK
-#line 1487 "lex.yy.c"
+#line 1525 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(STATE):
 case YY_STATE_EOF(DEDENT_STATE):
@@ -2508,7 +2546,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 376 "lexer_for_parser.l"
+#line 414 "lexer_for_parser.l"
 
 
 // int main(){

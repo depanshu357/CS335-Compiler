@@ -108,7 +108,10 @@ ERRORCHAR "$"|"?"|"`"
 
 
 {KEYWORD} { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="KEYWORD ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;
     cout<<"KEYWORD"<<" "<<yytext<<endl; ; 
     string oper = yytext;
@@ -151,40 +154,60 @@ ERRORCHAR "$"|"?"|"`"
 }
 
 ":"[ \t]*{TYPE_HINT} {
-    yylval.elem = create_node(1, strdup(yytext));
+string lexeme_out=string(yytext);
+    lexeme_out="TYPE_HINT ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;     
     cout<<"TYPE"<<": "<<yytext<<endl; 
      return TYPE_HINT; 
      }
      
 "->"[ \t]*({TYPE_HINT}|"None") {
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="TYPE_HINT ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     cout<<"TYPE"<<": "<<yytext<<endl; 
     return FUNC_TYPE_HINT; 
     }
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{IDENTIFIER} { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="IDENTIFIER ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     cout<<"IDENTIFIER"<<" "<<yytext<<endl; 
     return NAME; 
     }
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{INTEGER} { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="INTEGER ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     cout<<"INTEGER"<<" "<<yytext<<endl;
     return INTEGER;
     }
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{FLOATNUMBER} { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="FLOATNUMBER ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     cout<<"FLOAT"<<" "<<yytext<<endl;
     return FLOAT;
     }
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{STRINGLITERAL} { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out = lexeme_out.substr(1,lexeme_out.length()-2);
+    lexeme_out="\\\""+lexeme_out+"\\\"";
+    lexeme_out="STRING_LITERAL ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     cout<<"STRING"<<" "<<yytext<<endl;
     return STRING;
@@ -227,7 +250,10 @@ ERRORCHAR "$"|"?"|"`"
 
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{ARITHMETIC_OP} { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="ARITHMETIC_OP ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     string oper = yytext;
     if(oper=="**") return POW;
@@ -240,7 +266,10 @@ ERRORCHAR "$"|"?"|"`"
 }
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{BITWISE_OP} { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="BITWISE_OP ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     string oper = yytext;
     if(oper=="<<") return SHIFT_LEFT;
@@ -255,7 +284,10 @@ ERRORCHAR "$"|"?"|"`"
 }
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{RELATIONAL_OP} {
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="RELATIONAL_OP ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     string oper = yytext;
     if(oper=="==") return DOUBLE_EQUAL;
@@ -267,7 +299,10 @@ ERRORCHAR "$"|"?"|"`"
 }
 
 {ASSIGNMENT_OP} {
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="ASSIGNMENT_OP ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;
     string oper = yytext;
     if(oper==":=") return WAL_OP;
@@ -292,7 +327,10 @@ ERRORCHAR "$"|"?"|"`"
 
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{DELIMITER} { 
-    yylval.elem = create_node(1, strdup(yytext));
+    string lexeme_out=string(yytext);
+    lexeme_out="DELIMITER ("+lexeme_out+")";
+    const char* charPtr = lexeme_out.c_str();
+    yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;
     cout<<"DELIMITER"<<" "<<yytext<<endl;
     string oper = yytext;
@@ -345,7 +383,7 @@ ERRORCHAR "$"|"?"|"`"
 }
 
 "\n"+[ \t]*/[\n] {
-    cout<<"EMpty line";
+    cout<<"Empty line";
 }
 
 "\n"+[ \t]*[\#][^\n]* {

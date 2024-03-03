@@ -516,6 +516,7 @@ void MakeDOTFile(NODE*cell)
         value = value.substr(1,value.length()-2);
         value="\\\""+value+"\\\"";
     }
+    
     if(cell->is_terminal){
         fout << "\t" << cell->id << "\t\t[ style = solid label = \"" + value + "\" color = red shape = rectangle ];" << endl;
     }
@@ -532,14 +533,84 @@ void MakeDOTFile(NODE*cell)
     }
 } 
 
-int main(){
+int main(int argc, char* argv[]){
     indent_stack.push(0);
     /* yylex(); */
+
+	string output_file = "";
+    string input_file = "input.txt";
+
+    if(argc < 2 || argc > 4) {
+		cout << "Usage: ./main <input file> <output file> <debug>" << endl;
+		cout << "Example: ./main --input=input.py --output=output.dot --verbose" << endl;
+		cout<<endl;
+		cout << "For more help, run ./main --help" << endl;
+		return 0;
+	}
+
+	yydebug = 0;
+	bool debug = false;
+	bool noInputFile = true;
+
+	for(int i=1;i<argc;i++){
+		string arg = argv[i];
+		if(arg == "--help"){
+			cout << "--input : Add this flag for specifying a input file to the parser. This is a required flag." << endl;
+			cout << "Example: ./main --input=input.py" << endl;
+			cout<<endl;
+			cout << "--output Add this flag for specifying a output file to the parser which would contain the output i.e a AST in graphical form. This flag is optional. Default value is output.dot" << endl;
+			cout << "Example: ./main --input=input.py --output=result.dot" << endl;
+			cout<<endl;
+			cout << "--verbose Add this flag for switching on the debug mode in the parser. This flag is optional." << endl;
+			cout << "Example: ./main --input=input.py --output=result.dot --verbose" << endl;
+			return 0;
+		}
+		else if(arg.substr(0,8) == "--input="){
+			input_file = arg.substr(8);
+			noInputFile = false;
+		}
+		else if(arg.substr(0,9) == "--output="){
+			output_file = arg.substr(9);
+		}
+		else if(arg == "--verbose"){
+			debug = true;
+		}
+
+		else{
+			cout << "Invalid argument: " << arg << endl;
+			return 0;
+		}
+	}
+
+	if(input_file == "" || noInputFile){
+		cout << "Please specify an input file." << endl;
+		return 0;
+	}
+	if(output_file == ""){
+		output_file = "output.dot";
+	}
+	if(debug){
+		cout << "Input file: " << input_file << endl;
+		cout << "Output file: " << output_file << endl;
+		cout << "Debug: " << debug << endl;
+		yydebug = 1;
+	}
+
+    //  Open the input file
+	FILE* fp = fopen(("./" + input_file).c_str(), "r");
+
+	if(!fp){
+		cout << "Error opening file: " << input_file << endl;
+		return 0;
+	}
+	yyin = fp;
     
     yyparse();
  
+    // Close the input file
+	fclose(fp);
+    
     // Open the output file
-    string output_file = "";
     output_file = "output.dot";
 	fout.open(output_file.c_str() , ios::out | ios::trunc);
     

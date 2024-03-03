@@ -3,7 +3,7 @@ class ShiftReduceParser:
   def __init__(self, name_: str):
     self.srname: str = name_
 
-
+#ygtuhojopk       
 class LR0Parser(ShiftReduceParser):
 
   def __init__(self, myname_: str, parentname_: str):
