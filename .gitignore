@@ -8,3 +8,7 @@
 *.tab.c
 
 lex.yy.c
+
+graph.pdf
+
+*.output
