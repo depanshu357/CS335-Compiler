@@ -1,0 +1,10 @@
+# Ignore .tab.h files
+*.tab.h
+
+# Ignore .o files
+*.o
+
+# Ignore .tab.c files
+*.tab.c
+
+lex.yy.c

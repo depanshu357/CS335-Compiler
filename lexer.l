@@ -4,9 +4,9 @@
     #include<bits/stdc++.h>
     #include <iostream>
     #include <stack>
-    #include "data.h"
-    #include "data.cpp"
-    #include "test.tab.h"
+    #include "node.h"
+    #include "node.cpp"
+    #include "parser.tab.h"
     using namespace std;
 
     int current_indent = 0;
@@ -101,7 +101,7 @@ ERRORCHAR "$"|"?"|"`"
         }
     else{
             return DEDENT;
-            cout<<"spaces already present after newline"<<endl;
+            // cout<<"spaces already present after newline"<<endl;
             unput(yytext[0]);
     }
 }
@@ -109,16 +109,16 @@ ERRORCHAR "$"|"?"|"`"
 
 {KEYWORD} { 
     string lexeme_out=string(yytext);
-    lexeme_out="KEYWORD ("+lexeme_out+")";
+    lexeme_out="KEYWORD \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;
-    cout<<"KEYWORD"<<" "<<yytext<<endl; ; 
+    // cout<<"KEYWORD"<<" "<<yytext<<endl; ; 
     string oper = yytext;
     if(oper=="is") return IS;
     else if(oper=="in") return IN;
     else if(oper=="if") return IF;
-    else if(oper=="else") {cout<<"else"<<endl;return ELSE; }
+    else if(oper=="else") {return ELSE; }
     else if(oper=="and") return AND;
     else if(oper=="or") return OR;
     else if(oper=="not") return NOT;
@@ -155,87 +155,87 @@ ERRORCHAR "$"|"?"|"`"
 
 ":"[ \t]*{TYPE_HINT} {
 string lexeme_out=string(yytext);
-    lexeme_out="TYPE_HINT ("+lexeme_out+")";
+    lexeme_out="TYPE_HINT \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;     
-    cout<<"TYPE"<<": "<<yytext<<endl; 
+    // cout<<"TYPE"<<": "<<yytext<<endl; 
      return TYPE_HINT; 
      }
      
 "->"[ \t]*({TYPE_HINT}|"None") {
     string lexeme_out=string(yytext);
-    lexeme_out="TYPE_HINT ("+lexeme_out+")";
+    lexeme_out="TYPE_HINT \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
-    cout<<"TYPE"<<": "<<yytext<<endl; 
+    // cout<<"TYPE"<<": "<<yytext<<endl; 
     return FUNC_TYPE_HINT; 
     }
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{IDENTIFIER} { 
     string lexeme_out=string(yytext);
-    lexeme_out="IDENTIFIER ("+lexeme_out+")";
+    lexeme_out="IDENTIFIER \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
-    cout<<"IDENTIFIER"<<" "<<yytext<<endl; 
+    // cout<<"IDENTIFIER"<<" "<<yytext<<endl; 
     return NAME; 
     }
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{INTEGER} { 
     string lexeme_out=string(yytext);
-    lexeme_out="INTEGER ("+lexeme_out+")";
+    lexeme_out="INTEGER \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
-    cout<<"INTEGER"<<" "<<yytext<<endl;
+    // cout<<"INTEGER"<<" "<<yytext<<endl;
     return INTEGER;
     }
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{FLOATNUMBER} { 
     string lexeme_out=string(yytext);
-    lexeme_out="FLOATNUMBER ("+lexeme_out+")";
+    lexeme_out="FLOATNUMBER \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
-    cout<<"FLOAT"<<" "<<yytext<<endl;
+    // cout<<"FLOAT"<<" "<<yytext<<endl;
     return FLOAT;
     }
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{STRINGLITERAL} { 
     string lexeme_out=string(yytext);
     lexeme_out = lexeme_out.substr(1,lexeme_out.length()-2);
     lexeme_out="\\\""+lexeme_out+"\\\"";
-    lexeme_out="STRING_LITERAL ("+lexeme_out+")";
+    lexeme_out="STRING_LITERAL \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
-    cout<<"STRING"<<" "<<yytext<<endl;
+    // cout<<"STRING"<<" "<<yytext<<endl;
     return STRING;
     }
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{COMMENT} { 
-    cout<<"COMMENT"<<" "<<yytext<<endl;
+    // cout<<"COMMENT"<<" "<<yytext<<endl;
     }
 
 {INDENTATIONS} {
             int new_indent = strlen(yytext); 
             if(new_indent%2==1){
-                cout<<"ERROR: wrong indentation"<<endl;
+                // cout<<"ERROR: wrong indentation"<<endl;
                 return 0;
             }   
             new_indent = new_indent/2;
             if (new_indent > indent_stack.top()) {
                 indent_stack.push( new_indent);
-                cout<<"INDENT"<<endl;
+                // cout<<"INDENT"<<endl;
                 return INDENT;
             }
             else if(new_indent<indent_stack.top()){ 
                 while (indent_stack.top()!=0 &&  new_indent < indent_stack.top()) {
                     indent_stack.pop();
-                    cout<<"DEDENT"<<endl;
+                    // cout<<"DEDENT"<<endl;
                     temp_count++;
                 }
                 if(indent_stack.top()!=new_indent){
-                    cout<<"ERROR: wrong indentation"<<endl;
+                    // cout<<"ERROR: wrong indentation"<<endl;
                     return 0;
                 }
                 // temp_count--;
@@ -251,7 +251,7 @@ string lexeme_out=string(yytext);
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{ARITHMETIC_OP} { 
     string lexeme_out=string(yytext);
-    lexeme_out="ARITHMETIC_OP ("+lexeme_out+")";
+    lexeme_out="ARITHMETIC_OP \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
@@ -267,7 +267,7 @@ string lexeme_out=string(yytext);
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{BITWISE_OP} { 
     string lexeme_out=string(yytext);
-    lexeme_out="BITWISE_OP ("+lexeme_out+")";
+    lexeme_out="BITWISE_OP \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
@@ -278,14 +278,14 @@ string lexeme_out=string(yytext);
     else if(oper=="|") return BITWISE_OR;
     else if(oper=="^") return BITWISE_XOR;
     else if(oper=="~") {
-        cout<<"sending ~"<<endl;
+        // cout<<"sending ~"<<endl;
         return TILDE;
     }
 }
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{RELATIONAL_OP} {
     string lexeme_out=string(yytext);
-    lexeme_out="RELATIONAL_OP ("+lexeme_out+")";
+    lexeme_out="RELATIONAL_OP \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
@@ -300,7 +300,7 @@ string lexeme_out=string(yytext);
 
 {ASSIGNMENT_OP} {
     string lexeme_out=string(yytext);
-    lexeme_out="ASSIGNMENT_OP ("+lexeme_out+")";
+    lexeme_out="ASSIGNMENT_OP \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;
@@ -328,11 +328,11 @@ string lexeme_out=string(yytext);
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{DELIMITER} { 
     string lexeme_out=string(yytext);
-    lexeme_out="DELIMITER ("+lexeme_out+")";
+    lexeme_out="DELIMITER \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;
-    cout<<"DELIMITER"<<" "<<yytext<<endl;
+    // cout<<"DELIMITER"<<" "<<yytext<<endl;
     string oper = yytext;
 
     if(oper=="@") return AT;
@@ -350,7 +350,7 @@ string lexeme_out=string(yytext);
 }
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{ERRORCHAR} {
-    cout<<"Error: Unexpected character "<<yytext<< " at line "<<yylineno<< endl;
+    // cout<<"Error: Unexpected character "<<yytext<< " at line "<<yylineno<< endl;
     return 0;
 }
     
@@ -358,17 +358,17 @@ string lexeme_out=string(yytext);
 <INITIAL>"\n"+/[^ \t\#] {
       while (indent_stack.top()!=0) {
             indent_stack.pop();
-            cout<<"DEDENT"<<endl;
+            // cout<<"DEDENT"<<endl;
             temp_count++;
         }
         if(indent_stack.top()!=0){
-            cout<<"ERROR: wrong indentation"<<endl;
+            // cout<<"ERROR: wrong indentation"<<endl;
             return 0;
         }
         // temp_count--;
         unput(yytext[0]);
         BEGIN(STATE);
-        cout<<"NEWLINE"<<endl; 
+        // cout<<"NEWLINE"<<endl; 
         return NEWLINE ;
     }
 
@@ -378,32 +378,32 @@ string lexeme_out=string(yytext);
 
 
 "\n"+/[ \t] {
-    cout<<"NEWLINE"<<endl;
+    // cout<<"NEWLINE"<<endl;
     return NEWLINE;
 }
 
 "\n"+[ \t]*/[\n] {
-    cout<<"Empty line";
+    // cout<<"Empty line";
 }
 
 "\n"+[ \t]*[\#][^\n]* {
-    cout<<"comment detected"<<endl;
+    // cout<<"comment detected"<<endl;
 }
 
 "\n"+ {
      while (indent_stack.top()!=0) {
             indent_stack.pop();
-            cout<<"DEDENT"<<endl;
+            // cout<<"DEDENT"<<endl;
             temp_count++;
         }
         if(indent_stack.top()!=0){
-            cout<<"ERROR: wrong indentation"<<endl;
+            // cout<<"ERROR: wrong indentation"<<endl;
             return 0;
         }
         // temp_count--;
         unput(yytext[0]);
         BEGIN(STATE);
-        cout<<"Last NEWLINE"<<endl; 
+        // cout<<"Last NEWLINE"<<endl; 
         return NEWLINE ;
         // this will only when the last is newline not followed by spaces and tabs
 
