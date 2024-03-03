@@ -202,10 +202,42 @@ string lexeme_out=string(yytext);
     return FLOAT;
     }
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{STRINGLITERAL} { 
-    string lexeme_out=string(yytext);
-    lexeme_out = lexeme_out.substr(1,lexeme_out.length()-2);
-    lexeme_out="\\\""+lexeme_out+"\\\"";
-    lexeme_out="STRING_LITERAL \n("+lexeme_out+")";
+   string lexeme_out=string(yytext);
+   // copy the whole string and write \ before every " and '
+    string processed_string = "";
+
+   for (char c : lexeme_out) {
+       if (c == '\"' || c == '\'') {
+           processed_string += '\\';
+       }
+       processed_string += c;
+   }
+    // if (lexeme_out[0] == '\"' && lexeme_out[1] == '\"' && lexeme_out[2] == '\"' && lexeme_out[lexeme_out.length()-3] == '\"' && lexeme_out[lexeme_out.length()-2] == '\"' && lexeme_out[lexeme_out.length()-1] == '\"') {
+    //     // This is a long string
+    //     lexeme_out = lexeme_out.substr(3,lexeme_out.length()-6);
+    //     lexeme_out="\\\"\\\"\\\""+lexeme_out+"\\\"\\\"\\\"";
+    // }
+    // else if(lexeme_out[0] =='\'' && lexeme_out[1] == '\'' && lexeme_out[2] == '\'' && lexeme_out[lexeme_out.length()-3] == '\'' && lexeme_out[lexeme_out.length()-2] == '\'' && lexeme_out[lexeme_out.length()-1] == '\''){
+    //     // This is a long string
+    //     lexeme_out = lexeme_out.substr(3,lexeme_out.length()-6);
+    //     lexeme_out="\\'\\'\\'"+lexeme_out+"\\'\\'\\'";
+    // } 
+    // else if(lexeme_out[0] == '\"' && lexeme_out[lexeme_out.length()-1] == '\"'){
+    //     // This is a small string
+    //     lexeme_out = lexeme_out.substr(1,lexeme_out.length()-2);
+    //     lexeme_out="\\\""+lexeme_out+"\\\"";
+    // }
+    // else if(lexeme_out[0] == '\'' && lexeme_out[lexeme_out.length()-1] == '\''){
+    //     // This is a small string
+    //     lexeme_out = lexeme_out.substr(1,lexeme_out.length()-2);
+    //     lexeme_out="\\\'"+lexeme_out+"\\\'";
+    // }
+    lexeme_out="STRING_LITERAL \n("+processed_string+")";
+    // string lexeme_out=string(yytext);
+    // lexeme_out = lexeme_out.substr(1,lexeme_out.length()-2);
+    // lexeme_out="\\\""+lexeme_out+"\\\"";
+    // lexeme_out="STRING_LITERAL \n("+lexeme_out+")";
+    
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    

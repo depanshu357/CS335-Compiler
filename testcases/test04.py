@@ -1,12 +1,12 @@
 class HashTable:
-    def __init__(self):
+    def __init__(self) -> None:
         self.size = 10
         self.table = [[] for _ in range(self.size)]
 
-    def hash_function(self, key):
+    def hash_function(self, key: int) -> int:
         return key % self.size
 
-    def insert(self, key, value):
+    def insert(self, key: int, value) -> bool:
         key_hash = self.hash_function(key)
         key_value = [key, value]
 
@@ -21,7 +21,7 @@ class HashTable:
             self.table[key_hash].append(key_value)
             return True
 
-    def search(self, key):
+    def search(self, key: int):
         key_hash = self.hash_function(key)
         if self.table[key_hash] is not None:
             for pair in self.table[key_hash]:
@@ -29,7 +29,7 @@ class HashTable:
                     return pair[1]
         return None
 
-    def delete(self, key):
+    def delete(self, key: int) -> bool:
         key_hash = self.hash_function(key)
 
         if self.table[key_hash] is None:
@@ -41,7 +41,7 @@ class HashTable:
         return False
 
 # Test cases
-def test_hash_table():
+def test_hash_table() -> None:
     hash_table = HashTable()
 
     # Test inserting into an empty hash table

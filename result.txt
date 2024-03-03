@@ -1,4 +1,0 @@
-Usage: ./main <input file> <output file> <debug>
-Example: ./main --input=input.java --output=output.dot --verbose
-
-For more help, run ./main --help

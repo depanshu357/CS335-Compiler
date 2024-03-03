@@ -1,20 +1,20 @@
 class Node:
-    def __init__(self, data = None):
+    def __init__(self, data: any = None) -> None:
         self.data = data
         self.next = None
         self.prev = None
 
 class Queue:
-    def __init__(self):
-        self.head = None
-        self.tail = None
-        self.count = 0
+    def __init__(self) -> None:
+        self.head: Node = None
+        self.tail: Node = None
+        self.count: int = 0
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         return self.count == 0
 
-    def enqueue(self, data):
-        new_node = Node(data)
+    def enqueue(self, data: any) -> None:
+        new_node: Node = Node(data)
         if self.tail:
             new_node.prev = self.tail
             self.tail.next = new_node
@@ -27,7 +27,7 @@ class Queue:
     def dequeue(self):
         if not self.head:
             return None
-        ret = self.head.data
+        ret: any = self.head.data
         self.head = self.head.next
         if self.head:
             self.head.prev = None
@@ -36,12 +36,12 @@ class Queue:
         self.count -= 1
         return ret
 
-    def size(self):
+    def size(self) -> int:
         return self.count
 
 # Test cases
-def test_queue():
-    queue = Queue()
+def test_queue() -> None:
+    queue: Queue = Queue()
 
     # Test enqueueing to an empty queue
     queue.enqueue(1)
@@ -58,4 +58,4 @@ def test_queue():
     assert queue.size() == 0
 
 if __name__ == "__main__":
-  test_queue()
+    test_queue()
