@@ -1,0 +1,611 @@
+digraph G{
+
+label     = "AST"
+fontname  = "Cascadia code"
+fontsize  = 30
+labelloc  = t
+
+node   [ fontname="Cascadia code" ]
+	742		[ style = solid label = "START"  ];
+	742 -> 741
+	741		[ style = solid label = "File Input"  ];
+	741 -> 26
+	26		[ style = solid label = "Expr_stmt"  ];
+	26 -> 2
+	2		[ style = solid label = "Identifier"  ];
+	2 -> 0
+	0		[ style = solid label = "IDENTIFIER 
+(i)" color = red shape = rectangle ];
+	2 -> 1
+	1		[ style = solid label = "TYPE_HINT 
+(: int)" color = red shape = rectangle ];
+	26 -> 25
+	25		[ style = solid label = "Expr_stmt"  ];
+	25 -> 3
+	3		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	25 -> 14
+	14		[ style = solid label = "INTEGER 
+(0)" color = red shape = rectangle ];
+	741 -> 740
+	740		[ style = solid label = "File Input"  ];
+	740 -> 431
+	431		[ style = solid label = "For_stmt"  ];
+	431 -> 28
+	28		[ style = solid label = "KEYWORD 
+(for)" color = red shape = rectangle ];
+	431 -> 29
+	29		[ style = solid label = "IDENTIFIER 
+(i)" color = red shape = rectangle ];
+	431 -> 30
+	30		[ style = solid label = "KEYWORD 
+(in)" color = red shape = rectangle ];
+	431 -> 68
+	68		[ style = solid label = "Terms"  ];
+	68 -> 38
+	38		[ style = solid label = "IDENTIFIER 
+(range)" color = red shape = rectangle ];
+	68 -> 65
+	65		[ style = solid label = "Arguments"  ];
+	65 -> 39
+	39		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	65 -> 56
+	56		[ style = solid label = "Terms"  ];
+	56 -> 40
+	40		[ style = solid label = "IDENTIFIER 
+(len)" color = red shape = rectangle ];
+	56 -> 53
+	53		[ style = solid label = "Arguments"  ];
+	53 -> 41
+	41		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	53 -> 42
+	42		[ style = solid label = "IDENTIFIER 
+(array)" color = red shape = rectangle ];
+	53 -> 43
+	43		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	65 -> 54
+	54		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	431 -> 66
+	66		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	431 -> 429
+	429		[ style = solid label = "Stmts"  ];
+	429 -> 104
+	104		[ style = solid label = "Expr_stmt"  ];
+	104 -> 80
+	80		[ style = solid label = "Identifier"  ];
+	80 -> 78
+	78		[ style = solid label = "IDENTIFIER 
+(swapped)" color = red shape = rectangle ];
+	80 -> 79
+	79		[ style = solid label = "TYPE_HINT 
+(: bool)" color = red shape = rectangle ];
+	104 -> 103
+	103		[ style = solid label = "Expr_stmt"  ];
+	103 -> 81
+	81		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	103 -> 92
+	92		[ style = solid label = "KEYWORD 
+(False)" color = red shape = rectangle ];
+	429 -> 428
+	428		[ style = solid label = "For_stmt"  ];
+	428 -> 106
+	106		[ style = solid label = "KEYWORD 
+(for)" color = red shape = rectangle ];
+	428 -> 107
+	107		[ style = solid label = "IDENTIFIER 
+(j)" color = red shape = rectangle ];
+	428 -> 108
+	108		[ style = solid label = "KEYWORD 
+(in)" color = red shape = rectangle ];
+	428 -> 168
+	168		[ style = solid label = "Terms"  ];
+	168 -> 116
+	116		[ style = solid label = "IDENTIFIER 
+(range)" color = red shape = rectangle ];
+	168 -> 165
+	165		[ style = solid label = "Arguments"  ];
+	165 -> 117
+	117		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	165 -> 164
+	164		[ style = solid label = "Arguments"  ];
+	164 -> 118
+	118		[ style = solid label = "INTEGER 
+(0)" color = red shape = rectangle ];
+	164 -> 119
+	119		[ style = solid label = "DELIMITER 
+(,)" color = red shape = rectangle ];
+	164 -> 157
+	157		[ style = solid label = "Expressions"  ];
+	157 -> 145
+	145		[ style = solid label = "Terms"  ];
+	145 -> 129
+	129		[ style = solid label = "IDENTIFIER 
+(len)" color = red shape = rectangle ];
+	145 -> 142
+	142		[ style = solid label = "Arguments"  ];
+	142 -> 130
+	130		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	142 -> 131
+	131		[ style = solid label = "IDENTIFIER 
+(array)" color = red shape = rectangle ];
+	142 -> 132
+	132		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	157 -> 156
+	156		[ style = solid label = "Operator_expr"  ];
+	156 -> 143
+	143		[ style = solid label = "ARITHMETIC_OP 
+(-)" color = red shape = rectangle ];
+	156 -> 147
+	147		[ style = solid label = "IDENTIFIER 
+(i)" color = red shape = rectangle ];
+	156 -> 155
+	155		[ style = solid label = "Operator_expr"  ];
+	155 -> 148
+	148		[ style = solid label = "ARITHMETIC_OP 
+(-)" color = red shape = rectangle ];
+	155 -> 151
+	151		[ style = solid label = "INTEGER 
+(1)" color = red shape = rectangle ];
+	165 -> 152
+	152		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	428 -> 166
+	166		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	428 -> 427
+	427		[ style = solid label = "If_stmt"  ];
+	427 -> 178
+	178		[ style = solid label = "KEYWORD 
+(if)" color = red shape = rectangle ];
+	427 -> 231
+	231		[ style = solid label = "Expressions"  ];
+	231 -> 195
+	195		[ style = solid label = "Terms"  ];
+	195 -> 179
+	179		[ style = solid label = "IDENTIFIER 
+(array)" color = red shape = rectangle ];
+	195 -> 192
+	192		[ style = solid label = "Square_bracket"  ];
+	192 -> 180
+	180		[ style = solid label = "DELIMITER 
+([)" color = red shape = rectangle ];
+	192 -> 181
+	181		[ style = solid label = "IDENTIFIER 
+(j)" color = red shape = rectangle ];
+	192 -> 182
+	182		[ style = solid label = "DELIMITER 
+(])" color = red shape = rectangle ];
+	231 -> 230
+	230		[ style = solid label = "Expressions"  ];
+	230 -> 193
+	193		[ style = solid label = "RELATIONAL_OP 
+(>)" color = red shape = rectangle ];
+	230 -> 223
+	223		[ style = solid label = "Terms"  ];
+	223 -> 202
+	202		[ style = solid label = "IDENTIFIER 
+(array)" color = red shape = rectangle ];
+	223 -> 220
+	220		[ style = solid label = "Square_bracket"  ];
+	220 -> 203
+	203		[ style = solid label = "DELIMITER 
+([)" color = red shape = rectangle ];
+	220 -> 213
+	213		[ style = solid label = "Expressions"  ];
+	213 -> 204
+	204		[ style = solid label = "IDENTIFIER 
+(j)" color = red shape = rectangle ];
+	213 -> 212
+	212		[ style = solid label = "Operator_expr"  ];
+	212 -> 205
+	205		[ style = solid label = "ARITHMETIC_OP 
+(+)" color = red shape = rectangle ];
+	212 -> 208
+	208		[ style = solid label = "INTEGER 
+(1)" color = red shape = rectangle ];
+	220 -> 209
+	209		[ style = solid label = "DELIMITER 
+(])" color = red shape = rectangle ];
+	427 -> 221
+	221		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	427 -> 426
+	426		[ style = solid label = "Stmts"  ];
+	426 -> 274
+	274		[ style = solid label = "Expr_stmt"  ];
+	274 -> 236
+	236		[ style = solid label = "Identifier"  ];
+	236 -> 234
+	234		[ style = solid label = "IDENTIFIER 
+(temp)" color = red shape = rectangle ];
+	236 -> 235
+	235		[ style = solid label = "TYPE_HINT 
+(: int)" color = red shape = rectangle ];
+	274 -> 273
+	273		[ style = solid label = "Expr_stmt"  ];
+	273 -> 237
+	237		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	273 -> 263
+	263		[ style = solid label = "Terms"  ];
+	263 -> 248
+	248		[ style = solid label = "IDENTIFIER 
+(array)" color = red shape = rectangle ];
+	263 -> 261
+	261		[ style = solid label = "Square_bracket"  ];
+	261 -> 249
+	249		[ style = solid label = "DELIMITER 
+([)" color = red shape = rectangle ];
+	261 -> 250
+	250		[ style = solid label = "IDENTIFIER 
+(j)" color = red shape = rectangle ];
+	261 -> 251
+	251		[ style = solid label = "DELIMITER 
+(])" color = red shape = rectangle ];
+	426 -> 425
+	425		[ style = solid label = "Stmts"  ];
+	425 -> 333
+	333		[ style = solid label = "Expr_stmt"  ];
+	333 -> 292
+	292		[ style = solid label = "Terms"  ];
+	292 -> 276
+	276		[ style = solid label = "IDENTIFIER 
+(array)" color = red shape = rectangle ];
+	292 -> 289
+	289		[ style = solid label = "Square_bracket"  ];
+	289 -> 277
+	277		[ style = solid label = "DELIMITER 
+([)" color = red shape = rectangle ];
+	289 -> 278
+	278		[ style = solid label = "IDENTIFIER 
+(j)" color = red shape = rectangle ];
+	289 -> 279
+	279		[ style = solid label = "DELIMITER 
+(])" color = red shape = rectangle ];
+	333 -> 332
+	332		[ style = solid label = "Expr_stmt"  ];
+	332 -> 290
+	290		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	332 -> 322
+	322		[ style = solid label = "Terms"  ];
+	322 -> 302
+	302		[ style = solid label = "IDENTIFIER 
+(array)" color = red shape = rectangle ];
+	322 -> 320
+	320		[ style = solid label = "Square_bracket"  ];
+	320 -> 303
+	303		[ style = solid label = "DELIMITER 
+([)" color = red shape = rectangle ];
+	320 -> 313
+	313		[ style = solid label = "Expressions"  ];
+	313 -> 304
+	304		[ style = solid label = "IDENTIFIER 
+(j)" color = red shape = rectangle ];
+	313 -> 312
+	312		[ style = solid label = "Operator_expr"  ];
+	312 -> 305
+	305		[ style = solid label = "ARITHMETIC_OP 
+(+)" color = red shape = rectangle ];
+	312 -> 308
+	308		[ style = solid label = "INTEGER 
+(1)" color = red shape = rectangle ];
+	320 -> 309
+	309		[ style = solid label = "DELIMITER 
+(])" color = red shape = rectangle ];
+	425 -> 424
+	424		[ style = solid label = "Stmts"  ];
+	424 -> 378
+	378		[ style = solid label = "Expr_stmt"  ];
+	378 -> 356
+	356		[ style = solid label = "Terms"  ];
+	356 -> 335
+	335		[ style = solid label = "IDENTIFIER 
+(array)" color = red shape = rectangle ];
+	356 -> 353
+	353		[ style = solid label = "Square_bracket"  ];
+	353 -> 336
+	336		[ style = solid label = "DELIMITER 
+([)" color = red shape = rectangle ];
+	353 -> 346
+	346		[ style = solid label = "Expressions"  ];
+	346 -> 337
+	337		[ style = solid label = "IDENTIFIER 
+(j)" color = red shape = rectangle ];
+	346 -> 345
+	345		[ style = solid label = "Operator_expr"  ];
+	345 -> 338
+	338		[ style = solid label = "ARITHMETIC_OP 
+(+)" color = red shape = rectangle ];
+	345 -> 341
+	341		[ style = solid label = "INTEGER 
+(1)" color = red shape = rectangle ];
+	353 -> 342
+	342		[ style = solid label = "DELIMITER 
+(])" color = red shape = rectangle ];
+	378 -> 377
+	377		[ style = solid label = "Expr_stmt"  ];
+	377 -> 354
+	354		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	377 -> 366
+	366		[ style = solid label = "IDENTIFIER 
+(temp)" color = red shape = rectangle ];
+	424 -> 423
+	423		[ style = solid label = "Stmts"  ];
+	423 -> 404
+	404		[ style = solid label = "Expr_stmt"  ];
+	404 -> 380
+	380		[ style = solid label = "IDENTIFIER 
+(swapped)" color = red shape = rectangle ];
+	404 -> 403
+	403		[ style = solid label = "Expr_stmt"  ];
+	403 -> 381
+	381		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	403 -> 392
+	392		[ style = solid label = "KEYWORD 
+(True)" color = red shape = rectangle ];
+	423 -> 422
+	422		[ style = solid label = "If_stmt"  ];
+	422 -> 406
+	406		[ style = solid label = "KEYWORD 
+(if)" color = red shape = rectangle ];
+	422 -> 417
+	417		[ style = solid label = "Not_term"  ];
+	417 -> 407
+	407		[ style = solid label = "KEYWORD 
+(not)" color = red shape = rectangle ];
+	417 -> 408
+	408		[ style = solid label = "IDENTIFIER 
+(swapped)" color = red shape = rectangle ];
+	422 -> 409
+	409		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	422 -> 420
+	420		[ style = solid label = "KEYWORD 
+(break)" color = red shape = rectangle ];
+	740 -> 739
+	739		[ style = solid label = "File Input"  ];
+	739 -> 521
+	521		[ style = solid label = "Expr_stmt"  ];
+	521 -> 433
+	433		[ style = solid label = "Identifier"  ];
+	433 -> 430
+	430		[ style = solid label = "IDENTIFIER 
+(data)" color = red shape = rectangle ];
+	433 -> 432
+	432		[ style = solid label = "TYPE_HINT 
+(: list[int])" color = red shape = rectangle ];
+	521 -> 520
+	520		[ style = solid label = "Expr_stmt"  ];
+	520 -> 434
+	434		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	520 -> 509
+	509		[ style = solid label = "Square_bracket"  ];
+	509 -> 445
+	445		[ style = solid label = "DELIMITER 
+([)" color = red shape = rectangle ];
+	509 -> 508
+	508		[ style = solid label = "Expressions"  ];
+	508 -> 450
+	450		[ style = solid label = "Sub_term"  ];
+	450 -> 446
+	446		[ style = solid label = "ARITHMETIC_OP 
+(-)" color = red shape = rectangle ];
+	450 -> 447
+	447		[ style = solid label = "INTEGER 
+(2)" color = red shape = rectangle ];
+	508 -> 448
+	448		[ style = solid label = "DELIMITER 
+(,)" color = red shape = rectangle ];
+	508 -> 507
+	507		[ style = solid label = "Expressions"  ];
+	507 -> 459
+	459		[ style = solid label = "INTEGER 
+(45)" color = red shape = rectangle ];
+	507 -> 460
+	460		[ style = solid label = "DELIMITER 
+(,)" color = red shape = rectangle ];
+	507 -> 506
+	506		[ style = solid label = "Expressions"  ];
+	506 -> 470
+	470		[ style = solid label = "INTEGER 
+(0)" color = red shape = rectangle ];
+	506 -> 471
+	471		[ style = solid label = "DELIMITER 
+(,)" color = red shape = rectangle ];
+	506 -> 505
+	505		[ style = solid label = "Expressions"  ];
+	505 -> 481
+	481		[ style = solid label = "INTEGER 
+(11)" color = red shape = rectangle ];
+	505 -> 482
+	482		[ style = solid label = "DELIMITER 
+(,)" color = red shape = rectangle ];
+	505 -> 496
+	496		[ style = solid label = "Sub_term"  ];
+	496 -> 492
+	492		[ style = solid label = "ARITHMETIC_OP 
+(-)" color = red shape = rectangle ];
+	496 -> 493
+	493		[ style = solid label = "INTEGER 
+(9)" color = red shape = rectangle ];
+	509 -> 494
+	494		[ style = solid label = "DELIMITER 
+(])" color = red shape = rectangle ];
+	739 -> 738
+	738		[ style = solid label = "File Input"  ];
+	738 -> 538
+	538		[ style = solid label = "Terms"  ];
+	538 -> 523
+	523		[ style = solid label = "IDENTIFIER 
+(bubbleSort)" color = red shape = rectangle ];
+	538 -> 536
+	536		[ style = solid label = "Arguments"  ];
+	536 -> 524
+	524		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	536 -> 525
+	525		[ style = solid label = "IDENTIFIER 
+(data)" color = red shape = rectangle ];
+	536 -> 526
+	526		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	738 -> 737
+	737		[ style = solid label = "File Input"  ];
+	737 -> 564
+	564		[ style = solid label = "Terms"  ];
+	564 -> 549
+	549		[ style = solid label = "IDENTIFIER 
+(print)" color = red shape = rectangle ];
+	564 -> 562
+	562		[ style = solid label = "Arguments"  ];
+	562 -> 550
+	550		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	562 -> 551
+	551		[ style = solid label = "STRING_LITERAL 
+(\'Sorted Array in Ascending Order:\')" color = red shape = rectangle ];
+	562 -> 552
+	552		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	737 -> 736
+	736		[ style = solid label = "File Input"  ];
+	736 -> 601
+	601		[ style = solid label = "Expr_stmt"  ];
+	601 -> 577
+	577		[ style = solid label = "Identifier"  ];
+	577 -> 575
+	575		[ style = solid label = "IDENTIFIER 
+(i)" color = red shape = rectangle ];
+	577 -> 576
+	576		[ style = solid label = "TYPE_HINT 
+(: int)" color = red shape = rectangle ];
+	601 -> 600
+	600		[ style = solid label = "Expr_stmt"  ];
+	600 -> 578
+	578		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	600 -> 589
+	589		[ style = solid label = "INTEGER 
+(0)" color = red shape = rectangle ];
+	736 -> 735
+	735		[ style = solid label = "File Input"  ];
+	735 -> 694
+	694		[ style = solid label = "For_stmt"  ];
+	694 -> 603
+	603		[ style = solid label = "KEYWORD 
+(for)" color = red shape = rectangle ];
+	694 -> 604
+	604		[ style = solid label = "IDENTIFIER 
+(i)" color = red shape = rectangle ];
+	694 -> 605
+	605		[ style = solid label = "KEYWORD 
+(in)" color = red shape = rectangle ];
+	694 -> 643
+	643		[ style = solid label = "Terms"  ];
+	643 -> 613
+	613		[ style = solid label = "IDENTIFIER 
+(range)" color = red shape = rectangle ];
+	643 -> 640
+	640		[ style = solid label = "Arguments"  ];
+	640 -> 614
+	614		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	640 -> 631
+	631		[ style = solid label = "Terms"  ];
+	631 -> 615
+	615		[ style = solid label = "IDENTIFIER 
+(len)" color = red shape = rectangle ];
+	631 -> 628
+	628		[ style = solid label = "Arguments"  ];
+	628 -> 616
+	616		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	628 -> 617
+	617		[ style = solid label = "IDENTIFIER 
+(data)" color = red shape = rectangle ];
+	628 -> 618
+	618		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	640 -> 629
+	629		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	694 -> 641
+	641		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	694 -> 682
+	682		[ style = solid label = "Terms"  ];
+	682 -> 653
+	653		[ style = solid label = "IDENTIFIER 
+(print)" color = red shape = rectangle ];
+	682 -> 680
+	680		[ style = solid label = "Arguments"  ];
+	680 -> 654
+	654		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	680 -> 671
+	671		[ style = solid label = "Terms"  ];
+	671 -> 655
+	655		[ style = solid label = "IDENTIFIER 
+(data)" color = red shape = rectangle ];
+	671 -> 668
+	668		[ style = solid label = "Square_bracket"  ];
+	668 -> 656
+	656		[ style = solid label = "DELIMITER 
+([)" color = red shape = rectangle ];
+	668 -> 657
+	657		[ style = solid label = "IDENTIFIER 
+(i)" color = red shape = rectangle ];
+	668 -> 658
+	658		[ style = solid label = "DELIMITER 
+(])" color = red shape = rectangle ];
+	680 -> 669
+	669		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	735 -> 733
+	733		[ style = solid label = "If_stmt"  ];
+	733 -> 693
+	693		[ style = solid label = "KEYWORD 
+(if)" color = red shape = rectangle ];
+	733 -> 714
+	714		[ style = solid label = "Expressions"  ];
+	714 -> 695
+	695		[ style = solid label = "IDENTIFIER 
+(__name__)" color = red shape = rectangle ];
+	714 -> 713
+	713		[ style = solid label = "Expressions"  ];
+	713 -> 696
+	696		[ style = solid label = "RELATIONAL_OP 
+(==)" color = red shape = rectangle ];
+	713 -> 704
+	704		[ style = solid label = "STRING_LITERAL 
+(\"__main__\")" color = red shape = rectangle ];
+	733 -> 705
+	705		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	733 -> 722
+	722		[ style = solid label = "Terms"  ];
+	722 -> 717
+	717		[ style = solid label = "IDENTIFIER 
+(main)" color = red shape = rectangle ];
+	722 -> 720
+	720		[ style = solid label = "Parantheses"  ];
+	720 -> 718
+	718		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	720 -> 719
+	719		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+}
