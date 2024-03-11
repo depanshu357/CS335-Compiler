@@ -1,6 +1,7 @@
 %{
     #include <bits/stdc++.h>
     #include "node.h"
+    #include "symbol_table.cpp"
     using namespace std;
     int yylex();    
     int yyerror(const char *s);
@@ -9,8 +10,10 @@
     NODE *start_node;
 	fstream fout;
 	extern FILE *yyin;
-
     
+    //symbol table
+    sym_table * global_sym_table = new sym_table();    
+    stack<sym_table*> curr_sym_tbl;
 
 %}
 
@@ -444,8 +447,14 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$
     | BOX_OPEN testlist_comp BOX_CLOSE {$$=create_node(4,"Square_bracket",$1,$2,$3);}
     | BOX_OPEN BOX_CLOSE {$$=create_node(3,"Square_bracket",$1,$2);}
     | CURLY_OPEN CURLY_CLOSE {$$=create_node(3,"Curly_bracket",$1,$2);}
-    | NAME {$$=$1;}
-    | NAME TYPE_HINT {$$=create_node(3,"Identifier", $1, $2);}
+    | NAME {$$=$1; 
+        if(!search_sym_table(curr_sym_tbl.top(),$1->val,0)){
+            cout<<"Sym_tbl_error: Variable "<<$1->val<<" not declared at line "<<yylineno<<endl;
+            
+            // return 0;
+        }
+    }
+    | NAME TYPE_HINT {$$=create_node(3,"Identifier", $1, $2); create_entry(curr_sym_tbl.top(),  $1->val,$2->val,yylineno,0,4,0,NULL );}
     | number {$$=$1;}
     | string_plus {$$=$1;}
     | TRUE {$$=$1;}
@@ -505,8 +514,7 @@ NODE* convertParseTreeToAST(NODE* parseTree) {
 }
 
 
-void MakeDOTFile(NODE*cell)
-{
+void MakeDOTFile(NODE*cell) {
     if(!cell)
         return;
     
@@ -536,7 +544,7 @@ void MakeDOTFile(NODE*cell)
 int main(int argc, char* argv[]){
     indent_stack.push(0);
     /* yylex(); */
-
+    curr_sym_tbl.push(global_sym_table);
 	string output_file = "";
     string input_file = "input.txt";
 
@@ -629,7 +637,7 @@ int main(int argc, char* argv[]){
     MakeDOTFile(ast);
 
     /* MakeDOTFile(start_node); */
-
+    print_sym_table(global_sym_table);
 
 
     fout<<"}";
