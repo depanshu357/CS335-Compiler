@@ -454,7 +454,10 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$
             // return 0;
         }
     }
-    | NAME TYPE_HINT {$$=create_node(3,"Identifier", $1, $2); create_entry(curr_sym_tbl.top(),  $1->val,$2->val,yylineno,0,4,0,NULL );}
+    | NAME TYPE_HINT {$$=create_node(3,"Identifier", $1, $2); 
+    delete_sym_table(curr_sym_tbl.top(),$1->val);
+    create_entry(curr_sym_tbl.top(),  $1->val,$2->val,yylineno,0,0,NULL );
+    }
     | number {$$=$1;}
     | string_plus {$$=$1;}
     | TRUE {$$=$1;}
