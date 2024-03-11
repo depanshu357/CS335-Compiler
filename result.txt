@@ -52,15 +52,6 @@ Sym_tbl_error: Variable IDENTIFIER
 (main) not declared at line 25
 entry_no: 0-----------------------------
 name: IDENTIFIER 
-(i)
-type: TYPE_HINT 
-(: int)
-line_no: 1
-is_func: 0
-size: 4
-offset: 0
-entry_no: 1-----------------------------
-name: IDENTIFIER 
 (swapped)
 type: TYPE_HINT 
 (: bool)
@@ -68,7 +59,7 @@ line_no: 3
 is_func: 0
 size: 4
 offset: 0
-entry_no: 2-----------------------------
+entry_no: 1-----------------------------
 name: IDENTIFIER 
 (temp)
 type: TYPE_HINT 
@@ -77,7 +68,7 @@ line_no: 6
 is_func: 0
 size: 4
 offset: 0
-entry_no: 3-----------------------------
+entry_no: 2-----------------------------
 name: IDENTIFIER 
 (data)
 type: TYPE_HINT 
@@ -86,7 +77,7 @@ line_no: 15
 is_func: 0
 size: 4
 offset: 0
-entry_no: 4-----------------------------
+entry_no: 3-----------------------------
 name: IDENTIFIER 
 (i)
 type: TYPE_HINT 

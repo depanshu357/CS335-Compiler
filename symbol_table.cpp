@@ -16,14 +16,39 @@ typedef struct sym_table {
     vector<st_node> sym_tbl_entry; //this will contain entries of sym_table
 } sym_table;
 
+int  get_type_size(string s){
+    
+    if(s=="int"){
+        return 4;
+    }
+    else if(s=="float"){
+        return 4;
+    }
+    else if(s=="char"){
+        return 1;
+    }
+    else if(s=="double"){
+        return 8;
+    }
+    else if(s=="void"){
+        return 0;
+    }
+    else if(s=="bool"){
+        return 4;
+    }
+    else{
+        return 4; //string size is also returned 4
+    }
+    
+}
 
-void create_entry(sym_table * curr_sym_tbl,string name, string type, int line_no, int is_func, int size, int offset, sym_table * sub_symbol_table=NULL){
+void create_entry(sym_table * curr_sym_tbl,string name, string type, int line_no, int is_func, int offset, sym_table * sub_symbol_table=NULL){
     st_node new_entry;
     new_entry.name = name;
     new_entry.type = type;
     new_entry.line_no = line_no;
     new_entry.is_func = is_func;
-    new_entry.size = size;
+    new_entry.size = get_type_size(type);
     new_entry.offset = offset;
     new_entry.sub_symbol_table = sub_symbol_table;
     if(sub_symbol_table!=NULL)
@@ -58,6 +83,17 @@ void print_sym_table(sym_table * symbol_table){
     
     }
 }
+
+void delete_sym_table(sym_table * symbol_table, string name){
+   for(int i=0;i<symbol_table->sym_tbl_entry.size();i++){
+       if(symbol_table->sym_tbl_entry[i].name == name){
+           symbol_table->sym_tbl_entry.erase(symbol_table->sym_tbl_entry.begin()+i);
+           return;
+       }
+   }
+}
+
+
 
 // int main(){
     

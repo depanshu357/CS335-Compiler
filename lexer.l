@@ -18,7 +18,7 @@
 
 
 KEYWORD "False"|"await"|"else"|"import"|"pass"|"None"|"break"|"except"|"in"|"raise"|"True"|"class"|"finally"|"is"|"return"|"continue"|"for"|"lambda"|"try"|"as"|"def"|"from"|"nonlocal"|"while"|"assert"|"del"|"global"|"with"|"async"|"elif"|"if"|"yield"|{LOGICAL_OP}
-PRIMITIVE_TYPES "int"|"str"|"float"|"bool" 
+PRIMITIVE_TYPES "int"|"str"|"float"|"bool"|"void"|"char"|"double" 
 TYPE_HINT {PRIMITIVE_TYPES}|("list["{PRIMITIVE_TYPES}"]")
 
 INTEGER {DECINTEGER}|{BININTEGER}|{OCTINTEGER}|{HEXINTEGER}
