@@ -59,18 +59,18 @@ void print_sym_table(sym_table * symbol_table){
     }
 }
 
-// int main(){
+int main(){
     
-//     sym_table * global_sym_table = new sym_table;
-//     global_sym_table->prev_sym_table = NULL;
-//     global_sym_table->sym_tbl_entry.clear();
-//     create_entry(global_sym_table,"main","int",1,1,0,0);
-//     cout<<search_sym_table(global_sym_table,"main",1)<<endl; //returns 1
-//     cout<<search_sym_table(global_sym_table,"mains",1)<<endl; //returns 0
-//     sym_table * local_sym_table = new sym_table;
+    sym_table * global_sym_table = new sym_table;
+    global_sym_table->prev_sym_table = NULL;
+    global_sym_table->sym_tbl_entry.clear();
+    create_entry(global_sym_table,"main","int",1,1,0,0);
+    cout<<search_sym_table(global_sym_table,"main",1)<<endl; //returns 1
+    cout<<search_sym_table(global_sym_table,"mains",1)<<endl; //returns 0
+    sym_table * local_sym_table = new sym_table;
 
-//     create_entry(global_sym_table,"a","int",2,0,4,0, local_sym_table);
-//     create_entry(local_sym_table,"b","int",3,0,4,4);
-//     cout<<search_sym_table(local_sym_table,"a",0)<<endl; //returns 1
-//     return 0;
-// }
+    create_entry(global_sym_table,"a","int",2,0,4,0, local_sym_table);
+    create_entry(local_sym_table,"b","int",3,0,4,4);
+    cout<<search_sym_table(local_sym_table,"a",0)<<endl; //returns 1
+    return 0;
+}

@@ -311,7 +311,13 @@ trailer: SMALL_OPEN arglist SMALL_CLOSE  {$$ = create_node(4,"Arguments",$1,$2,$
     ;
 
 
-classdef: CLASS NAME bracket_arglist_optional COLON suite {$$=create_node(6,"Class_def",$1,$2,$3,$4,$5);};
+classdef: CLASS NAME bracket_arglist_optional COLON suite {
+    $$=create_node(6,"Class_def",$1,$2,$3,$4,$5);
+    // sym_table * new_table = new sym_table();
+    // create_entry(curr_sym_tbl.top(),  $2->val,"class",yylineno,0,4,0,new_table );
+    // curr_sym_tbl.push(new_table);
+
+};
 
 bracket_arglist_optional: SMALL_OPEN SMALL_CLOSE {$$=create_node(3,"Parantheses",$1,$2);}
     | SMALL_OPEN arglist SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$3);}
@@ -450,8 +456,7 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$
     | NAME {$$=$1; 
         if(!search_sym_table(curr_sym_tbl.top(),$1->val,0)){
             cout<<"Sym_tbl_error: Variable "<<$1->val<<" not declared at line "<<yylineno<<endl;
-            
-            // return 0;
+            // give error as type hint not found
         }
     }
     | NAME TYPE_HINT {$$=create_node(3,"Identifier", $1, $2); create_entry(curr_sym_tbl.top(),  $1->val,$2->val,yylineno,0,4,0,NULL );}

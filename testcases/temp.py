@@ -9,7 +9,7 @@ for i in range(len(array)):
             swapped = True
             if not swapped:
                 break
-
+ 
 
 
 data: list[int] = [-2, 45, 0, 11, -9]
