@@ -8,6 +8,7 @@ using namespace std;
 
 typedef struct node{
     int id;
+    char * lexeme;
     char* val;
     bool is_terminal;
     vector<struct node*> children;

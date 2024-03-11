@@ -1,88 +1,17 @@
-Sym_tbl_error: Variable IDENTIFIER 
-(range) not declared at line 2
-Sym_tbl_error: Variable IDENTIFIER 
-(len) not declared at line 2
-Sym_tbl_error: Variable IDENTIFIER 
-(array) not declared at line 2
-Sym_tbl_error: Variable IDENTIFIER 
-(j) not declared at line 4
-Sym_tbl_error: Variable IDENTIFIER 
-(range) not declared at line 4
-Sym_tbl_error: Variable IDENTIFIER 
-(len) not declared at line 4
-Sym_tbl_error: Variable IDENTIFIER 
-(array) not declared at line 4
-Sym_tbl_error: Variable IDENTIFIER 
-(array) not declared at line 5
-Sym_tbl_error: Variable IDENTIFIER 
-(j) not declared at line 5
-Sym_tbl_error: Variable IDENTIFIER 
-(array) not declared at line 5
-Sym_tbl_error: Variable IDENTIFIER 
-(j) not declared at line 5
-Sym_tbl_error: Variable IDENTIFIER 
-(array) not declared at line 6
-Sym_tbl_error: Variable IDENTIFIER 
-(j) not declared at line 6
-Sym_tbl_error: Variable IDENTIFIER 
-(array) not declared at line 7
-Sym_tbl_error: Variable IDENTIFIER 
-(j) not declared at line 7
-Sym_tbl_error: Variable IDENTIFIER 
-(array) not declared at line 7
-Sym_tbl_error: Variable IDENTIFIER 
-(j) not declared at line 7
-Sym_tbl_error: Variable IDENTIFIER 
-(array) not declared at line 8
-Sym_tbl_error: Variable IDENTIFIER 
-(j) not declared at line 8
-Sym_tbl_error: Variable IDENTIFIER 
-(bubbleSort) not declared at line 16
-Sym_tbl_error: Variable IDENTIFIER 
-(print) not declared at line 18
-Sym_tbl_error: Variable IDENTIFIER 
-(range) not declared at line 20
-Sym_tbl_error: Variable IDENTIFIER 
-(len) not declared at line 20
-Sym_tbl_error: Variable IDENTIFIER 
-(print) not declared at line 21
-Sym_tbl_error: Variable IDENTIFIER 
-(__name__) not declared at line 24
-Sym_tbl_error: Variable IDENTIFIER 
-(main) not declared at line 25
-entry_no: 0-----------------------------
-name: IDENTIFIER 
-(swapped)
-type: TYPE_HINT 
-(: bool)
-line_no: 3
-is_func: 0
-size: 4
-offset: 0
-entry_no: 1-----------------------------
-name: IDENTIFIER 
-(temp)
-type: TYPE_HINT 
-(: int)
-line_no: 6
-is_func: 0
-size: 4
-offset: 0
-entry_no: 2-----------------------------
-name: IDENTIFIER 
-(data)
-type: TYPE_HINT 
-(: list[int])
-line_no: 15
-is_func: 0
-size: 4
-offset: 0
-entry_no: 3-----------------------------
-name: IDENTIFIER 
-(i)
-type: TYPE_HINT 
-(: int)
-line_no: 19
-is_func: 0
-size: 4
-offset: 0
+entry_no,name,type,line_no,is_func,size,offset
+0,array,list[int],1,0,4,0
+1,bubbleSort,None,1,1,4,0
+-----------sub table start-----------
+entry_no,name,type,line_no,is_func,size,offset
+0,i,int,2,0,4,0
+1,j,int,3,0,4,0
+2,swapped,bool,5,0,4,0
+3,temp,int,8,0,4,0
+-----------sub table end-----------
+2,main,None,16,1,4,0
+-----------sub table start-----------
+entry_no,name,type,line_no,is_func,size,offset
+0,data,list[int],17,0,4,0
+1,i,int,21,0,4,0
+-----------sub table end-----------
+3,test,int,26,0,4,0

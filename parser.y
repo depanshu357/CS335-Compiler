@@ -32,7 +32,7 @@
 %token <elem> TYPE_HINT FUNC_TYPE_HINT 
 %token <elem> ADD_EQUAL SUB_EQUAL MUL_EQUAL  AT_EQUAL  DIV_EQUAL MOD_EQUAL BITWISE_AND_EQUAL  BITWISE_OR_EQUAL  BITWISE_XOR_EQUAL SHIFT_LEFT_EQUAL  SHIFT_RIGHT_EQUAL  POW_EQUAL  FLOOR_DIV_EQUAL 
 %token INDENT DEDENT
-%type <elem> start file_input stmt compound_stmt async_stmt if_stmt elif_namedexpr_test_colon_suite_star while_stmt for_stmt try_stmt except_clause_colon_suite try_stmt_options except_clause test_as_name_optional funcdef parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr star_expr symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr symbol_term_star term symbol_factor_star symbol_factor factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument optional_test comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option expr_star_expr_option_list testlist_comp namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option namedexpr_test test atom number string_plus  
+%type <elem> start file_input stmt compound_stmt async_stmt if_stmt elif_namedexpr_test_colon_suite_star while_stmt for_stmt try_stmt except_clause_colon_suite try_stmt_options except_clause test_as_name_optional funcdef funcdef_title parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr star_expr symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr symbol_term_star term symbol_factor_star symbol_factor factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument optional_test comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option expr_star_expr_option_list testlist_comp namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option namedexpr_test test atom number string_plus  
 
 %%
     
@@ -66,7 +66,6 @@ async_stmt: ASYNC funcdef { $$ = create_node(3,"Async_stmt",$1,$2);}
 
 if_stmt: IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star ELSE COLON suite { $$ = create_node(9,"If_stmt",$1,$2,$3,$4,$5,$6,$7,$8);}
     | IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star { $$ = create_node(6,"If_stmt",$1,$2,$3,$4,$5);}
-    ;
 
 elif_namedexpr_test_colon_suite_star: ELIF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star {$$ = create_node(5,"Elif_block",$1,$2,$3,$4);}
     | { $$ = NULL;}
@@ -102,8 +101,17 @@ test_as_name_optional: test {$$=$1;}
     ;
 
 /*using this notation instead of below one*/
-funcdef:  DEF NAME parameters  FUNC_TYPE_HINT COLON  func_body_suite { $$ = create_node(7,"Func_def",$1,$2,$3,$4,$5,$6);}
+funcdef:  DEF funcdef_title  func_body_suite { $$ = create_node(4,"Func_def",$1,$2,$3);}
     | DEF NAME parameters  COLON  func_body_suite { $$ = create_node(6,"Func_def",$1,$2,$3,$4,$5);}
+    ;
+
+funcdef_title: NAME parameters  FUNC_TYPE_HINT COLON { 
+    $$ = create_node(5,"Func_def",$1,$2,$3,$4);
+    delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
+    sym_table * new_table = new sym_table();
+    create_entry(curr_sym_tbl.top(),  $1->lexeme,$3->lexeme,yylineno,1,0,new_table );
+    curr_sym_tbl.push(new_table);
+    }
     ;
 
 // Written only to run START ye dono document se dekhna hai
@@ -111,28 +119,39 @@ parameters: SMALL_OPEN typedarglist SMALL_CLOSE {$$ = create_node(4,"Arguments",
     |SMALL_OPEN SMALL_CLOSE {$$ = create_node(3,"Parantheses",$1,$2);}
     ;
 
+typedarglist:
+    typedlist_arguments {$$ = $1;}
+    ;
+
+typedlist_arguments: typedlist_argument comma_option_argument_star {$$ = create_node(3,"Arguments",$1,$2);};
 
 typedlist_argument: tfpdef  { $$ = $1;}
     |  tfpdef EQUAL test { $$ = create_node(4,"Assign_expr",$1,$2,$3);}
     ;
     
-typedlist_arguments: typedlist_argument comma_option_argument_star {$$ = create_node(3,"Arguments",$1,$2);};
-
 comma_option_argument_star: comma_option_argument_star COMMA typedlist_argument {$$ = create_node(4,"Arguments",$1,$2,$3);}
     | { $$ = NULL;}
     ;
 
-typedarglist:
-    typedlist_arguments {$$ = $1;}
-    ;
 
 tfpdef: NAME { $$ = $1;}
-    | NAME TYPE_HINT { $$ = create_node(3,"Identifier",$1,$2); }
-    | NAME COLON test {$$ = create_node(4,"Identifier",$1,$2,$3);}
+    | NAME TYPE_HINT { $$ = create_node(3,"Identifier",$1,$2); 
+    delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
+    create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,0,NULL );
+    }
+    | NAME COLON test {
+        $$ = create_node(4,"Identifier",$1,$2,$3);
+        }
     ;
 
-func_body_suite: simple_stmt {$$ = $1;}
-    | NEWLINE INDENT stmt_plus DEDENT { $$ = $3;}
+func_body_suite: simple_stmt {$$ = $1; 
+    if(curr_sym_tbl.size()>1)
+        curr_sym_tbl.pop();
+    }
+    | NEWLINE INDENT stmt_plus DEDENT { $$ = $3;
+    if(curr_sym_tbl.size()>1)
+        curr_sym_tbl.pop();
+    }
 
 suite: simple_stmt {$$ = $1;}
     | NEWLINE INDENT stmt_plus DEDENT { $$ = $3;}
@@ -306,8 +325,16 @@ trailer_star:  trailer trailer_star  {$$ = create_node(3,"Stmts",$1,$2);}
 trailer: SMALL_OPEN arglist SMALL_CLOSE  {$$ = create_node(4,"Arguments",$1,$2,$3);}
     |SMALL_OPEN SMALL_CLOSE { $$ = create_node(3,"Parantheses",$1,$2);}
     |BOX_OPEN subscriptlist BOX_CLOSE {$$ = create_node(4,"Square_bracket",$1,$2,$3);}
-    |DOT NAME TYPE_HINT {$$ = create_node(4,"Identifier",$1,$2,$3);}
-    |DOT NAME { $$ = create_node(3,"Identifier",$1,$2);}
+    |DOT NAME TYPE_HINT {$$ = create_node(4,"Identifier",$1,$2,$3);
+     delete_sym_table(curr_sym_tbl.top(),$2->lexeme);
+    create_entry(curr_sym_tbl.top(),  $2->lexeme,$3->lexeme,yylineno,0,0,NULL );
+    }
+    |DOT NAME { $$ = create_node(3,"Identifier",$1,$2);
+    if(!search_sym_table(curr_sym_tbl.top(),$2->lexeme,0)){
+        cout<<"Sym_tbl_error: Variable "<<$2->lexeme<<" not declared at line "<<yylineno<<endl;
+        // give error as type hint not found
+    }
+    }
     ;
 
 
@@ -454,14 +481,14 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$
     | BOX_OPEN BOX_CLOSE {$$=create_node(3,"Square_bracket",$1,$2);}
     | CURLY_OPEN CURLY_CLOSE {$$=create_node(3,"Curly_bracket",$1,$2);}
     | NAME {$$=$1; 
-        if(!search_sym_table(curr_sym_tbl.top(),$1->val,0)){
-            cout<<"Sym_tbl_error: Variable "<<$1->val<<" not declared at line "<<yylineno<<endl;
+        if((string($1->lexeme)!="print" && string($1->lexeme)!="range"&& string($1->lexeme)!="len") &&  !search_sym_table(curr_sym_tbl.top(),$1->lexeme,0)){
+            cout<<"Sym_tbl_error: Variable "<<$1->lexeme<<" not declared at line "<<yylineno<<endl;
             // give error as type hint not found
         }
     }
     | NAME TYPE_HINT {$$=create_node(3,"Identifier", $1, $2); 
-    delete_sym_table(curr_sym_tbl.top(),$1->val);
-    create_entry(curr_sym_tbl.top(),  $1->val,$2->val,yylineno,0,0,NULL );
+    delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
+    create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,0,NULL );
     }
     | number {$$=$1;}
     | string_plus {$$=$1;}
@@ -509,6 +536,7 @@ NODE* convertParseTreeToAST(NODE* parseTree) {
 
     NODE* astNode = new NODE;
     astNode->id = parseTree->id;
+    astNode->lexeme=parseTree->lexeme;
     astNode->val = parseTree->val;
     astNode->is_terminal = parseTree->is_terminal;
 

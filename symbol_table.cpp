@@ -60,7 +60,7 @@ int search_sym_table(sym_table * symbol_table,string name, int is_func){
     sym_table * curr = symbol_table;
     while(curr!=NULL){
         for(int i=0;i<curr->sym_tbl_entry.size();i++){
-            if(curr->sym_tbl_entry[i].name == name && curr->sym_tbl_entry[i].is_func == is_func){
+            if(curr->sym_tbl_entry[i].name == name){
                 return 1;
             }
         }
@@ -72,15 +72,22 @@ int search_sym_table(sym_table * symbol_table,string name, int is_func){
 
 void print_sym_table(sym_table * symbol_table){
     
-    for(int i=0;i<symbol_table->sym_tbl_entry.size();i++){
-        cout<<"entry_no: "<<i<<"-----------------------------"<<endl;
-        cout<<"name: "<<symbol_table->sym_tbl_entry[i].name<<endl;
-        cout<<"type: "<<symbol_table->sym_tbl_entry[i].type<<endl;
-        cout<<"line_no: "<<symbol_table->sym_tbl_entry[i].line_no<<endl;
-        cout<<"is_func: "<<symbol_table->sym_tbl_entry[i].is_func<<endl;
-        cout<<"size: "<<symbol_table->sym_tbl_entry[i].size<<endl;
-        cout<<"offset: "<<symbol_table->sym_tbl_entry[i].offset<<endl;
-    
+     std::cout << "entry_no,name,type,line_no,is_func,size,offset" << std::endl;
+
+    // Print data in CSV format
+    for (int i = 0; i < symbol_table->sym_tbl_entry.size(); i++) {
+        std::cout << i << ",";
+        std::cout << symbol_table->sym_tbl_entry[i].name << ",";
+        std::cout << symbol_table->sym_tbl_entry[i].type << ",";
+        std::cout << symbol_table->sym_tbl_entry[i].line_no << ",";
+        std::cout << symbol_table->sym_tbl_entry[i].is_func << ",";
+        std::cout << symbol_table->sym_tbl_entry[i].size << ",";
+        std::cout << symbol_table->sym_tbl_entry[i].offset << std::endl;
+        if(symbol_table->sym_tbl_entry[i].sub_symbol_table!=NULL){
+            cout << "-----------sub table start-----------" << endl;
+            print_sym_table(symbol_table->sym_tbl_entry[i].sub_symbol_table);
+            cout << "-----------sub table end-----------" << endl;
+        }
     }
 }
 

@@ -113,6 +113,7 @@ ERRORCHAR "$"|"?"|"`"
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;
+    yylval.elem->lexeme=strdup(yytext);
     // cout<<"KEYWORD"<<" "<<yytext<<endl; ; 
     string oper = yytext;
     if(oper=="is") return IS;
@@ -153,22 +154,36 @@ ERRORCHAR "$"|"?"|"`"
     else if(oper=="None") return NONE;
 }
 
-":"[ \t]*{TYPE_HINT} {
-string lexeme_out=string(yytext);
+<INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>":"[ \t]*{TYPE_HINT} {
+    string lexeme_out=string(yytext);
     lexeme_out="TYPE_HINT \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;     
+    //ignore the starting colon and spaces or tabs from yytext
+
+    const char* yytextPtr = yytext;
+    while(*yytextPtr == ' ' || *yytextPtr == '\t' || *yytextPtr == ':') {
+        ++yytextPtr;
+    }
+    yylval.elem->lexeme = strdup(yytextPtr);
+
     // cout<<"TYPE"<<": "<<yytext<<endl; 
      return TYPE_HINT; 
      }
      
-"->"[ \t]*({TYPE_HINT}|"None") {
+<INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>"->"[ \t]*({TYPE_HINT}|"None") {
     string lexeme_out=string(yytext);
     lexeme_out="TYPE_HINT \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
+    const char* yytextPtr = yytext;
+    while(*yytextPtr == ' ' || *yytextPtr == '\t' || *yytextPtr == '-'|| *yytextPtr == '>') {
+        ++yytextPtr;
+    }
+    yylval.elem->lexeme = strdup(yytextPtr);
+
     // cout<<"TYPE"<<": "<<yytext<<endl; 
     return FUNC_TYPE_HINT; 
     }
@@ -179,6 +194,7 @@ string lexeme_out=string(yytext);
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
+    yylval.elem->lexeme=strdup(yytext);
     // cout<<"IDENTIFIER"<<" "<<yytext<<endl; 
     return NAME; 
     }
@@ -189,6 +205,7 @@ string lexeme_out=string(yytext);
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
+    yylval.elem->lexeme=strdup(yytext);
     // cout<<"INTEGER"<<" "<<yytext<<endl;
     return INTEGER;
     }
@@ -198,6 +215,7 @@ string lexeme_out=string(yytext);
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
+    yylval.elem->lexeme=strdup(yytext);
     // cout<<"FLOAT"<<" "<<yytext<<endl;
     return FLOAT;
     }
@@ -241,6 +259,7 @@ string lexeme_out=string(yytext);
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
+    yylval.elem->lexeme=strdup(yytext);
     // cout<<"STRING"<<" "<<yytext<<endl;
     return STRING;
     }
@@ -287,6 +306,7 @@ string lexeme_out=string(yytext);
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
+    yylval.elem->lexeme=strdup(yytext);
     string oper = yytext;
     if(oper=="**") return POW;
     else if(oper=="//") return FLOOR_DIV;
@@ -303,6 +323,7 @@ string lexeme_out=string(yytext);
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
+    yylval.elem->lexeme=strdup(yytext);
     string oper = yytext;
     if(oper=="<<") return SHIFT_LEFT;
     else if(oper==">>") return SHIFT_RIGHT;
@@ -321,6 +342,7 @@ string lexeme_out=string(yytext);
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
+    yylval.elem->lexeme=strdup(yytext);
     string oper = yytext;
     if(oper=="==") return DOUBLE_EQUAL;
     else if(oper=="!=") return NE;
@@ -336,6 +358,7 @@ string lexeme_out=string(yytext);
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;
+    yylval.elem->lexeme=strdup(yytext);
     string oper = yytext;
     if(oper==":=") return WAL_OP;
     else if(oper=="=") {return EQUAL;}
@@ -364,6 +387,7 @@ string lexeme_out=string(yytext);
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;
+    yylval.elem->lexeme=strdup(yytext);
     // cout<<"DELIMITER"<<" "<<yytext<<endl;
     string oper = yytext;
 
