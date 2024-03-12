@@ -167,10 +167,10 @@ test_as_name_optional: test {$$=$1;}
 
 /*using this notation instead of below one*/
 funcdef:  DEF funcdef_title  func_body_suite { $$ = create_node(4,"Func_def",$1,$2,$3);}
-    /* | DEF NAME parameters  COLON  func_body_suite { $$ = create_node(6,"Func_def",$1,$2,$3,$4,$5);} */ //because we always need return type at def of a func
+    /* | DEF NAME parameters  COLON  func_body_suite { $$ = create_node(6,"Func_def",$1,$2,$3,$4,$5);} //because we always need return type at def of a func */
     ;
 
-funcdef_title: NAME {parameter_vec.clear(); is_param=1;cout<<"is_param";} parameters  FUNC_TYPE_HINT COLON { 
+funcdef_title: NAME {parameter_vec.clear(); is_param=1;} parameters  FUNC_TYPE_HINT COLON { 
     $$ = create_node(5,"Func_def",$1,$3,$4,$5);
     sym_table * new_table = new sym_table();
     create_entry(curr_sym_tbl.top(),  $1->lexeme,"func",yylineno,1,new_table );
@@ -200,10 +200,22 @@ comma_option_argument_star: comma_option_argument_star COMMA typedlist_argument 
     ;
 
 
-tfpdef: NAME { $$ = $1;}
+tfpdef: NAME { $$ = $1; 
+        if((string($1->lexeme)!="print" && string($1->lexeme)!="range"&& string($1->lexeme)!="len") &&  !search_sym_table(curr_sym_tbl.top(),$1->lexeme,0)){
+            cout<<"Sym_tbl_error: Variable "<<$1->lexeme<<" not declared at line "<<yylineno<<endl;
+            // give error as type hint not found
+        }
+        }
     | NAME TYPE_HINT { $$ = create_node(3,"Identifier",$1,$2); 
+    
+    if(is_param) {
+        add_to_vector(parameter_vec, $1->lexeme, $2->lexeme,yylineno);
+    }
+    else{
     delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
     create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,NULL );
+    }
+
     }
     | NAME COLON test {
         $$ = create_node(4,"Identifier",$1,$2,$3);

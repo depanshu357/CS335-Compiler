@@ -1,12 +1,12 @@
-is_paramentry_no,name,type,line_no,is_func,size,offset
-parameters start-------
-parameters end-------
-0,x,int,1,0,4,0
-1,y,int,1,0,4,4
-2,aryan,func,1,1,4,8
------------sub table start-----------
 entry_no,name,type,line_no,is_func,size,offset
 parameters start-------
 parameters end-------
-0,z,int,2,0,4,0
+0,aryan,func,1,1,4,0
+-----------sub table start-----------
+entry_no,name,type,line_no,is_func,size,offset
+parameters start-------
+0,x,int,1,0,4,0
+1,y,int,1,0,4,4
+parameters end-------
+0,z,int,2,0,4,8
 -----------sub table end-----------
