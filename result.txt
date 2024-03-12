@@ -1,17 +1,12 @@
-entry_no,name,type,line_no,is_func,size,offset
-0,array,list[int],1,0,4,0
-1,bubbleSort,None,1,1,4,0
+is_paramentry_no,name,type,line_no,is_func,size,offset
+parameters start-------
+parameters end-------
+0,x,int,1,0,4,0
+1,y,int,1,0,4,4
+2,aryan,func,1,1,4,8
 -----------sub table start-----------
 entry_no,name,type,line_no,is_func,size,offset
-0,i,int,2,0,4,0
-1,j,int,3,0,4,0
-2,swapped,bool,5,0,4,0
-3,temp,int,8,0,4,0
+parameters start-------
+parameters end-------
+0,z,int,2,0,4,0
 -----------sub table end-----------
-2,main,None,16,1,4,0
------------sub table start-----------
-entry_no,name,type,line_no,is_func,size,offset
-0,data,list[int],17,0,4,0
-1,i,int,21,0,4,0
------------sub table end-----------
-3,test,int,26,0,4,0

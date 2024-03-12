@@ -1,5 +1,5 @@
 compile: parser.y lexer.l
-		bison -t -d -v parser.y
+		bison -t -d -v -Wcounterexamples parser.y 
 		flex lexer.l
 		g++ parser.tab.c lex.yy.c -o main
 

@@ -12,8 +12,12 @@ typedef struct st_node {
 } st_node;
 
 typedef struct sym_table {
+    string name;
+    int parameter_count;
+    int total_offset = 0;
     sym_table * prev_sym_table;
     vector<st_node> sym_tbl_entry; //this will contain entries of sym_table
+    vector<st_node> parameters; //this will contain entries of parameters
 } sym_table;
 
 int  get_type_size(string s){
@@ -36,53 +40,101 @@ int  get_type_size(string s){
     else if(s=="bool"){
         return 4;
     }
+    //if the first 4 chars are "list" calcualte size of "list[int]"
+    else if(s.substr(0,4)=="list"){
+        int start = s.find("[");
+        int end = s.find("]");
+        string type = s.substr(start+1,end-start-1);
+        return  get_type_size(type);
+    }
     else{
         return 4; //string size is also returned 4
     }
     
 }
 
-void create_entry(sym_table * curr_sym_tbl,string name, string type, int line_no, int is_func, int offset, sym_table * sub_symbol_table=NULL){
+void create_entry(sym_table * curr_sym_tbl,string name, string type, int line_no, int is_func, sym_table * sub_symbol_table=NULL){
     st_node new_entry;
     new_entry.name = name;
     new_entry.type = type;
     new_entry.line_no = line_no;
     new_entry.is_func = is_func;
     new_entry.size = get_type_size(type);
-    new_entry.offset = offset;
+    new_entry.offset = curr_sym_tbl->total_offset;
+    curr_sym_tbl->total_offset+=new_entry.size;
     new_entry.sub_symbol_table = sub_symbol_table;
     if(sub_symbol_table!=NULL)
-    new_entry.sub_symbol_table->prev_sym_table=curr_sym_tbl;
+    {
+        new_entry.sub_symbol_table->prev_sym_table=curr_sym_tbl;
+        new_entry.sub_symbol_table->total_offset=0;  
+        new_entry.sub_symbol_table->name=name;  
+    }
     curr_sym_tbl->sym_tbl_entry.push_back(new_entry);
 }
 
 int search_sym_table(sym_table * symbol_table,string name, int is_func){
     sym_table * curr = symbol_table;
     while(curr!=NULL){
+        for(int i=0;i<curr->parameters.size();i++){
+            if(curr->parameters[i].name == name){
+                return 1;
+            }
+        }
         for(int i=0;i<curr->sym_tbl_entry.size();i++){
             if(curr->sym_tbl_entry[i].name == name){
                 return 1;
             }
         }
+
         curr = curr->prev_sym_table;
     }
 
     return 0;
 }
 
+void add_to_vector(vector<st_node>&v, string name, string type, int line_no){
+    st_node new_entry;
+    new_entry.name = name;
+    new_entry.type = type;
+    new_entry.line_no = line_no;
+    v.push_back(new_entry);
+}
+
+void add_parameters(sym_table * symbol_table, vector<st_node>&v){
+   for(int i=0;i<v.size();i++){
+        v[i].offset = symbol_table->total_offset;
+        v[i].size = get_type_size(v[i].type);
+        symbol_table->total_offset+=v[i].size;
+        v[i].is_func = 0;
+       symbol_table->parameters.push_back(v[i]);
+    }
+    symbol_table->parameter_count = v.size();
+}
+
 void print_sym_table(sym_table * symbol_table){
     
      std::cout << "entry_no,name,type,line_no,is_func,size,offset" << std::endl;
-
+    //print all parameters
+    cout<<"parameters start-------"<<endl;
+    for (int i = 0; i < symbol_table->parameters.size(); i++) {
+        cout << i << ",";
+        cout << symbol_table->parameters[i].name << ",";
+        cout << symbol_table->parameters[i].type << ",";
+        cout << symbol_table->parameters[i].line_no << ",";
+        cout << symbol_table->parameters[i].is_func << ",";
+        cout << symbol_table->parameters[i].size << ",";
+        cout << symbol_table->parameters[i].offset << endl;
+    }
+    cout << "parameters end-------" << endl;
     // Print data in CSV format
     for (int i = 0; i < symbol_table->sym_tbl_entry.size(); i++) {
-        std::cout << i << ",";
-        std::cout << symbol_table->sym_tbl_entry[i].name << ",";
-        std::cout << symbol_table->sym_tbl_entry[i].type << ",";
-        std::cout << symbol_table->sym_tbl_entry[i].line_no << ",";
-        std::cout << symbol_table->sym_tbl_entry[i].is_func << ",";
-        std::cout << symbol_table->sym_tbl_entry[i].size << ",";
-        std::cout << symbol_table->sym_tbl_entry[i].offset << std::endl;
+        cout << i << ",";
+        cout << symbol_table->sym_tbl_entry[i].name << ",";
+        cout << symbol_table->sym_tbl_entry[i].type << ",";
+        cout << symbol_table->sym_tbl_entry[i].line_no << ",";
+        cout << symbol_table->sym_tbl_entry[i].is_func << ",";
+        cout << symbol_table->sym_tbl_entry[i].size << ",";
+        cout << symbol_table->sym_tbl_entry[i].offset <<endl;
         if(symbol_table->sym_tbl_entry[i].sub_symbol_table!=NULL){
             cout << "-----------sub table start-----------" << endl;
             print_sym_table(symbol_table->sym_tbl_entry[i].sub_symbol_table);

@@ -10,10 +10,11 @@
     NODE *start_node;
 	fstream fout;
 	extern FILE *yyin;
-    
+    int is_param=0;
     //symbol table
     sym_table * global_sym_table = new sym_table();    
     stack<sym_table*> curr_sym_tbl;
+    vector<st_node> parameter_vec;
 
 %}
 
@@ -32,7 +33,7 @@
 %token <elem> TYPE_HINT FUNC_TYPE_HINT 
 %token <elem> ADD_EQUAL SUB_EQUAL MUL_EQUAL  AT_EQUAL  DIV_EQUAL MOD_EQUAL BITWISE_AND_EQUAL  BITWISE_OR_EQUAL  BITWISE_XOR_EQUAL SHIFT_LEFT_EQUAL  SHIFT_RIGHT_EQUAL  POW_EQUAL  FLOOR_DIV_EQUAL 
 %token INDENT DEDENT
-%type <elem> start file_input stmt compound_stmt async_stmt if_stmt elif_namedexpr_test_colon_suite_star while_stmt for_stmt try_stmt except_clause_colon_suite try_stmt_options except_clause test_as_name_optional funcdef funcdef_title parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr star_expr symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr symbol_term_star term symbol_factor_star symbol_factor factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument optional_test comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option expr_star_expr_option_list testlist_comp namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option namedexpr_test test atom number string_plus  
+%type <elem> start file_input stmt compound_stmt async_stmt if_stmt if_stmt_deviation elif_namedexpr_test_colon_suite_star while_stmt while_stmt_deviation for_stmt try_stmt except_clause_colon_suite try_stmt_options except_clause test_as_name_optional funcdef funcdef_title parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr star_expr symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr symbol_term_star term symbol_factor_star symbol_factor factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument optional_test comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option expr_star_expr_option_list testlist_comp namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option namedexpr_test test atom number string_plus  else_colon_suite_optional
 
 %%
     
@@ -64,20 +65,84 @@ async_stmt: ASYNC funcdef { $$ = create_node(3,"Async_stmt",$1,$2);}
     | ASYNC for_stmt { $$ = create_node(3,"Async_stmt",$1,$2);}
     ;
 
-if_stmt: IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star ELSE COLON suite { $$ = create_node(9,"If_stmt",$1,$2,$3,$4,$5,$6,$7,$8);}
-    | IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star { $$ = create_node(6,"If_stmt",$1,$2,$3,$4,$5);}
+/* if_stmt: IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star ELSE COLON suite { $$ = create_node(9,"If_stmt",$1,$2,$3,$4,$5,$6,$7,$8);}
+    | IF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star { $$ = create_node(6,"If_stmt",$1,$2,$3,$4,$5);} */
 
-elif_namedexpr_test_colon_suite_star: ELIF namedexpr_test COLON suite elif_namedexpr_test_colon_suite_star {$$ = create_node(5,"Elif_block",$1,$2,$3,$4);}
+if_stmt: IF {           
+            sym_table * new_table = new sym_table();
+            create_entry(curr_sym_tbl.top(),"if_block" , "If_stmt" ,yylineno,1,new_table );
+            curr_sym_tbl.push(new_table);
+            }  
+            namedexpr_test COLON suite {
+                                    if(curr_sym_tbl.size()>1)
+                                    curr_sym_tbl.pop();} 
+            if_stmt_deviation {$$ = create_node(6,"If_stmt",$1,$3,$4,$5,$7);};
+
+if_stmt_deviation: elif_namedexpr_test_colon_suite_star ELSE COLON {
+                                                    sym_table * new_table = new sym_table();
+                                                    create_entry(curr_sym_tbl.top(),"elif_block" , "Elif_stmt" ,yylineno,0,new_table );
+                                                    curr_sym_tbl.push(new_table);} 
+        suite { $$ = create_node(5,"elif_stmt",$1,$2,$3,$5);if(curr_sym_tbl.size()>1) curr_sym_tbl.pop();}
+        |elif_namedexpr_test_colon_suite_star {$$ = $1;};
+                                                
+
+elif_namedexpr_test_colon_suite_star: ELIF {
+                                            sym_table * new_table = new sym_table();
+                                            create_entry(curr_sym_tbl.top(),"else_block" , "Else_stmt" ,yylineno,0,new_table );
+                                            curr_sym_tbl.push(new_table);} 
+        namedexpr_test COLON suite {
+            if(curr_sym_tbl.size()>1) curr_sym_tbl.pop();
+        } 
+        elif_namedexpr_test_colon_suite_star {$$ = create_node(6,"Elif_block",$1,$3,$4,$5,$7);}
     | { $$ = NULL;}
     ;
 
-while_stmt: WHILE namedexpr_test COLON suite ELSE COLON suite { $$ = create_node(8,"While_stmt",$1,$2,$3,$4,$5,$6,$7);}
+/* while_stmt: WHILE namedexpr_test COLON suite ELSE COLON suite { $$ = create_node(8,"While_stmt",$1,$2,$3,$4,$5,$6,$7);}
     | WHILE namedexpr_test COLON suite {$$ = create_node(5,"While_stmt",$1,$2,$3,$4);}
+    ; */
+
+while_stmt: WHILE {
+                    sym_table * new_table = new sym_table();
+                    create_entry(curr_sym_tbl.top(),"while_block" , "While_stmt" ,yylineno,0,new_table );
+                    curr_sym_tbl.push(new_table);
+                }  
+            namedexpr_test COLON suite while_stmt_deviation { $$ = create_node(4,"While_stmt",$1,$3,$4);}
     ;
 
-for_stmt:  FOR exprlist IN testlist COLON suite ELSE COLON suite { $$ = create_node(10,"For_stmt",$1,$2,$3,$4,$5,$6,$7,$8,$9);}
-    | FOR exprlist IN testlist COLON suite {$$ = create_node(7,"For_stmt",$1,$2,$3,$4,$5,$6);}
+while_stmt_deviation: ELSE COLON {
+                    sym_table * new_table = new sym_table();
+                    create_entry(curr_sym_tbl.top(),"else_while_block" , "Else_while_stmt" ,yylineno,0,new_table );
+                    curr_sym_tbl.push(new_table);
+} suite { $$ = create_node(4,"Else_block",$1,$2,$4);
+    if(curr_sym_tbl.size()>1)
+        curr_sym_tbl.pop();
+    }
+    | { $$ = NULL;}
+    ;
+
+for_stmt: FOR {
+                sym_table * new_table = new sym_table();
+                create_entry(curr_sym_tbl.top(),"Block" , "For_block" ,yylineno,0,new_table );
+                curr_sym_tbl.push(new_table);
+                } 
+                exprlist IN testlist COLON suite {
+                    if(curr_sym_tbl.size()>1)
+                        curr_sym_tbl.pop();
+                } else_colon_suite_optional{
+                    $$ = create_node(8,"For_stmt",$1,$3,$4,$5,$6,$7,$9);
+                }
     ; 
+
+else_colon_suite_optional : ELSE COLON {
+                    sym_table * new_table = new sym_table();
+                    create_entry(curr_sym_tbl.top(),"Block" , "Else_block" ,yylineno,0,new_table );
+                    curr_sym_tbl.push(new_table);
+                    } suite { 
+                        $$ = create_node(4,"Else_block",$1,$2,$4);
+                        if(curr_sym_tbl.size()>1) curr_sym_tbl.pop();
+                    }
+    | { $$ = NULL;}
+    ;
 
 try_stmt: TRY COLON suite FINALLY COLON suite {$$ = create_node(7,"Try_stmt",$1,$2,$3,$4,$5,$6);}
     | TRY COLON suite except_clause_colon_suite try_stmt_options { $$ = create_node(6,"Try_stmt",$1,$2,$3,$4,$5);}
@@ -86,7 +151,7 @@ try_stmt: TRY COLON suite FINALLY COLON suite {$$ = create_node(7,"Try_stmt",$1,
 except_clause_colon_suite: except_clause COLON suite except_clause_colon_suite {$$ = create_node(5,"Except_block",$1,$2,$3,$4);}
     | except_clause COLON suite { $$ = create_node(4,"Except_block",$1,$2,$3);}
     ;
-
+    
 try_stmt_options: ELSE COLON suite FINALLY COLON suite { $$ = create_node(7,"Else_finally_block",$1,$2,$3,$4,$5,$6);}
     | ELSE COLON suite {$$ = create_node(4,"Else_block",$1,$2,$3);}
     | FINALLY COLON suite { $$ = create_node(4,"Finally_block",$1,$2,$3);}
@@ -102,15 +167,16 @@ test_as_name_optional: test {$$=$1;}
 
 /*using this notation instead of below one*/
 funcdef:  DEF funcdef_title  func_body_suite { $$ = create_node(4,"Func_def",$1,$2,$3);}
-    | DEF NAME parameters  COLON  func_body_suite { $$ = create_node(6,"Func_def",$1,$2,$3,$4,$5);}
+    /* | DEF NAME parameters  COLON  func_body_suite { $$ = create_node(6,"Func_def",$1,$2,$3,$4,$5);} */ //because we always need return type at def of a func
     ;
 
-funcdef_title: NAME parameters  FUNC_TYPE_HINT COLON { 
-    $$ = create_node(5,"Func_def",$1,$2,$3,$4);
-    delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
+funcdef_title: NAME {parameter_vec.clear(); is_param=1;cout<<"is_param";} parameters  FUNC_TYPE_HINT COLON { 
+    $$ = create_node(5,"Func_def",$1,$3,$4,$5);
     sym_table * new_table = new sym_table();
-    create_entry(curr_sym_tbl.top(),  $1->lexeme,$3->lexeme,yylineno,1,0,new_table );
+    create_entry(curr_sym_tbl.top(),  $1->lexeme,"func",yylineno,1,new_table );
     curr_sym_tbl.push(new_table);
+    add_parameters(curr_sym_tbl.top(), parameter_vec);
+    is_param=0;
     }
     ;
 
@@ -137,7 +203,7 @@ comma_option_argument_star: comma_option_argument_star COMMA typedlist_argument 
 tfpdef: NAME { $$ = $1;}
     | NAME TYPE_HINT { $$ = create_node(3,"Identifier",$1,$2); 
     delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
-    create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,0,NULL );
+    create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,NULL );
     }
     | NAME COLON test {
         $$ = create_node(4,"Identifier",$1,$2,$3);
@@ -327,7 +393,7 @@ trailer: SMALL_OPEN arglist SMALL_CLOSE  {$$ = create_node(4,"Arguments",$1,$2,$
     |BOX_OPEN subscriptlist BOX_CLOSE {$$ = create_node(4,"Square_bracket",$1,$2,$3);}
     |DOT NAME TYPE_HINT {$$ = create_node(4,"Identifier",$1,$2,$3);
      delete_sym_table(curr_sym_tbl.top(),$2->lexeme);
-    create_entry(curr_sym_tbl.top(),  $2->lexeme,$3->lexeme,yylineno,0,0,NULL );
+    create_entry(curr_sym_tbl.top(),  $2->lexeme,$3->lexeme,yylineno,0,NULL );
     }
     |DOT NAME { $$ = create_node(3,"Identifier",$1,$2);
     if(!search_sym_table(curr_sym_tbl.top(),$2->lexeme,0)){
@@ -338,13 +404,26 @@ trailer: SMALL_OPEN arglist SMALL_CLOSE  {$$ = create_node(4,"Arguments",$1,$2,$
     ;
 
 
-classdef: CLASS NAME bracket_arglist_optional COLON suite {
+classdef: CLASS NAME {parameter_vec.clear(); is_param=1;}bracket_arglist_optional COLON {
+                                                    sym_table * new_table = new sym_table();
+                                                    create_entry(curr_sym_tbl.top(),$2->lexeme , "class" ,yylineno,1,new_table );
+                                                    curr_sym_tbl.push(new_table);
+                                                    add_parameters(curr_sym_tbl.top(), parameter_vec);
+                                                    is_param=0;
+                                                    }
+                                                    suite {
+                                                        $$=create_node(6,"Class_def",$1,$2,$4,$5,$7);
+                                                        if(curr_sym_tbl.size()>1)
+                                                            curr_sym_tbl.pop();
+                                                    };
+
+/* classdef: CLASS NAME bracket_arglist_optional COLON suite {
     $$=create_node(6,"Class_def",$1,$2,$3,$4,$5);
     // sym_table * new_table = new sym_table();
     // create_entry(curr_sym_tbl.top(),  $2->val,"class",yylineno,0,4,0,new_table );
     // curr_sym_tbl.push(new_table);
 
-};
+}; */
 
 bracket_arglist_optional: SMALL_OPEN SMALL_CLOSE {$$=create_node(3,"Parantheses",$1,$2);}
     | SMALL_OPEN arglist SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$3);}
@@ -487,8 +566,13 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$
         }
     }
     | NAME TYPE_HINT {$$=create_node(3,"Identifier", $1, $2); 
+    if(is_param) {
+        add_to_vector(parameter_vec, $1->lexeme, $2->lexeme,yylineno);
+    }
+    else{
     delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
-    create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,0,NULL );
+    create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,NULL );
+    }
     }
     | number {$$=$1;}
     | string_plus {$$=$1;}
@@ -580,6 +664,7 @@ void MakeDOTFile(NODE*cell) {
 int main(int argc, char* argv[]){
     indent_stack.push(0);
     /* yylex(); */
+    global_sym_table->total_offset=0;
     curr_sym_tbl.push(global_sym_table);
 	string output_file = "";
     string input_file = "input.txt";
