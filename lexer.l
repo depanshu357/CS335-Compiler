@@ -114,6 +114,7 @@ ERRORCHAR "$"|"?"|"`"
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;
     yylval.elem->lexeme=strdup(yytext);
+    // yylval.elem->type_of_node = "keyword";
     // cout<<"KEYWORD"<<" "<<yytext<<endl; ; 
     string oper = yytext;
     if(oper=="is") return IS;
@@ -159,7 +160,7 @@ ERRORCHAR "$"|"?"|"`"
     lexeme_out="TYPE_HINT \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
     yylval.elem = create_node(1, strdup(charPtr));
-    yylval.elem->is_terminal = true;     
+    yylval.elem->is_terminal = true; 
     //ignore the starting colon and spaces or tabs from yytext
 
     const char* yytextPtr = yytext;
@@ -167,6 +168,7 @@ ERRORCHAR "$"|"?"|"`"
         ++yytextPtr;
     }
     yylval.elem->lexeme = strdup(yytextPtr);
+    // yylval.elem->type_of_node = "type_hint";    
 
     // cout<<"TYPE"<<": "<<yytext<<endl; 
      return TYPE_HINT; 
@@ -183,7 +185,7 @@ ERRORCHAR "$"|"?"|"`"
         ++yytextPtr;
     }
     yylval.elem->lexeme = strdup(yytextPtr);
-
+    // yylval.elem->type_of_node = "type_hint";
     // cout<<"TYPE"<<": "<<yytext<<endl; 
     return FUNC_TYPE_HINT; 
     }
@@ -196,6 +198,7 @@ ERRORCHAR "$"|"?"|"`"
     yylval.elem->is_terminal = true;    
     yylval.elem->lexeme=strdup(yytext);
     // cout<<"IDENTIFIER"<<" "<<yytext<<endl; 
+    // yylval.elem->type_of_node = "identifier";
     return NAME; 
     }
 
@@ -206,6 +209,7 @@ ERRORCHAR "$"|"?"|"`"
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     yylval.elem->lexeme=strdup(yytext);
+    yylval.elem->type_of_node = "int";
     // cout<<"INTEGER"<<" "<<yytext<<endl;
     return INTEGER;
     }
@@ -216,6 +220,7 @@ ERRORCHAR "$"|"?"|"`"
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     yylval.elem->lexeme=strdup(yytext);
+    yylval.elem->type_of_node = "float";
     // cout<<"FLOAT"<<" "<<yytext<<endl;
     return FLOAT;
     }
@@ -260,6 +265,7 @@ ERRORCHAR "$"|"?"|"`"
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     yylval.elem->lexeme=strdup(yytext);
+    yylval.elem->type_of_node = "str";
     // cout<<"STRING"<<" "<<yytext<<endl;
     return STRING;
     }
@@ -307,6 +313,7 @@ ERRORCHAR "$"|"?"|"`"
     yylval.elem = create_node(1, strdup(charPtr));
     yylval.elem->is_terminal = true;    
     yylval.elem->lexeme=strdup(yytext);
+    
     string oper = yytext;
     if(oper=="**") return POW;
     else if(oper=="//") return FLOOR_DIV;

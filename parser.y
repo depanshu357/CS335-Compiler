@@ -33,7 +33,7 @@
 %token <elem> TYPE_HINT FUNC_TYPE_HINT 
 %token <elem> ADD_EQUAL SUB_EQUAL MUL_EQUAL  AT_EQUAL  DIV_EQUAL MOD_EQUAL BITWISE_AND_EQUAL  BITWISE_OR_EQUAL  BITWISE_XOR_EQUAL SHIFT_LEFT_EQUAL  SHIFT_RIGHT_EQUAL  POW_EQUAL  FLOOR_DIV_EQUAL 
 %token INDENT DEDENT
-%type <elem> start file_input stmt compound_stmt async_stmt if_stmt if_stmt_deviation elif_namedexpr_test_colon_suite_star while_stmt while_stmt_deviation for_stmt try_stmt except_clause_colon_suite try_stmt_options except_clause test_as_name_optional funcdef funcdef_title parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr star_expr symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr symbol_term_star term symbol_factor_star symbol_factor factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument optional_test comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option expr_star_expr_option_list testlist_comp namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option namedexpr_test test atom number string_plus  else_colon_suite_optional
+%type <elem> start file_input stmt compound_stmt async_stmt if_stmt if_stmt_deviation elif_namedexpr_test_colon_suite_star while_stmt while_stmt_deviation for_stmt try_stmt except_clause_colon_suite try_stmt_options except_clause test_as_name_optional funcdef funcdef_title func_type_hint_optional parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr star_expr symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr symbol_term_star term symbol_factor_star symbol_factor factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument optional_test comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option expr_star_expr_option_list testlist_comp namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option namedexpr_test test atom number string_plus  else_colon_suite_optional 
 
 %%
     
@@ -167,17 +167,25 @@ test_as_name_optional: test {$$=$1;}
 
 /*using this notation instead of below one*/
 funcdef:  DEF funcdef_title  func_body_suite { $$ = create_node(4,"Func_def",$1,$2,$3);}
-    /* | DEF NAME parameters  COLON  func_body_suite { $$ = create_node(6,"Func_def",$1,$2,$3,$4,$5);} //because we always need return type at def of a func */
+     /* | DEF NAME {parameter_vec.clear(); is_param=1;} parameters  COLON  func_body_suite { $$ = create_node(6,"Func_def",$1,$2,$3,$4,$5);}  */
     ;
 
-funcdef_title: NAME {parameter_vec.clear(); is_param=1;} parameters  FUNC_TYPE_HINT COLON { 
-    $$ = create_node(5,"Func_def",$1,$3,$4,$5);
-    sym_table * new_table = new sym_table();
-    create_entry(curr_sym_tbl.top(),  $1->lexeme,"func",yylineno,1,new_table );
-    curr_sym_tbl.push(new_table);
-    add_parameters(curr_sym_tbl.top(), parameter_vec);
-    is_param=0;
+
+funcdef_title: NAME {parameter_vec.clear(); is_param=1;} parameters  func_type_hint_optional COLON { 
+        $$ = create_node(5,"Func_def",$1,$3,$4,$5);
+        sym_table * new_table = new sym_table();
+        string func_type="func";
+        if($4!=NULL)
+            func_type=$4->lexeme;
+        create_entry(curr_sym_tbl.top(),  $1->lexeme,func_type,yylineno,1,new_table );
+        curr_sym_tbl.push(new_table);
+        add_parameters(curr_sym_tbl.top(), parameter_vec);
+        is_param=0;
     }
+    ;
+
+func_type_hint_optional: FUNC_TYPE_HINT {$$ = $1;}
+    | { $$ = NULL;}
     ;
 
 // Written only to run START ye dono document se dekhna hai
@@ -388,11 +396,36 @@ factor: ADD factor {$$ = create_node(3,"Add_term",$1,$2);}
     ;
     
 power: atom_expr {$$ = $1;}
-    | atom_expr POW factor {$$ = create_node(4,"Power_term",$1,$2,$3);}
+    | atom_expr POW factor {$$ = create_node(4,"Power_term",$1,$2,$3);
+        if(!($3->type_of_node=="int" || $3->type_of_node=="float")){
+            cout<<"Error invalid power type at line " <<yylineno <<". Expected int or float.\n";
+        }else if(!($1->type_of_node=="int" || $1->type_of_node=="float")){
+            cout<<"Error invalid power type at line " <<yylineno <<". Expected int or float\n";
+        }else{
+            if($1->type_of_node=="float" || $3->type_of_node=="float")
+                $$->type_of_node= "float";
+            else
+                $$->type_of_node= "int";
+        }
+    }
     ;
 
 atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
-    | atom trailer_star{$$=create_node(3,"Terms", $1,$2);}
+    | atom trailer_star{
+        $$=create_node(3,"Terms", $1,$2);
+        if($2==NULL || $2->type_of_node==""){
+            string temp_type = $1->type_of_node;
+            if($1->type_of_node=="int")
+                $$->type_of_node = "int";
+            else if($1->type_of_node=="float")
+                $$->type_of_node="float";
+            // $$->type_of_node= temp_type;
+            // $$->type_of_node= $1->type_of_node;
+        }else{
+            $$->type_of_node="undefined";
+            // karna hai pending
+        }
+    }
     ;
 
 trailer_star:  trailer trailer_star  {$$ = create_node(3,"Stmts",$1,$2);}
@@ -418,7 +451,7 @@ trailer: SMALL_OPEN arglist SMALL_CLOSE  {$$ = create_node(4,"Arguments",$1,$2,$
 
 classdef: CLASS NAME {parameter_vec.clear(); is_param=1;}bracket_arglist_optional COLON {
                                                     sym_table * new_table = new sym_table();
-                                                    create_entry(curr_sym_tbl.top(),$2->lexeme , "class" ,yylineno,1,new_table );
+                                                    create_entry(curr_sym_tbl.top(),$2->lexeme , "class" ,yylineno,2,new_table );
                                                     curr_sym_tbl.push(new_table);
                                                     add_parameters(curr_sym_tbl.top(), parameter_vec);
                                                     is_param=0;
@@ -510,7 +543,6 @@ not_test: NOT not_test {$$=create_node(3,"Not_term",$1,$2);}
     | comparison {$$=$1;}
     ;
     
-/* still not implemented comp_op_expr_star properly but currently forms valid grammar*/    
 comparison: expr comp_op_expr_plus {$$=create_node(3,"Expressions",$1,$2);}
     |expr {$$=$1;}
    ;
@@ -571,13 +603,18 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$
     | BOX_OPEN testlist_comp BOX_CLOSE {$$=create_node(4,"Square_bracket",$1,$2,$3);}
     | BOX_OPEN BOX_CLOSE {$$=create_node(3,"Square_bracket",$1,$2);}
     | CURLY_OPEN CURLY_CLOSE {$$=create_node(3,"Curly_bracket",$1,$2);}
-    | NAME {$$=$1; 
-        if((string($1->lexeme)!="print" && string($1->lexeme)!="range"&& string($1->lexeme)!="len") &&  !search_sym_table(curr_sym_tbl.top(),$1->lexeme,0)){
+    | NAME {
+        string curr_type = search_type_in_sym_table(curr_sym_tbl.top(),$1->lexeme);
+        $1->type_of_node = curr_type; 
+        $$=$1;
+        if((string($1->lexeme)!="print" && string($1->lexeme)!="range"&& string($1->lexeme)!="len"&& string($1->lexeme)!="main") &&  !search_sym_table(curr_sym_tbl.top(),$1->lexeme,0)){
             cout<<"Sym_tbl_error: Variable "<<$1->lexeme<<" not declared at line "<<yylineno<<endl;
             // give error as type hint not found
         }
     }
-    | NAME TYPE_HINT {$$=create_node(3,"Identifier", $1, $2); 
+    | NAME TYPE_HINT {
+        $$=create_node(3,"Identifier", $1, $2); 
+        $$->type_of_node = $2->lexeme;
     if(is_param) {
         add_to_vector(parameter_vec, $1->lexeme, $2->lexeme,yylineno);
     }
@@ -588,9 +625,9 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$
     }
     | number {$$=$1;}
     | string_plus {$$=$1;}
-    | TRUE {$$=$1;}
-    | FALSE {$$=$1;}
-    | NONE {$$=$1;}
+    | TRUE {$$=$1;$$->type_of_node="bool";}
+    | FALSE {$$=$1;$$->type_of_node="bool";}
+    | NONE {$$=$1;$$->type_of_node="None";}
     ;
 // dictionary , setliterals are to be ignored
 
@@ -601,7 +638,6 @@ number: INTEGER {$$ = $1;}
 string_plus: STRING string_plus {$$=create_node(3,"Strings", $1, $2);}
     | STRING {$$=$1;}
     ;
-
 
 
 

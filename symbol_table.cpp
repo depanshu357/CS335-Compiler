@@ -5,7 +5,7 @@ typedef struct st_node {
     string name;
     string type; //return type in case of a function
     int line_no;
-    int is_func;
+    int sp_type;
     int size;
     int offset;
     struct sym_table* sub_symbol_table;
@@ -53,12 +53,12 @@ int  get_type_size(string s){
     
 }
 
-void create_entry(sym_table * curr_sym_tbl,string name, string type, int line_no, int is_func, sym_table * sub_symbol_table=NULL){
+void create_entry(sym_table * curr_sym_tbl,string name, string type, int line_no, int sp_type, sym_table * sub_symbol_table=NULL){
     st_node new_entry;
     new_entry.name = name;
     new_entry.type = type;
     new_entry.line_no = line_no;
-    new_entry.is_func = is_func;
+    new_entry.sp_type = sp_type;
     new_entry.size = get_type_size(type);
     new_entry.offset = curr_sym_tbl->total_offset;
     curr_sym_tbl->total_offset+=new_entry.size;
@@ -72,7 +72,7 @@ void create_entry(sym_table * curr_sym_tbl,string name, string type, int line_no
     curr_sym_tbl->sym_tbl_entry.push_back(new_entry);
 }
 
-int search_sym_table(sym_table * symbol_table,string name, int is_func){
+int search_sym_table(sym_table * symbol_table,string name, int sp_type){
     sym_table * curr = symbol_table;
     while(curr!=NULL){
         for(int i=0;i<curr->parameters.size();i++){
@@ -92,6 +92,25 @@ int search_sym_table(sym_table * symbol_table,string name, int is_func){
     return 0;
 }
 
+string search_type_in_sym_table(sym_table * symbol_table,string name){
+    sym_table * curr = symbol_table;
+    while(curr!=NULL){
+        for(int i=0;i<curr->parameters.size();i++){
+            if(curr->parameters[i].name == name){
+                return curr->parameters[i].type;
+            }
+        }
+        for(int i=0;i<curr->sym_tbl_entry.size();i++){
+            if(curr->sym_tbl_entry[i].name == name){
+                return curr->sym_tbl_entry[i].type;
+            }
+        }
+        curr = curr->prev_sym_table;
+    }
+
+    return "NULL";
+}
+
 void add_to_vector(vector<st_node>&v, string name, string type, int line_no){
     st_node new_entry;
     new_entry.name = name;
@@ -105,7 +124,7 @@ void add_parameters(sym_table * symbol_table, vector<st_node>&v){
         v[i].offset = symbol_table->total_offset;
         v[i].size = get_type_size(v[i].type);
         symbol_table->total_offset+=v[i].size;
-        v[i].is_func = 0;
+        v[i].sp_type = 0;
        symbol_table->parameters.push_back(v[i]);
     }
     symbol_table->parameter_count = v.size();
@@ -113,7 +132,7 @@ void add_parameters(sym_table * symbol_table, vector<st_node>&v){
 
 void print_sym_table(sym_table * symbol_table){
     
-     std::cout << "entry_no,name,type,line_no,is_func,size,offset" << std::endl;
+     std::cout << "entry_no,name,type,line_no,sp_type,size,offset" << std::endl;
     //print all parameters
     cout<<"parameters start-------"<<endl;
     for (int i = 0; i < symbol_table->parameters.size(); i++) {
@@ -121,7 +140,7 @@ void print_sym_table(sym_table * symbol_table){
         cout << symbol_table->parameters[i].name << ",";
         cout << symbol_table->parameters[i].type << ",";
         cout << symbol_table->parameters[i].line_no << ",";
-        cout << symbol_table->parameters[i].is_func << ",";
+        cout << symbol_table->parameters[i].sp_type << ",";
         cout << symbol_table->parameters[i].size << ",";
         cout << symbol_table->parameters[i].offset << endl;
     }
@@ -132,7 +151,7 @@ void print_sym_table(sym_table * symbol_table){
         cout << symbol_table->sym_tbl_entry[i].name << ",";
         cout << symbol_table->sym_tbl_entry[i].type << ",";
         cout << symbol_table->sym_tbl_entry[i].line_no << ",";
-        cout << symbol_table->sym_tbl_entry[i].is_func << ",";
+        cout << symbol_table->sym_tbl_entry[i].sp_type << ",";
         cout << symbol_table->sym_tbl_entry[i].size << ",";
         cout << symbol_table->sym_tbl_entry[i].offset <<endl;
         if(symbol_table->sym_tbl_entry[i].sub_symbol_table!=NULL){

@@ -3,7 +3,7 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
 
 typedef struct node{
@@ -11,6 +11,7 @@ typedef struct node{
     char * lexeme;
     char* val;
     bool is_terminal;
+    string type_of_node;
     vector<struct node*> children;
 }NODE;
 
