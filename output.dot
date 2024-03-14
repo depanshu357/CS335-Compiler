@@ -6,104 +6,74 @@ fontsize  = 30
 labelloc  = t
 
 node   [ fontname="Cascadia code" ]
-	117		[ style = solid label = "START"  ];
-	117 -> 115
-	115		[ style = solid label = "Func_def"  ];
-	115 -> 0
-	0		[ style = solid label = "KEYWORD 
-(def)" color = red shape = rectangle ];
-	115 -> 7
-	7		[ style = solid label = "Func_def"  ];
-	7 -> 1
-	1		[ style = solid label = "IDENTIFIER 
-(test_array_index)" color = red shape = rectangle ];
-	7 -> 4
-	4		[ style = solid label = "Parantheses"  ];
-	4 -> 2
-	2		[ style = solid label = "DELIMITER 
-(()" color = red shape = rectangle ];
-	4 -> 3
-	3		[ style = solid label = "DELIMITER 
-())" color = red shape = rectangle ];
-	7 -> 5
-	5		[ style = solid label = "TYPE_HINT 
-(->None)" color = red shape = rectangle ];
-	7 -> 6
-	6		[ style = solid label = "DELIMITER 
-(:)" color = red shape = rectangle ];
-	115 -> 114
-	114		[ style = solid label = "Stmts"  ];
-	114 -> 70
-	70		[ style = solid label = "Expr_stmt"  ];
-	70 -> 10
-	10		[ style = solid label = "Identifier"  ];
-	10 -> 8
-	8		[ style = solid label = "IDENTIFIER 
-(my_list)" color = red shape = rectangle ];
-	10 -> 9
-	9		[ style = solid label = "TYPE_HINT 
-(:list[int])" color = red shape = rectangle ];
-	70 -> 69
-	69		[ style = solid label = "Expr_stmt"  ];
-	69 -> 11
-	11		[ style = solid label = "ASSIGNMENT_OP 
-(=)" color = red shape = rectangle ];
-	69 -> 58
-	58		[ style = solid label = "Square_bracket"  ];
-	58 -> 22
-	22		[ style = solid label = "DELIMITER 
-([)" color = red shape = rectangle ];
-	58 -> 57
-	57		[ style = solid label = "Expressions"  ];
-	57 -> 23
-	23		[ style = solid label = "INTEGER 
-(10)" color = red shape = rectangle ];
-	57 -> 24
-	24		[ style = solid label = "DELIMITER 
-(,)" color = red shape = rectangle ];
-	57 -> 56
-	56		[ style = solid label = "Expressions"  ];
-	56 -> 34
-	34		[ style = solid label = "INTEGER 
-(20)" color = red shape = rectangle ];
-	56 -> 35
-	35		[ style = solid label = "DELIMITER 
-(,)" color = red shape = rectangle ];
-	56 -> 45
-	45		[ style = solid label = "INTEGER 
-(30)" color = red shape = rectangle ];
-	58 -> 46
-	46		[ style = solid label = "DELIMITER 
-(])" color = red shape = rectangle ];
-	114 -> 112
-	112		[ style = solid label = "Expr_stmt"  ];
-	112 -> 74
-	74		[ style = solid label = "Identifier"  ];
-	74 -> 72
-	72		[ style = solid label = "IDENTIFIER 
-(value)" color = red shape = rectangle ];
-	74 -> 73
-	73		[ style = solid label = "TYPE_HINT 
+	56		[ style = solid label = "START"  ];
+	56 -> 53
+	53		[ style = solid label = "Expr_stmt"  ];
+	53 -> 2
+	2		[ style = solid label = "Identifier"  ];
+	2 -> 0
+	0		[ style = solid label = "IDENTIFIER 
+(x)" color = red shape = rectangle ];
+	2 -> 1
+	1		[ style = solid label = "TYPE_HINT 
 (:int)" color = red shape = rectangle ];
-	112 -> 111
-	111		[ style = solid label = "Expr_stmt"  ];
-	111 -> 75
-	75		[ style = solid label = "ASSIGNMENT_OP 
+	53 -> 52
+	52		[ style = solid label = "Expr_stmt"  ];
+	52 -> 3
+	3		[ style = solid label = "ASSIGNMENT_OP 
 (=)" color = red shape = rectangle ];
-	111 -> 101
-	101		[ style = solid label = "Terms"  ];
-	101 -> 86
-	86		[ style = solid label = "IDENTIFIER 
-(my_list)" color = red shape = rectangle ];
-	101 -> 99
-	99		[ style = solid label = "Square_bracket"  ];
-	99 -> 87
-	87		[ style = solid label = "DELIMITER 
-([)" color = red shape = rectangle ];
-	99 -> 88
-	88		[ style = solid label = "STRING_LITERAL 
-(\'index\')" color = red shape = rectangle ];
-	99 -> 89
-	89		[ style = solid label = "DELIMITER 
-(])" color = red shape = rectangle ];
+	52 -> 44
+	44		[ style = solid label = "Expressions"  ];
+	44 -> 14
+	14		[ style = solid label = "INTEGER 
+(3)" color = red shape = rectangle ];
+	44 -> 43
+	43		[ style = solid label = "Operator_expr"  ];
+	43 -> 15
+	15		[ style = solid label = "ARITHMETIC_OP 
+(+)" color = red shape = rectangle ];
+	43 -> 26
+	26		[ style = solid label = "Terms"  ];
+	26 -> 18
+	18		[ style = solid label = "INTEGER 
+(5)" color = red shape = rectangle ];
+	26 -> 24
+	24		[ style = solid label = "Mul_term"  ];
+	24 -> 19
+	19		[ style = solid label = "ARITHMETIC_OP 
+(*)" color = red shape = rectangle ];
+	24 -> 21
+	21		[ style = solid label = "INTEGER 
+(4)" color = red shape = rectangle ];
+	43 -> 42
+	42		[ style = solid label = "Operator_expr"  ];
+	42 -> 22
+	22		[ style = solid label = "ARITHMETIC_OP 
+(-)" color = red shape = rectangle ];
+	42 -> 35
+	35		[ style = solid label = "Terms"  ];
+	35 -> 27
+	27		[ style = solid label = "INTEGER 
+(2)" color = red shape = rectangle ];
+	35 -> 33
+	33		[ style = solid label = "Div_term"  ];
+	33 -> 28
+	28		[ style = solid label = "ARITHMETIC_OP 
+(/)" color = red shape = rectangle ];
+	33 -> 30
+	30		[ style = solid label = "FLOATNUMBER 
+(2.3)" color = red shape = rectangle ];
+	42 -> 41
+	41		[ style = solid label = "Operator_expr"  ];
+	41 -> 31
+	31		[ style = solid label = "ARITHMETIC_OP 
+(+)" color = red shape = rectangle ];
+	41 -> 39
+	39		[ style = solid label = "Tilde_term"  ];
+	39 -> 36
+	36		[ style = solid label = "BITWISE_OP 
+(~)" color = red shape = rectangle ];
+	39 -> 37
+	37		[ style = solid label = "INTEGER 
+(3)" color = red shape = rectangle ];
 }
