@@ -33,7 +33,7 @@
 %token <elem> TYPE_HINT FUNC_TYPE_HINT 
 %token <elem> ADD_EQUAL SUB_EQUAL MUL_EQUAL  AT_EQUAL  DIV_EQUAL MOD_EQUAL BITWISE_AND_EQUAL  BITWISE_OR_EQUAL  BITWISE_XOR_EQUAL SHIFT_LEFT_EQUAL  SHIFT_RIGHT_EQUAL  POW_EQUAL  FLOOR_DIV_EQUAL 
 %token INDENT DEDENT
-%type <elem> start file_input stmt compound_stmt async_stmt if_stmt if_stmt_deviation elif_namedexpr_test_colon_suite_star while_stmt while_stmt_deviation for_stmt try_stmt except_clause_colon_suite try_stmt_options except_clause test_as_name_optional funcdef funcdef_title func_type_hint_optional parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr star_expr symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr symbol_term_star term symbol_factor_star symbol_factor factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument optional_test comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option expr_star_expr_option_list testlist_comp namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option namedexpr_test test atom number string_plus  else_colon_suite_optional 
+%type <elem> start file_input stmt compound_stmt async_stmt if_stmt if_stmt_deviation elif_namedexpr_test_colon_suite_star while_stmt while_stmt_deviation for_stmt   funcdef funcdef_title func_type_hint_optional parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr star_expr symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr symbol_term_star term symbol_factor_star symbol_factor factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option expr_star_expr_option_list testlist_comp namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option namedexpr_test test atom number string_plus  else_colon_suite_optional 
 
 %%
     
@@ -55,7 +55,7 @@ stmt: simple_stmt  {$$ = $1;}
 compound_stmt: if_stmt { $$ = $1;}
     |  while_stmt { $$ = $1;}
     | for_stmt { $$ = $1;}
-    | try_stmt { $$ = $1;}
+    /* | try_stmt { $$ = $1;} */
     | funcdef  {  $$ = $1;}
     | classdef { $$ = $1;}
     | async_stmt { $$ = $1;}
@@ -144,7 +144,7 @@ else_colon_suite_optional : ELSE COLON {
     | { $$ = NULL;}
     ;
 
-try_stmt: TRY COLON suite FINALLY COLON suite {$$ = create_node(7,"Try_stmt",$1,$2,$3,$4,$5,$6);}
+/* try_stmt: TRY COLON suite FINALLY COLON suite {$$ = create_node(7,"Try_stmt",$1,$2,$3,$4,$5,$6);}
     | TRY COLON suite except_clause_colon_suite try_stmt_options { $$ = create_node(6,"Try_stmt",$1,$2,$3,$4,$5);}
     ;
 
@@ -158,12 +158,9 @@ try_stmt_options: ELSE COLON suite FINALLY COLON suite { $$ = create_node(7,"Els
     | { $$ = NULL;{}}
     ;
 
-except_clause: EXCEPT test_as_name_optional {$$ = create_node(3,"Except_block",$1,$2);}
+except_clause: EXCEPT test_as_name_optional {$$ = create_node(3,"Except_block",$1,$2);} */
 
-test_as_name_optional: test {$$=$1;}
-    | test AS NAME {$$ = create_node(4,"Expressions_block",$1,$2,$3);}
-    | {$$ = NULL;}
-    ;
+
 
 /*using this notation instead of below one*/
 funcdef:  DEF funcdef_title  func_body_suite { $$ = create_node(4,"Func_def",$1,$2,$3);}
@@ -342,7 +339,14 @@ augassign: ADD_EQUAL {$$ = $1;}
     | FLOOR_DIV_EQUAL {$$ = $1;} 
     ;
 
-expr: xor_expr symbol_xor_expr_star {$$ = create_node(3,"Expressions",$1,$2);}
+expr: xor_expr symbol_xor_expr_star {
+    $$ = create_node(3,"Expressions",$1,$2);
+    if($2==NULL || $2->type_of_node=="undefined"){
+        $$->type_of_node= $1->type_of_node;
+    }else{
+        // karna hai
+    }
+}
 
 star_expr: MUL expr {$$ = create_node(3,"Expressions",$1,$2);};
 
@@ -350,48 +354,118 @@ symbol_xor_expr_star: BITWISE_OR xor_expr symbol_xor_expr_star {$$ = create_node
     | /*empty*/ {$$=NULL;}
     ;
 
-xor_expr: and_expr symbol_and_expr_star {$$ = create_node(3,"Expressions",$1,$2);};
+xor_expr: and_expr symbol_and_expr_star {
+    $$ = create_node(3,"Expressions",$1,$2);
+    if($2==NULL || $2->type_of_node=="undefined"){
+        $$->type_of_node= $1->type_of_node;
+    }else{
+        // karna hai
+    }
+};
 
 symbol_and_expr_star: BITWISE_XOR and_expr symbol_and_expr_star {$$ = create_node(4,"Xor_exprs",$1,$2,$3);}
     | /*empty*/ {$$=NULL;}
     ;
 
-and_expr: shift_expr symbol_shift_expr_star {$$ = create_node(3,"Expressions",$1,$2);};
+and_expr: shift_expr symbol_shift_expr_star {
+    $$ = create_node(3,"Expressions",$1,$2);
+    if($2==NULL || $2->type_of_node=="undefined"){
+        $$->type_of_node= $1->type_of_node;
+    }else{
+        // karna hai
+    }
+};
 
 symbol_shift_expr_star: BITWISE_AND shift_expr symbol_shift_expr_star {$$ = create_node(4,"And_exprs",$1,$2,$3);}
     | /*empty*/ {$$=NULL;}
     ;
 
-shift_expr: arith_expr shift_arith_expr_star {$$ = create_node(3,"Expressions",$1,$2);};
+shift_expr: arith_expr shift_arith_expr_star {
+    $$ = create_node(3,"Expressions",$1,$2);
+    if($2==NULL || $2->type_of_node=="undefined"){
+        $$->type_of_node= $1->type_of_node;
+    }else{
+        // karna hai
+    }
+};
 
 shift_arith_expr_star: /*empty*/ {$$=NULL;}
     | SHIFT_LEFT arith_expr shift_arith_expr_star {$$ = create_node(4,"Shift_left_expr",$1,$2,$3);}
     | SHIFT_RIGHT arith_expr shift_arith_expr_star {$$ = create_node(4,"Shift_right_expr",$1,$2,$3);}
     ;
 
-arith_expr: term symbol_term_star  {$$ = create_node(3,"Expressions",$1,$2);} ;
+arith_expr: term symbol_term_star  {
+    $$ = create_node(3,"Expressions",$1,$2);
+    if($2==NULL || $2->type_of_node=="undefined"){
+        $$->type_of_node= $1->type_of_node;
+    }else{
+            // karna hai
+    }
+} ;
 
 symbol_term_star: /*empty*/ {$$=NULL;}
     | ADD term symbol_term_star {$$ = create_node(4,"Operator_expr",$1,$2,$3);}
     | SUB term symbol_term_star {$$ = create_node(4,"Operator_expr",$1,$2,$3);}
     ;
 
-term: factor symbol_factor_star {$$ = create_node(3,"Terms",$1,$2);};
+term: factor symbol_factor_star {
+    $$ = create_node(3,"Terms",$1,$2);
+    if($2==NULL || $2->type_of_node=="undefined"){
+        $$->type_of_node= $1->type_of_node;
+    }else{
+        // karna hai
+    }
+}
 
 symbol_factor_star: /*empty*/ {$$=NULL;}
     | symbol_factor symbol_factor_star {$$ = create_node(3,"Terms",$1,$2);}
     ;
 
-symbol_factor: MUL factor {$$ = create_node(3,"Mul_term",$1,$2);}
-    | AT factor {$$ = create_node(3,"At_term",$1,$2);}
-    | DIV factor {$$ = create_node(3,"Div_term",$1,$2);}
-    | FLOOR_DIV factor {$$ = create_node(3,"Div_term",$1,$2);}
-    | MOD factor {$$ = create_node(3,"Mod_term",$1,$2);}
+symbol_factor: MUL factor {
+        $$ = create_node(3,"Mul_term",$1,$2);
+        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+        }
+    }
+    // | AT factor {$$ = create_node(3,"At_term",$1,$2);}
+    | DIV factor {
+        $$ = create_node(3,"Div_term",$1,$2);
+        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+        }
+    }
+    | FLOOR_DIV factor {
+        $$ = create_node(3,"Div_term",$1,$2);
+        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+        }
+    }
+    | MOD factor {
+        $$ = create_node(3,"Mod_term",$1,$2);
+        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+        }
+    }
     ;
 
-factor: ADD factor {$$ = create_node(3,"Add_term",$1,$2);}
-    | SUB factor {$$ = create_node(3,"Sub_term",$1,$2);}
-    | TILDE factor {$$ = create_node(3,"Tilde_term",$1,$2);}
+factor: ADD factor {
+        $$ = create_node(3,"Add_term",$1,$2);
+        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+        }
+    }
+    | SUB factor {
+        $$ = create_node(3,"Sub_term",$1,$2);
+        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+        }
+    }
+    | TILDE factor {
+        $$ = create_node(3,"Tilde_term",$1,$2);
+        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+        }
+    }
     | power {$$ = $1;}
     ;
     
@@ -413,38 +487,61 @@ power: atom_expr {$$ = $1;}
 atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
     | atom trailer_star{
         $$=create_node(3,"Terms", $1,$2);
-        if($2==NULL || $2->type_of_node==""){
+        if($2 && $2->type_of_node.substr(0,3)=="Box" && $2->type_of_node!="Box;int"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int\n";
+        }
+        // if($2)
+        //     cout<<$2->type_of_node<<" Thissss"<<endl;
+        if($2==NULL || $2->type_of_node=="undefined"){
             string temp_type = $1->type_of_node;
-            if($1->type_of_node=="int")
-                $$->type_of_node = "int";
-            else if($1->type_of_node=="float")
-                $$->type_of_node="float";
-            // $$->type_of_node= temp_type;
-            // $$->type_of_node= $1->type_of_node;
+            $$->type_of_node= $1->type_of_node;
+            // cout<<$$->type_of_node<<endl;
         }else{
-            $$->type_of_node="undefined";
+            $$->type_of_node= $1->type_of_node+";"+$2->type_of_node;
             // karna hai pending
         }
     }
     ;
 
-trailer_star:  trailer trailer_star  {$$ = create_node(3,"Stmts",$1,$2);}
+trailer_star:  trailer trailer_star  {
+        $$ = create_node(3,"Stmts",$1,$2);
+        $$->type_of_node=$1->type_of_node;
+        if($2!=NULL){
+            //check if first 3 substring is  Box
+            if($1->type_of_node.substr(0,3)=="Box" || $1->type_of_node.substr(0,5)=="Small"){
+                    cout<<"Error invalid sequence of dereferencing at line no "<<yylineno<<endl;
+            }
+        }
+    }
     | /*empty*/{$$=NULL;}
     ;
 
 
-trailer: SMALL_OPEN arglist SMALL_CLOSE  {$$ = create_node(4,"Arguments",$1,$2,$3);}
-    |SMALL_OPEN SMALL_CLOSE { $$ = create_node(3,"Parantheses",$1,$2);}
-    |BOX_OPEN subscriptlist BOX_CLOSE {$$ = create_node(4,"Square_bracket",$1,$2,$3);}
-    |DOT NAME TYPE_HINT {$$ = create_node(4,"Identifier",$1,$2,$3);
-     delete_sym_table(curr_sym_tbl.top(),$2->lexeme);
-    create_entry(curr_sym_tbl.top(),  $2->lexeme,$3->lexeme,yylineno,0,NULL );
+trailer: SMALL_OPEN arglist SMALL_CLOSE  {
+        $$ = create_node(4,"Arguments",$1,$2,$3);
+        $$->type_of_node = "Small";
+    }
+    |SMALL_OPEN SMALL_CLOSE { 
+        $$ = create_node(3,"Parantheses",$1,$2);
+        $$->type_of_node = "Small";
+    }
+    |BOX_OPEN subscriptlist BOX_CLOSE {$$ = create_node(4,"Square_bracket",$1,$2,$3);
+        $$->type_of_node = "Box;"+$2->type_of_node;
+        // cout<<"trailer"<<endl;
+    }
+    |DOT NAME TYPE_HINT {
+        $$ = create_node(4,"Identifier",$1,$2,$3);
+        delete_sym_table(curr_sym_tbl.top(),$2->lexeme);
+        create_entry(curr_sym_tbl.top(),  $2->lexeme,$3->lexeme,yylineno,0,NULL );
+        $$->type_of_node = $3->lexeme;
     }
     |DOT NAME { $$ = create_node(3,"Identifier",$1,$2);
     if(!search_sym_table(curr_sym_tbl.top(),$2->lexeme,0)){
         cout<<"Sym_tbl_error: Variable "<<$2->lexeme<<" not declared at line "<<yylineno<<endl;
         // give error as type hint not found
     }
+        $$->type_of_node = $2->type_of_node;
+
     }
     ;
 
@@ -475,7 +572,9 @@ bracket_arglist_optional: SMALL_OPEN SMALL_CLOSE {$$=create_node(3,"Parantheses"
     | {$$=NULL;}
     ;
 
-arglist: argument_list COMMA {$$=create_node(3,"Arguments",$1,$2);}
+arglist: argument_list COMMA {
+        $$=create_node(3,"Arguments",$1,$2);
+    }
     | argument_list {$$=$1;}
     ;
 
@@ -487,13 +586,14 @@ subscriptlist: subscript_list COMMA {$$=create_node(3,"Terms",$1,$2);}
     | subscript_list { $$=$1;}
     ;
 
-subscript_list: subscript_list COMMA subscript { $$=create_node(4,"Terms",$1,$2,$3);}
-    | subscript { $$=$1;}
+subscript_list: subscript_list COMMA subscript { $$=create_node(4,"Terms",$1,$2,$3);
+    $$->type_of_node=$3->type_of_node;}
+    | subscript { $$=$1; }
     ;
 
 
 subscript: test {$$=$1;}
-    | optional_test COLON optional_test{ $$=create_node(4,"Terms",$1,$2,$3);}
+   // |   optional_test COLON optional_test{ $$=create_node(4,"Terms",$1,$2,$3);}
     ;
 
 
@@ -504,9 +604,7 @@ argument: test { $$ = $1;}
     | MUL test {$$=create_node(3,"Mul_term",$1,$2);}
     ;
 
-optional_test: test {$$=$1;}
-    | /*empty*/ {$$=NULL;}
-    ; 
+
 
 comp_iter: comp_for {$$=$1;}
     | comp_if {$$=$1;}
@@ -527,24 +625,46 @@ comp_if: IF test_nocond {$$=create_node(3,"IF_stmt",$1,$2);}
 
 test_nocond: or_test {$$=$1;};
 
-or_test: and_test or_and_test_star{$$=create_node(3,"Expressions",$1,$2);};
+or_test: and_test or_and_test_star{$$=create_node(3,"Expressions",$1,$2);
+    if($2==NULL)
+        $$->type_of_node=$1->type_of_node;
+    else{
+        // karna hai
+        }
+    };
 
 or_and_test_star:OR and_test or_and_test_star {$$=create_node(4,"OR_term",$1,$2,$3);}
     | { $$ = NULL;}
     ;
     
-and_test: not_test and_not_test_star {$$=create_node(3,"Expressions",$1,$2);};
+and_test: not_test and_not_test_star {$$=create_node(3,"Expressions",$1,$2);
+    if($2==NULL)
+        $$->type_of_node=$1->type_of_node;
+    else{
+        // karna hai
+        }
+};
 
 and_not_test_star: AND not_test and_not_test_star {$$=create_node(4,"And_term",$1,$2,$3);}
     | { $$ = NULL;}
     ;
 
 not_test: NOT not_test {$$=create_node(3,"Not_term",$1,$2);}
-    | comparison {$$=$1;}
+    | comparison {$$=$1;
+    $$->type_of_node=$1->type_of_node;
+    }
     ;
     
-comparison: expr comp_op_expr_plus {$$=create_node(3,"Expressions",$1,$2);}
-    |expr {$$=$1;}
+comparison: expr comp_op_expr_plus {$$=create_node(3,"Expressions",$1,$2);
+    if($2==NULL)
+        $$->type_of_node=$1->type_of_node;
+    else{
+        // karna hai
+        }
+    }
+    |expr {$$=$1;
+    $$->type_of_node=$1->type_of_node;
+    }
    ;
 
 comp_op_expr_plus: comp_op expr comp_op_expr_plus {$$=create_node(3,"Expresions",$1,$2);}
@@ -596,7 +716,12 @@ namedexpr_test_star_expr_option: namedexpr_test {$$=$1;}
 namedexpr_test: test {$$=$1;};
 
 test: or_test {$$=$1;}
-    |or_test IF or_test ELSE test {$$=create_node(6,"Expressions",$1,$2,$3,$4,$5);};
+    |or_test IF or_test ELSE test {$$=create_node(6,"Expressions",$1,$2,$3,$4,$5);
+    if($1->type_of_node!=$5->type_of_node){
+        cout<<"Error invalid type assign at line " <<yylineno <<".";
+    }
+    $$->type_of_node=$1->type_of_node;
+    };
 
 atom: SMALL_OPEN testlist_comp SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$3);}
     | SMALL_OPEN SMALL_CLOSE {$$=create_node(3,"Parantheses",$1,$2);}
@@ -619,8 +744,8 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$
         add_to_vector(parameter_vec, $1->lexeme, $2->lexeme,yylineno);
     }
     else{
-    delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
-    create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,NULL );
+        delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
+        create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,NULL );
     }
     }
     | number {$$=$1;}
