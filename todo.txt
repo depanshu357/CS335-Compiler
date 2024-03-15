@@ -1,0 +1,34 @@
+https://piazza.com/class/lqrto1fry5u57e/post/222
+Update on language features
+1. We will allow implicit typecasting for the following cases.
+
+integer <-> bool
+
+integer <-> float
+
+ 2. The following situation should be an error.
+
+i : float = 3.14
+
+def or use of mylist[i]   <----- error
+
+3. We will use two forms of the range() function: range(start, stop) and range(stop). It is okay if you want to handle these specially in your implementation.
+
+4. A function in the global scope and a class method can have the same name.  
+
+5. Objects will always be created with explicit ctor calls and a l-value on the LHS. You can assume that the test cases will respect this constraint.
+
+a : myclass = myclass(1,2)  <---- valid
+
+myclass(1,2) <--- invalid
+
+
+
+
+
+//if statement false condition
+None
+0
+empty
+""
+NULL

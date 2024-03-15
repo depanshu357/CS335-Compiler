@@ -2,3 +2,9 @@ entry_no,name,type,line_no,sp_type,size,offset
 parameters start-------
 parameters end-------
 0,x,int,1,0,4,0
+1,Block,For_block,2,0,4,4
+-----------sub table start-----------
+entry_no,name,type,line_no,sp_type,size,offset
+parameters start-------
+parameters end-------
+-----------sub table end-----------

@@ -1,1 +1,3 @@
-x:int=3+5*4-2/2.3+~3
+x:int=0
+for x in range(4):
+    print(x)

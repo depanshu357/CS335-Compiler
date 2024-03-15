@@ -33,7 +33,7 @@
 %token <elem> TYPE_HINT FUNC_TYPE_HINT 
 %token <elem> ADD_EQUAL SUB_EQUAL MUL_EQUAL  AT_EQUAL  DIV_EQUAL MOD_EQUAL BITWISE_AND_EQUAL  BITWISE_OR_EQUAL  BITWISE_XOR_EQUAL SHIFT_LEFT_EQUAL  SHIFT_RIGHT_EQUAL  POW_EQUAL  FLOOR_DIV_EQUAL 
 %token INDENT DEDENT
-%type <elem> start file_input stmt compound_stmt async_stmt if_stmt if_stmt_deviation elif_namedexpr_test_colon_suite_star while_stmt while_stmt_deviation for_stmt   funcdef funcdef_title func_type_hint_optional parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr star_expr symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr symbol_term_star term symbol_factor_star symbol_factor factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option expr_star_expr_option_list testlist_comp namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option namedexpr_test test atom number string_plus  else_colon_suite_optional 
+%type <elem> start file_input stmt compound_stmt async_stmt if_stmt if_stmt_deviation elif_namedexpr_test_colon_suite_star while_stmt while_stmt_deviation for_stmt   funcdef funcdef_title func_type_hint_optional parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr  symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr symbol_term_star term symbol_factor_star symbol_factor factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option expr_star_expr_option_list   testlist_comp   namedexpr_test test atom number string_plus  else_colon_suite_optional 
 
 %%
     
@@ -76,7 +76,10 @@ if_stmt: IF {
             namedexpr_test COLON suite {
                                     if(curr_sym_tbl.size()>1)
                                     curr_sym_tbl.pop();} 
-            if_stmt_deviation {$$ = create_node(6,"If_stmt",$1,$3,$4,$5,$7);};
+            if_stmt_deviation {
+                $$ = create_node(6,"If_stmt",$1,$3,$4,$5,$7);
+                
+            };
 
 if_stmt_deviation: elif_namedexpr_test_colon_suite_star ELSE COLON {
                                                     sym_table * new_table = new sym_table();
@@ -106,7 +109,9 @@ while_stmt: WHILE {
                     create_entry(curr_sym_tbl.top(),"while_block" , "While_stmt" ,yylineno,0,new_table );
                     curr_sym_tbl.push(new_table);
                 }  
-            namedexpr_test COLON suite while_stmt_deviation { $$ = create_node(4,"While_stmt",$1,$3,$4);}
+            namedexpr_test COLON suite while_stmt_deviation { 
+                $$ = create_node(4,"While_stmt",$1,$3,$4);
+            }
     ;
 
 while_stmt_deviation: ELSE COLON {
@@ -315,11 +320,9 @@ annassign: COLON test {$$ = create_node(3,"Identifiers",$1,$2);}
     ;
 
 testlist_star_expr: test testlist_star_expr_option1_star {$$ = create_node(3,"Expressions",$1,$2);}
-    | star_expr testlist_star_expr_option1_star {$$ = create_node(3,"Expressions",$1,$2);}
     ;
 
 testlist_star_expr_option1_star: COMMA test testlist_star_expr_option1_star {$$ = create_node(4,"Expressions",$1,$2,$3);}
-    | COMMA star_expr testlist_star_expr_option1_star {$$ = create_node(4,"Expressions",$1,$2,$3);}
     | COMMA {$$ = $1;}
     |{$$=NULL;}
     ;
@@ -341,16 +344,32 @@ augassign: ADD_EQUAL {$$ = $1;}
 
 expr: xor_expr symbol_xor_expr_star {
     $$ = create_node(3,"Expressions",$1,$2);
-    if($2==NULL || $2->type_of_node=="undefined"){
+     if($2==NULL || $2->type_of_node=="undefined"){
         $$->type_of_node= $1->type_of_node;
     }else{
-        // karna hai
+        if($2->type_of_node!="int" || $1->type_of_node!="int"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int\n";
+        }
+        $$->type_of_node= $1->type_of_node;
     }
 }
 
-star_expr: MUL expr {$$ = create_node(3,"Expressions",$1,$2);};
+/* star_expr: MUL expr {
+        $$ = create_node(3,"Expressions",$1,$2);
+        //check if expr is of type list
+        if($2->type_of_node.size()<6 || $2->type_of_node.substr(0,4)!="list"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected list\n";
+        }
+        
+    }; */
 
-symbol_xor_expr_star: BITWISE_OR xor_expr symbol_xor_expr_star {$$ = create_node(4,"Or_exprs",$1,$2,$3);}
+symbol_xor_expr_star: BITWISE_OR xor_expr symbol_xor_expr_star {
+        $$ = create_node(4,"Or_exprs",$1,$2,$3);
+        if($2->type_of_node!="int" ){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int\n";
+        }
+        $$->type_of_node= $2->type_of_node;
+    }
     | /*empty*/ {$$=NULL;}
     ;
 
@@ -359,11 +378,20 @@ xor_expr: and_expr symbol_and_expr_star {
     if($2==NULL || $2->type_of_node=="undefined"){
         $$->type_of_node= $1->type_of_node;
     }else{
-        // karna hai
+        if($2->type_of_node!="int" || $1->type_of_node!="int"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int\n";
+        }
+        $$->type_of_node= $2->type_of_node;
     }
 };
 
-symbol_and_expr_star: BITWISE_XOR and_expr symbol_and_expr_star {$$ = create_node(4,"Xor_exprs",$1,$2,$3);}
+symbol_and_expr_star: BITWISE_XOR and_expr symbol_and_expr_star {
+        $$ = create_node(4,"Xor_exprs",$1,$2,$3);
+        if($2->type_of_node!="int" ){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int\n";
+        }
+        $$->type_of_node = $2->type_of_node;
+    }
     | /*empty*/ {$$=NULL;}
     ;
 
@@ -372,11 +400,20 @@ and_expr: shift_expr symbol_shift_expr_star {
     if($2==NULL || $2->type_of_node=="undefined"){
         $$->type_of_node= $1->type_of_node;
     }else{
-        // karna hai
+        if($2->type_of_node!="int"|| $1->type_of_node!="int" ){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int\n";
+        }
+        $$->type_of_node= $2->type_of_node;
     }
 };
 
-symbol_shift_expr_star: BITWISE_AND shift_expr symbol_shift_expr_star {$$ = create_node(4,"And_exprs",$1,$2,$3);}
+symbol_shift_expr_star: BITWISE_AND shift_expr symbol_shift_expr_star {
+        $$ = create_node(4,"And_exprs",$1,$2,$3);
+        if($2->type_of_node!="int" ){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int\n";
+        }
+        $$->type_of_node = $2->type_of_node;
+    }
     | /*empty*/ {$$=NULL;}
     ;
 
@@ -385,47 +422,120 @@ shift_expr: arith_expr shift_arith_expr_star {
     if($2==NULL || $2->type_of_node=="undefined"){
         $$->type_of_node= $1->type_of_node;
     }else{
-        // karna hai
+        if($2->type_of_node!="int" || $1->type_of_node!="int"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int\n";
+        }
+        $$->type_of_node= $2->type_of_node;
     }
 };
 
 shift_arith_expr_star: /*empty*/ {$$=NULL;}
-    | SHIFT_LEFT arith_expr shift_arith_expr_star {$$ = create_node(4,"Shift_left_expr",$1,$2,$3);}
-    | SHIFT_RIGHT arith_expr shift_arith_expr_star {$$ = create_node(4,"Shift_right_expr",$1,$2,$3);}
+    | SHIFT_LEFT arith_expr shift_arith_expr_star {
+        $$ = create_node(4,"Shift_left_expr",$1,$2,$3);
+        if($2->type_of_node!="int" ){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int\n";
+        }
+        $$->type_of_node = $2->type_of_node;
+    }
+    | SHIFT_RIGHT arith_expr shift_arith_expr_star {
+        $$ = create_node(4,"Shift_right_expr",$1,$2,$3);
+        if($2->type_of_node!="int" ){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int\n";
+        }
+        $$->type_of_node = $2->type_of_node;
+    }
     ;
 
 arith_expr: term symbol_term_star  {
     $$ = create_node(3,"Expressions",$1,$2);
     if($2==NULL || $2->type_of_node=="undefined"){
         $$->type_of_node= $1->type_of_node;
+    }else if($2->type_of_node!="int" && $2->type_of_node!="float"){
+        cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+    }else if($1->type_of_node=="float" || $2->type_of_node=="float"){
+        $$->type_of_node= "float";
     }else{
-            // karna hai
+        $$->type_of_node= "int";
     }
 } ;
 
 symbol_term_star: /*empty*/ {$$=NULL;}
-    | ADD term symbol_term_star {$$ = create_node(4,"Operator_expr",$1,$2,$3);}
-    | SUB term symbol_term_star {$$ = create_node(4,"Operator_expr",$1,$2,$3);}
+    | ADD term symbol_term_star {
+        $$ = create_node(4,"Operator_expr",$1,$2,$3);
+        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+        }
+        if($3==NULL || $3->type_of_node=="undefined"){
+            $$->type_of_node= $2->type_of_node;
+        }else if($3->type_of_node!="int" && $3->type_of_node!="float"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+        }else if($2->type_of_node=="float" || $3->type_of_node=="float"){
+            $$->type_of_node= "float";
+        }else{
+            $$->type_of_node= "int";
+        }
+    }
+    | SUB term symbol_term_star {
+        $$ = create_node(4,"Operator_expr",$1,$2,$3);
+        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+        }
+        if($3==NULL || $3->type_of_node=="undefined"){
+            $$->type_of_node= $2->type_of_node;
+        }else if($3->type_of_node!="int" && $3->type_of_node!="float"){
+            cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+        }else if($2->type_of_node=="float" || $3->type_of_node=="float"){
+            $$->type_of_node= "float";
+        }else{
+            $$->type_of_node= "int";
+        
+        }
+    }
     ;
 
 term: factor symbol_factor_star {
     $$ = create_node(3,"Terms",$1,$2);
-    if($2==NULL || $2->type_of_node=="undefined"){
+    if($2==NULL){
         $$->type_of_node= $1->type_of_node;
-    }else{
-        // karna hai
+    }else if($2->type_of_node!="int" && $2->type_of_node!="float"){
+        cout<<"line 495 ";
+        cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+        
+    }else if($1->type_of_node!="float" && $1->type_of_node!="int"){
+        cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
     }
-}
+    else {
+        if($1->type_of_node=="float" || $2->type_of_node=="float")
+            $$->type_of_node= "float";
+        else
+            $$->type_of_node= "int";
+    }
+    };
+    
+
 
 symbol_factor_star: /*empty*/ {$$=NULL;}
-    | symbol_factor symbol_factor_star {$$ = create_node(3,"Terms",$1,$2);}
-    ;
+    | symbol_factor symbol_factor_star {$$ = create_node(3,"Terms",$1,$2);
+    if($1->type_of_node!="int" && $1->type_of_node!="float"){
+        cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+    }
+    if($2!=NULL && $2->type_of_node!="int" && $2->type_of_node!="float"){
+        cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
+    }
+
+    if($1->type_of_node=="float" || ($2!=NULL && $2->type_of_node=="float"))
+        $$->type_of_node= "float";
+    else
+        $$->type_of_node= "int";
+    
+    };
 
 symbol_factor: MUL factor {
         $$ = create_node(3,"Mul_term",$1,$2);
         if($2->type_of_node!="int" && $2->type_of_node!="float"){
             cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
         }
+        $$->type_of_node = $2->type_of_node;
     }
     // | AT factor {$$ = create_node(3,"At_term",$1,$2);}
     | DIV factor {
@@ -433,18 +543,21 @@ symbol_factor: MUL factor {
         if($2->type_of_node!="int" && $2->type_of_node!="float"){
             cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
         }
+        $$->type_of_node = $2->type_of_node;
     }
     | FLOOR_DIV factor {
         $$ = create_node(3,"Div_term",$1,$2);
         if($2->type_of_node!="int" && $2->type_of_node!="float"){
             cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
         }
+        $$->type_of_node = $2->type_of_node;
     }
     | MOD factor {
         $$ = create_node(3,"Mod_term",$1,$2);
         if($2->type_of_node!="int" && $2->type_of_node!="float"){
             cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
         }
+        $$->type_of_node = $2->type_of_node;
     }
     ;
 
@@ -453,18 +566,21 @@ factor: ADD factor {
         if($2->type_of_node!="int" && $2->type_of_node!="float"){
             cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
         }
+        $$->type_of_node = $2->type_of_node;
     }
     | SUB factor {
         $$ = create_node(3,"Sub_term",$1,$2);
         if($2->type_of_node!="int" && $2->type_of_node!="float"){
             cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
         }
+        $$->type_of_node = $2->type_of_node;
     }
     | TILDE factor {
         $$ = create_node(3,"Tilde_term",$1,$2);
         if($2->type_of_node!="int" && $2->type_of_node!="float"){
             cout<<"Error invalid type at line " <<yylineno <<". Expected int or float\n";
         }
+        $$->type_of_node = $2->type_of_node;
     }
     | power {$$ = $1;}
     ;
@@ -492,13 +608,27 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
         }
         // if($2)
         //     cout<<$2->type_of_node<<" Thissss"<<endl;
-        if($2==NULL || $2->type_of_node=="undefined"){
+        if($2==NULL ){
             string temp_type = $1->type_of_node;
             $$->type_of_node= $1->type_of_node;
             // cout<<$$->type_of_node<<endl;
         }else{
-            $$->type_of_node= $1->type_of_node+";"+$2->type_of_node;
-            // karna hai pending
+            // $$->type_of_node= $1->type_of_node+";"+$2->type_of_node;
+            if($2->type_of_node.substr(0,3)=="Box" ){
+                if($1->type_of_node.size()<6 || $1->type_of_node.substr(0,4)!="list"){
+                    cout<<"Error invalid  dereferencing of a type at line no "<<yylineno<<endl;
+                }
+                if($1->type_of_node.size()>=6){
+                    string temp_type = $1->type_of_node.substr(5,$1->type_of_node.size()-6);
+                    $$->type_of_node= temp_type;                
+                }
+            }
+            else if($2->type_of_node.size()>=5 && $2->type_of_node.substr(0,5)=="Small"){
+                $$->type_of_node= $1->type_of_node;
+            }
+            else{
+                $$->type_of_node= $2->type_of_node;
+            }
         }
     }
     ;
@@ -508,9 +638,10 @@ trailer_star:  trailer trailer_star  {
         $$->type_of_node=$1->type_of_node;
         if($2!=NULL){
             //check if first 3 substring is  Box
-            if($1->type_of_node.substr(0,3)=="Box" || $1->type_of_node.substr(0,5)=="Small"){
+            if($1->type_of_node.substr(0,3)=="Box" || ($1->type_of_node.size()>=5 && $1->type_of_node.substr(0,5)=="Small")){
                     cout<<"Error invalid sequence of dereferencing at line no "<<yylineno<<endl;
             }
+            
         }
     }
     | /*empty*/{$$=NULL;}
@@ -691,7 +822,6 @@ exprlist:
     ;
 
 expr_star_expr_option: expr {$$=$1;}
-    | star_expr {$$=$1;}
     ;
 
 expr_star_expr_option_list: expr_star_expr_option COMMA expr_star_expr_option_list {$$=create_node(4,"Expressions",$1,$2,$3);}
@@ -710,7 +840,6 @@ namedexpr_test_star_expr_option_list: namedexpr_test_star_expr_option COMMA name
     ;
 
 namedexpr_test_star_expr_option: namedexpr_test {$$=$1;}
-    | star_expr {$$=$1;}
     ;
 
 namedexpr_test: test {$$=$1;};
@@ -750,8 +879,8 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$
     }
     | number {$$=$1;}
     | string_plus {$$=$1;}
-    | TRUE {$$=$1;$$->type_of_node="bool";}
-    | FALSE {$$=$1;$$->type_of_node="bool";}
+    | TRUE {$$=$1;$$->type_of_node="int";}
+    | FALSE {$$=$1;$$->type_of_node="int";}
     | NONE {$$=$1;$$->type_of_node="None";}
     ;
 // dictionary , setliterals are to be ignored
