@@ -1,10 +1,23 @@
 entry_no,name,type,line_no,sp_type,size,offset
 parameters start-------
 parameters end-------
-0,x,int,1,0,4,0
-1,Block,For_block,2,0,4,4
+0,print,print,0,1,4,0
+1,range,list[int],0,1,4,4
+2,len,len,0,1,4,8
+3,greeting,str,1,1,4,12
+-----------sub table start-----------
+entry_no,name,type,line_no,sp_type,size,offset
+parameters start-------
+0,name,str,1,0,4,0
+parameters end-------
+-----------sub table end-----------
+4,x,str,4,0,4,16
+5,y,int,5,0,4,20
+6,array,list[int],6,0,4,24
+7,Block,For_block,7,0,4,28
 -----------sub table start-----------
 entry_no,name,type,line_no,sp_type,size,offset
 parameters start-------
 parameters end-------
 -----------sub table end-----------
+8,i,float,9,0,4,32

@@ -12,3 +12,9 @@ lex.yy.c
 graph.pdf
 
 *.output
+
+.vscode
+
+todo.txt
+
+*.csv
