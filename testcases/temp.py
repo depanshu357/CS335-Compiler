@@ -1,12 +1,12 @@
-def greeting(name: str) -> str:
-    return  name
+def func(a:int, b:int, c:int)->int:
+    # print(a, b, c)
+    return a, b, c
 
-x:str= "hello"
-y:int = 1
-array:list[int] = [1,2,3,4,5]
-for y in range(0,5):
-    print(x)
-i:float = 4.5
-y  **= 2
-y += 4
-print(y)
+x:int = 1, y:int=4
+y:int = 2
+z:int = 3
+# func(x,y,z)
+# array:list[int] = [1,2,3,4,5,6,8]
+# x,y,z
+# x:int , y:int, z:int
+

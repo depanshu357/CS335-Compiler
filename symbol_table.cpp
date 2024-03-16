@@ -15,6 +15,7 @@ typedef struct sym_table {
     string name;
     int parameter_count;
     int total_offset = 0;
+    string return_type;
     sym_table * prev_sym_table;
     vector<st_node> sym_tbl_entry; //this will contain entries of sym_table
     vector<st_node> parameters; //this will contain entries of parameters

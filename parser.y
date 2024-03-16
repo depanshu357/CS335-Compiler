@@ -181,7 +181,8 @@ except_clause: EXCEPT test_as_name_optional {$$ = create_node(3,"Except_block",$
 
 
 /*using this notation instead of below one*/
-funcdef:  DEF funcdef_title  func_body_suite { $$ = create_node(4,"Func_def",$1,$2,$3);}
+funcdef:  DEF funcdef_title  func_body_suite { $$ = create_node(4,"Func_def",$1,$2,$3);
+}
      /* | DEF NAME {parameter_vec.clear(); is_param=1;} parameters  COLON  func_body_suite { $$ = create_node(6,"Func_def",$1,$2,$3,$4,$5);}  */
     ;
 
@@ -196,10 +197,12 @@ funcdef_title: NAME {parameter_vec.clear(); is_param=1;} parameters  func_type_h
         curr_sym_tbl.push(new_table);
         add_parameters(curr_sym_tbl.top(), parameter_vec);
         is_param=0;
+        $$->type_of_node= $4->lexeme;
+        curr_sym_tbl.top()->return_type= $4->lexeme;
     }
     ;
 
-func_type_hint_optional: FUNC_TYPE_HINT {$$ = $1;}
+func_type_hint_optional: FUNC_TYPE_HINT {$$ = $1; $$->type_of_node= $1->val;}
     | { $$ = NULL;}
     ;
 
@@ -215,9 +218,15 @@ typedarglist:
 typedlist_arguments: typedlist_argument comma_option_argument_star {$$ = create_node(3,"Arguments",$1,$2);};
 
 typedlist_argument: tfpdef  { $$ = $1;}
-    |  tfpdef EQUAL test { $$ = create_node(4,"Assign_expr",$1,$2,$3);}
+    |  tfpdef EQUAL test { 
+        $$ = create_node(4,"Assign_expr",$1,$2,$3);
+        if($1->type_of_node!=$3->type_of_node && (($1->type_of_node!="int" && $1->type_of_node!="float") || ( $3->type_of_node!="int" && $3->type_of_node!="float"))){
+            cout<<"Error --typedlist_argument-- invalid type at line " <<yylineno <<endl;
+        }
+        $$->type_of_node= $1->type_of_node;
+    }
     ;
-    
+// x:int = 24
 comma_option_argument_star: comma_option_argument_star COMMA typedlist_argument {$$ = create_node(4,"Arguments",$1,$2,$3);}
     | { $$ = NULL;}
     ;
@@ -230,24 +239,23 @@ tfpdef: NAME { $$ = $1;
         }
         }
     | NAME TYPE_HINT { $$ = create_node(3,"Identifier",$1,$2); 
-    
-    if(is_param) {
-        add_to_vector(parameter_vec, $1->lexeme, $2->lexeme,yylineno);
-    }
-    else{
-    delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
-    create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,NULL );
-    }
-
+        if(is_param) {
+            add_to_vector(parameter_vec, $1->lexeme, $2->lexeme,yylineno);
+        }
+        else{
+        delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
+        create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,NULL );
+        }
     }
     | NAME COLON test {
+        //ignore this production
         $$ = create_node(4,"Identifier",$1,$2,$3);
-        }
+    }
     ;
 
 func_body_suite: simple_stmt {$$ = $1; 
-    if(curr_sym_tbl.size()>1)
-        curr_sym_tbl.pop();
+        if(curr_sym_tbl.size()>1)
+            curr_sym_tbl.pop();    
     }
     | NEWLINE INDENT stmt_plus DEDENT { $$ = $3;
     if(curr_sym_tbl.size()>1)
@@ -258,14 +266,25 @@ suite: simple_stmt {$$ = $1;}
     | NEWLINE INDENT stmt_plus DEDENT { $$ = $3;}
     ;
 
-stmt_plus: stmt stmt_plus {$$ = create_node(3,"Stmts",$1,$2);}
+stmt_plus: stmt stmt_plus {$$ = create_node(3,"Stmts",$1,$2);
+    }
     | stmt {$$ = $1;}
     ;
 
-simple_stmt: small_stmt semi_colon_small_stmt_star NEWLINE {$$ = create_node(3,"Simple_stmts",$1,$2);}
+simple_stmt: small_stmt semi_colon_small_stmt_star NEWLINE {
+        $$ = create_node(3,"Simple_stmts",$1,$2);
+       
+        
+    }
     ;
 
-semi_colon_small_stmt_star: SEMI_COLON small_stmt semi_colon_small_stmt_star {$$ = create_node(4,"Small_stmts",$1,$2,$3);}
+semi_colon_small_stmt_star: SEMI_COLON small_stmt semi_colon_small_stmt_star {$$ = create_node(4,"Small_stmts",$1,$2,$3);
+        // if($3 && $3->type_of_node!="undefined")
+        //     $$->type_of_node= $3->type_of_node;
+        // else 
+        //     $$->type_of_node= $2->type_of_node;
+       
+    }
     | SEMI_COLON {$$ = $1;}
     | { $$ = NULL;}
     ;
@@ -287,8 +306,25 @@ break_stmt: BREAK {$$  = $1;};
 
 continue_stmt: CONTINUE {$$ = $1;};
 
-return_stmt: RETURN testlist_star_expr {$$ = create_node(3,"Return_stmt",$1,$2);}
-    | RETURN {$$ = $1;}
+return_stmt: RETURN testlist_star_expr {
+        $$ = create_node(3,"Return_stmt",$1,$2);
+        if($2->type_of_node=="float" && curr_sym_tbl.top()->return_type=="int"){
+            //continue; change float val to int
+        }
+        else if($2->type_of_node=="int" && curr_sym_tbl.top()->return_type=="float"){
+          //continue; change int val to float
+        }
+        else if($2->type_of_node!=curr_sym_tbl.top()->return_type){
+            cout<<"Error --return_stmt-- invalid return type at line " <<yylineno <<". Expected "<<curr_sym_tbl.top()->return_type<<endl;
+        }
+        
+    }
+    | RETURN {
+        $$ = $1;
+        if(curr_sym_tbl.top()->return_type!="None"){
+            cout<<"Error --return_stmt-- invalid return type at line " <<yylineno <<". Expected "<<curr_sym_tbl.top()->return_type<<endl;
+        }
+    }
     ;
 
 raise_stmt: RAISE {$$ = $1;}
@@ -346,8 +382,6 @@ symbol_test_star: COMMA test symbol_test_star {$$ = create_node(4,"Expressions",
     |{$$=NULL;} 
     ;
 
-
-    
 expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus {
     $$ = create_node(4,"Expr_stmt",$1,$2,$3);
     if($3!=NULL && $3->type_of_node!=$2->type_of_node){
@@ -373,16 +407,29 @@ annassign: COLON test {$$ = create_node(3,"Identifiers",$1,$2);
 
 testlist_star_expr: test testlist_star_expr_option1_star {
         $$ = create_node(3,"Expressions",$1,$2);
-        if($2==NULL || $2->type_of_node=="undefined"){
-            $$->type_of_node= $1->type_of_node;
-            // cout<<"Testlist_star_expr"<<$$->type_of_node<<endl;
-        }else{
-            // karna hai
-        }
+        // if($2==NULL || $2->type_of_node=="undefined"){
+        //     $$->type_of_node= $1->type_of_node;
+        // }else{
+        //     $$->type_of_node= $1->type_of_node;
+        // }
+        $$->type_of_node= $1->type_of_node;
     }
     ;
 
-testlist_star_expr_option1_star: COMMA test testlist_star_expr_option1_star {$$ = create_node(4,"Expressions",$1,$2,$3);}
+testlist_star_expr_option1_star: COMMA test testlist_star_expr_option1_star {
+        $$ = create_node(4,"Expressions",$1,$2,$3);
+        cout << "testlist_star_expr_option1_star" << endl;
+        // if($3 || $3->type_of_node=="undefined"){
+        //     // continue;
+        //     cout <<"if is running" << endl;
+        // }
+        // else if($2->type_of_node!=$3->type_of_node){
+        //     cout<<"Error --testlist_star_expr_option1_star-- invalid type at line " <<yylineno <<". Expected "<<$2->type_of_node<<endl;
+        // }
+        // else{
+        //     $$->type_of_node= $2->type_of_node;
+        // }
+    }
     | COMMA {$$ = $1;}
     |{$$=NULL;}
     ;
@@ -1028,6 +1075,7 @@ int main(int argc, char* argv[]){
     indent_stack.push(0);
     /* yylex(); */
     global_sym_table->total_offset=0;
+    global_sym_table->return_type = "undefined";
     create_entry(global_sym_table, "print", "print", 0, 1, NULL);
     create_entry(global_sym_table, "range", "list[int]", 0, 1, NULL);
     create_entry(global_sym_table, "len", "len", 0, 1, NULL);
