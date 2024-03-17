@@ -1,21 +1,26 @@
-testlist_star_expr_option1_star
-testlist_star_expr_option1_star
-testlist_star_expr_option1_star
 entry_no,name,type,line_no,sp_type,size,offset
+symbol table name: 
 parameters start-------
 parameters end-------
 0,print,print,0,1,4,0
 1,range,list[int],0,1,4,4
 2,len,len,0,1,4,8
-3,func,int,1,1,4,12
------------sub table start-----------
+3,self,self,0,1,4,12
+4,fun,class,1,2,4,16
+-----------sub table with name start-----------
 entry_no,name,type,line_no,sp_type,size,offset
+symbol table name: fun
 parameters start-------
-0,a,int,1,0,4,0
-1,b,int,1,0,4,4
-2,c,int,1,0,4,8
+0,b,int,2,0,4,0
 parameters end-------
+0,self.x,int,3,0,4,4
+1,self.y,int,4,0,4,8
+2,run,None,6,1,4,12
+-----------sub table with name start-----------
+entry_no,name,type,line_no,sp_type,size,offset
+symbol table name: run
+parameters start-------
+parameters end-------
+0,y,int,8,0,4,0
 -----------sub table end-----------
-4,x,int,5,0,4,16
-5,y,int,6,0,4,24
-6,z,int,7,0,4,28
+-----------sub table end-----------
