@@ -6,174 +6,258 @@ fontsize  = 30
 labelloc  = t
 
 node   [ fontname="Cascadia code" ]
-	176		[ style = solid label = "START"  ];
-	176 -> 175
-	175		[ style = solid label = "File Input"  ];
-	175 -> 60
-	60		[ style = solid label = "Func_def"  ];
-	60 -> 0
+	235		[ style = solid label = "START"  ];
+	235 -> 233
+	233		[ style = solid label = "Class_def"  ];
+	233 -> 0
 	0		[ style = solid label = "KEYWORD 
-(def)" color = red shape = rectangle ];
-	60 -> 21
-	21		[ style = solid label = "Func_def"  ];
-	21 -> 1
+(class)" color = red shape = rectangle ];
+	233 -> 1
 	1		[ style = solid label = "IDENTIFIER 
-(func)" color = red shape = rectangle ];
-	21 -> 18
-	18		[ style = solid label = "Arguments"  ];
-	18 -> 2
+(fun)" color = red shape = rectangle ];
+	233 -> 4
+	4		[ style = solid label = "Parantheses"  ];
+	4 -> 2
 	2		[ style = solid label = "DELIMITER 
 (()" color = red shape = rectangle ];
-	18 -> 17
+	4 -> 3
+	3		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	233 -> 5
+	5		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	233 -> 232
+	232		[ style = solid label = "Stmts"  ];
+	232 -> 84
+	84		[ style = solid label = "Func_def"  ];
+	84 -> 6
+	6		[ style = solid label = "KEYWORD 
+(def)" color = red shape = rectangle ];
+	84 -> 20
+	20		[ style = solid label = "Func_def"  ];
+	20 -> 7
+	7		[ style = solid label = "IDENTIFIER 
+(__init__)" color = red shape = rectangle ];
+	20 -> 17
 	17		[ style = solid label = "Arguments"  ];
-	17 -> 5
-	5		[ style = solid label = "Identifier"  ];
-	5 -> 3
-	3		[ style = solid label = "IDENTIFIER 
-(a)" color = red shape = rectangle ];
-	5 -> 4
-	4		[ style = solid label = "TYPE_HINT 
-(:int)" color = red shape = rectangle ];
+	17 -> 8
+	8		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
 	17 -> 16
 	16		[ style = solid label = "Arguments"  ];
-	16 -> 11
-	11		[ style = solid label = "Arguments"  ];
-	11 -> 6
-	6		[ style = solid label = "DELIMITER 
-(,)" color = red shape = rectangle ];
-	11 -> 9
-	9		[ style = solid label = "Identifier"  ];
-	9 -> 7
-	7		[ style = solid label = "IDENTIFIER 
-(b)" color = red shape = rectangle ];
-	9 -> 8
-	8		[ style = solid label = "TYPE_HINT 
-(:int)" color = red shape = rectangle ];
-	16 -> 10
+	16 -> 9
+	9		[ style = solid label = "IDENTIFIER 
+(self)" color = red shape = rectangle ];
+	16 -> 15
+	15		[ style = solid label = "Arguments"  ];
+	15 -> 10
 	10		[ style = solid label = "DELIMITER 
 (,)" color = red shape = rectangle ];
-	16 -> 14
-	14		[ style = solid label = "Identifier"  ];
-	14 -> 12
-	12		[ style = solid label = "IDENTIFIER 
-(c)" color = red shape = rectangle ];
-	14 -> 13
-	13		[ style = solid label = "TYPE_HINT 
-(:int)" color = red shape = rectangle ];
-	18 -> 15
-	15		[ style = solid label = "DELIMITER 
-())" color = red shape = rectangle ];
-	21 -> 19
-	19		[ style = solid label = "TYPE_HINT 
-(->int)" color = red shape = rectangle ];
-	21 -> 20
-	20		[ style = solid label = "DELIMITER 
-(:)" color = red shape = rectangle ];
-	60 -> 58
-	58		[ style = solid label = "Return_stmt"  ];
-	58 -> 22
-	22		[ style = solid label = "KEYWORD 
-(return)" color = red shape = rectangle ];
-	58 -> 57
-	57		[ style = solid label = "Expressions"  ];
-	57 -> 23
-	23		[ style = solid label = "IDENTIFIER 
-(a)" color = red shape = rectangle ];
-	57 -> 56
-	56		[ style = solid label = "Expressions"  ];
-	56 -> 24
-	24		[ style = solid label = "DELIMITER 
-(,)" color = red shape = rectangle ];
-	56 -> 34
-	34		[ style = solid label = "IDENTIFIER 
+	15 -> 13
+	13		[ style = solid label = "Identifier"  ];
+	13 -> 11
+	11		[ style = solid label = "IDENTIFIER 
 (b)" color = red shape = rectangle ];
-	56 -> 55
-	55		[ style = solid label = "Expressions"  ];
-	55 -> 35
-	35		[ style = solid label = "DELIMITER 
-(,)" color = red shape = rectangle ];
-	55 -> 45
-	45		[ style = solid label = "IDENTIFIER 
-(c)" color = red shape = rectangle ];
-	175 -> 174
-	174		[ style = solid label = "File Input"  ];
-	174 -> 114
-	114		[ style = solid label = "Expr_stmt"  ];
-	114 -> 63
-	63		[ style = solid label = "Identifier"  ];
-	63 -> 61
-	61		[ style = solid label = "IDENTIFIER 
+	13 -> 12
+	12		[ style = solid label = "TYPE_HINT 
+(:int)" color = red shape = rectangle ];
+	17 -> 14
+	14		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	20 -> 18
+	18		[ style = solid label = "TYPE_HINT 
+(->None)" color = red shape = rectangle ];
+	20 -> 19
+	19		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	84 -> 83
+	83		[ style = solid label = "Stmts"  ];
+	83 -> 50
+	50		[ style = solid label = "Expr_stmt"  ];
+	50 -> 28
+	28		[ style = solid label = "Terms"  ];
+	28 -> 21
+	21		[ style = solid label = "IDENTIFIER 
+(self)" color = red shape = rectangle ];
+	28 -> 25
+	25		[ style = solid label = "Identifier"  ];
+	25 -> 22
+	22		[ style = solid label = "DELIMITER 
+(.)" color = red shape = rectangle ];
+	25 -> 23
+	23		[ style = solid label = "IDENTIFIER 
 (x)" color = red shape = rectangle ];
-	63 -> 62
-	62		[ style = solid label = "TYPE_HINT 
+	25 -> 24
+	24		[ style = solid label = "TYPE_HINT 
 (:int)" color = red shape = rectangle ];
-	114 -> 113
-	113		[ style = solid label = "Expr_stmt"  ];
-	113 -> 64
-	64		[ style = solid label = "ASSIGNMENT_OP 
+	50 -> 49
+	49		[ style = solid label = "Expr_stmt"  ];
+	49 -> 26
+	26		[ style = solid label = "ASSIGNMENT_OP 
 (=)" color = red shape = rectangle ];
-	113 -> 100
-	100		[ style = solid label = "Expressions"  ];
-	100 -> 75
-	75		[ style = solid label = "INTEGER 
-(1)" color = red shape = rectangle ];
-	100 -> 99
-	99		[ style = solid label = "Expressions"  ];
-	99 -> 76
-	76		[ style = solid label = "DELIMITER 
-(,)" color = red shape = rectangle ];
-	99 -> 88
-	88		[ style = solid label = "Identifier"  ];
-	88 -> 86
+	49 -> 38
+	38		[ style = solid label = "INTEGER 
+(110)" color = red shape = rectangle ];
+	83 -> 81
+	81		[ style = solid label = "Expr_stmt"  ];
+	81 -> 59
+	59		[ style = solid label = "Terms"  ];
+	59 -> 52
+	52		[ style = solid label = "IDENTIFIER 
+(self)" color = red shape = rectangle ];
+	59 -> 56
+	56		[ style = solid label = "Identifier"  ];
+	56 -> 53
+	53		[ style = solid label = "DELIMITER 
+(.)" color = red shape = rectangle ];
+	56 -> 54
+	54		[ style = solid label = "IDENTIFIER 
+(y)" color = red shape = rectangle ];
+	56 -> 55
+	55		[ style = solid label = "TYPE_HINT 
+(:int)" color = red shape = rectangle ];
+	81 -> 80
+	80		[ style = solid label = "Expr_stmt"  ];
+	80 -> 57
+	57		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	80 -> 69
+	69		[ style = solid label = "IDENTIFIER 
+(b)" color = red shape = rectangle ];
+	232 -> 231
+	231		[ style = solid label = "Func_def"  ];
+	231 -> 85
+	85		[ style = solid label = "KEYWORD 
+(def)" color = red shape = rectangle ];
+	231 -> 94
+	94		[ style = solid label = "Func_def"  ];
+	94 -> 86
 	86		[ style = solid label = "IDENTIFIER 
+(run)" color = red shape = rectangle ];
+	94 -> 91
+	91		[ style = solid label = "Arguments"  ];
+	91 -> 87
+	87		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	91 -> 88
+	88		[ style = solid label = "IDENTIFIER 
+(self)" color = red shape = rectangle ];
+	91 -> 89
+	89		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	94 -> 92
+	92		[ style = solid label = "TYPE_HINT 
+(->None)" color = red shape = rectangle ];
+	94 -> 93
+	93		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	231 -> 230
+	230		[ style = solid label = "Stmts"  ];
+	230 -> 123
+	123		[ style = solid label = "Expr_stmt"  ];
+	123 -> 101
+	101		[ style = solid label = "Terms"  ];
+	101 -> 95
+	95		[ style = solid label = "IDENTIFIER 
+(self)" color = red shape = rectangle ];
+	101 -> 99
+	99		[ style = solid label = "Identifier"  ];
+	99 -> 96
+	96		[ style = solid label = "DELIMITER 
+(.)" color = red shape = rectangle ];
+	99 -> 97
+	97		[ style = solid label = "IDENTIFIER 
 (y)" color = red shape = rectangle ];
-	88 -> 87
-	87		[ style = solid label = "TYPE_HINT 
-(:int)" color = red shape = rectangle ];
-	113 -> 112
-	112		[ style = solid label = "Expr_stmt"  ];
-	112 -> 89
-	89		[ style = solid label = "ASSIGNMENT_OP 
+	123 -> 122
+	122		[ style = solid label = "Expr_stmt"  ];
+	122 -> 98
+	98		[ style = solid label = "ASSIGNMENT_OP 
 (=)" color = red shape = rectangle ];
-	112 -> 101
-	101		[ style = solid label = "INTEGER 
-(4)" color = red shape = rectangle ];
-	174 -> 173
-	173		[ style = solid label = "File Input"  ];
-	173 -> 142
-	142		[ style = solid label = "Expr_stmt"  ];
-	142 -> 118
-	118		[ style = solid label = "Identifier"  ];
-	118 -> 116
-	116		[ style = solid label = "IDENTIFIER 
+	122 -> 111
+	111		[ style = solid label = "INTEGER 
+(12)" color = red shape = rectangle ];
+	230 -> 229
+	229		[ style = solid label = "Stmts"  ];
+	229 -> 151
+	151		[ style = solid label = "Expr_stmt"  ];
+	151 -> 127
+	127		[ style = solid label = "Identifier"  ];
+	127 -> 125
+	125		[ style = solid label = "IDENTIFIER 
 (y)" color = red shape = rectangle ];
-	118 -> 117
-	117		[ style = solid label = "TYPE_HINT 
+	127 -> 126
+	126		[ style = solid label = "TYPE_HINT 
 (:int)" color = red shape = rectangle ];
-	142 -> 141
-	141		[ style = solid label = "Expr_stmt"  ];
-	141 -> 119
-	119		[ style = solid label = "ASSIGNMENT_OP 
+	151 -> 150
+	150		[ style = solid label = "Expr_stmt"  ];
+	150 -> 128
+	128		[ style = solid label = "ASSIGNMENT_OP 
 (=)" color = red shape = rectangle ];
-	141 -> 130
-	130		[ style = solid label = "INTEGER 
-(2)" color = red shape = rectangle ];
-	173 -> 170
-	170		[ style = solid label = "Expr_stmt"  ];
-	170 -> 146
-	146		[ style = solid label = "Identifier"  ];
-	146 -> 144
-	144		[ style = solid label = "IDENTIFIER 
-(z)" color = red shape = rectangle ];
-	146 -> 145
-	145		[ style = solid label = "TYPE_HINT 
-(:int)" color = red shape = rectangle ];
-	170 -> 169
-	169		[ style = solid label = "Expr_stmt"  ];
-	169 -> 147
-	147		[ style = solid label = "ASSIGNMENT_OP 
+	150 -> 139
+	139		[ style = solid label = "INTEGER 
+(8)" color = red shape = rectangle ];
+	229 -> 228
+	228		[ style = solid label = "Stmts"  ];
+	228 -> 181
+	181		[ style = solid label = "Expr_stmt"  ];
+	181 -> 159
+	159		[ style = solid label = "Terms"  ];
+	159 -> 153
+	153		[ style = solid label = "IDENTIFIER 
+(self)" color = red shape = rectangle ];
+	159 -> 157
+	157		[ style = solid label = "Identifier"  ];
+	157 -> 154
+	154		[ style = solid label = "DELIMITER 
+(.)" color = red shape = rectangle ];
+	157 -> 155
+	155		[ style = solid label = "IDENTIFIER 
+(y)" color = red shape = rectangle ];
+	181 -> 180
+	180		[ style = solid label = "Expr_stmt"  ];
+	180 -> 156
+	156		[ style = solid label = "ASSIGNMENT_OP 
 (=)" color = red shape = rectangle ];
-	169 -> 158
-	158		[ style = solid label = "INTEGER 
-(3)" color = red shape = rectangle ];
+	180 -> 169
+	169		[ style = solid label = "IDENTIFIER 
+(y)" color = red shape = rectangle ];
+	228 -> 227
+	227		[ style = solid label = "Stmts"  ];
+	227 -> 214
+	214		[ style = solid label = "Terms"  ];
+	214 -> 183
+	183		[ style = solid label = "IDENTIFIER 
+(print)" color = red shape = rectangle ];
+	214 -> 212
+	212		[ style = solid label = "Arguments"  ];
+	212 -> 184
+	184		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	212 -> 211
+	211		[ style = solid label = "Arguments"  ];
+	211 -> 191
+	191		[ style = solid label = "Terms"  ];
+	191 -> 185
+	185		[ style = solid label = "IDENTIFIER 
+(self)" color = red shape = rectangle ];
+	191 -> 189
+	189		[ style = solid label = "Identifier"  ];
+	189 -> 186
+	186		[ style = solid label = "DELIMITER 
+(.)" color = red shape = rectangle ];
+	189 -> 187
+	187		[ style = solid label = "IDENTIFIER 
+(y)" color = red shape = rectangle ];
+	211 -> 188
+	188		[ style = solid label = "DELIMITER 
+(,)" color = red shape = rectangle ];
+	211 -> 200
+	200		[ style = solid label = "IDENTIFIER 
+(y)" color = red shape = rectangle ];
+	212 -> 201
+	201		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	227 -> 225
+	225		[ style = solid label = "KEYWORD 
+(return)" color = red shape = rectangle ];
 }

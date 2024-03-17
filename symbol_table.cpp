@@ -133,8 +133,9 @@ void add_parameters(sym_table * symbol_table, vector<st_node>&v){
 
 void print_sym_table(sym_table * symbol_table){
     
-     std::cout << "entry_no,name,type,line_no,sp_type,size,offset" << std::endl;
+     cout << "entry_no,name,type,line_no,sp_type,size,offset" << endl;
     //print all parameters
+    cout<<"symbol table name: "<<symbol_table->name<<endl;
     cout<<"parameters start-------"<<endl;
     for (int i = 0; i < symbol_table->parameters.size(); i++) {
         cout << i << ",";
@@ -156,7 +157,7 @@ void print_sym_table(sym_table * symbol_table){
         cout << symbol_table->sym_tbl_entry[i].size << ",";
         cout << symbol_table->sym_tbl_entry[i].offset <<endl;
         if(symbol_table->sym_tbl_entry[i].sub_symbol_table!=NULL){
-            cout << "-----------sub table start-----------" << endl;
+            cout << "-----------sub table with name start-----------" << endl;
             print_sym_table(symbol_table->sym_tbl_entry[i].sub_symbol_table);
             cout << "-----------sub table end-----------" << endl;
         }
