@@ -215,14 +215,18 @@ funcdef_title: NAME {parameter_vec.clear(); is_param=1;} parameters func_type_hi
         else{
             sym_table * new_table = new sym_table();
             string func_type="func";
-            if($4!=NULL)
+            if($4!=NULL){
                 func_type=$4->lexeme;
+                
+            }
+            else
+                func_type="None";
             create_entry(curr_sym_tbl.top(),  $1->lexeme,func_type,yylineno,__FUNC__,new_table );
             curr_sym_tbl.push(new_table);
             add_parameters(curr_sym_tbl.top(), parameter_vec);
             is_param=0;
-            $$->type_of_node= $4->lexeme;
-            curr_sym_tbl.top()->return_type= $4->lexeme;
+            $$->type_of_node= func_type;
+            curr_sym_tbl.top()->return_type= func_type;
         }
     }
     ;
@@ -245,6 +249,7 @@ typedlist_arguments: typedlist_argument comma_option_argument_star {$$ = create_
 typedlist_argument: tfpdef  { $$ = $1;}
     |  tfpdef EQUAL test { 
         $$ = create_node(4,"Assign_expr",$1,$2,$3);
+        
         if($1->type_of_node!=$3->type_of_node && (($1->type_of_node!="int" && $1->type_of_node!="float") || ( $3->type_of_node!="int" && $3->type_of_node!="float"))){
             cout<<"Error --typedlist_argument-- invalid type at line " <<yylineno <<endl;
         }
@@ -854,7 +859,7 @@ classdef: CLASS NAME {
         }
         bracket_arglist_optional COLON {
         sym_table * new_table = new sym_table();
-        create_entry(curr_sym_tbl.top(),$2->lexeme , "class" ,yylineno,__CLASS__,new_table );
+        create_entry(curr_sym_tbl.top(),$2->lexeme , $2->lexeme ,yylineno,__CLASS__,new_table );
         curr_sym_tbl.push(new_table);
         add_parameters(curr_sym_tbl.top(), parameter_vec);
         is_param=0;
@@ -1158,6 +1163,7 @@ int main(int argc, char* argv[]){
     create_entry(global_sym_table, "range", "list[int]", 0, 1, NULL);
     create_entry(global_sym_table, "len", "len", 0, 1, NULL);
     create_entry(global_sym_table, "self", "self", 0, 1, NULL);
+    create_entry(global_sym_table, "__name__", "__name__", 0, 1, NULL);
     curr_sym_tbl.push(global_sym_table);
 	string output_file = "";
     string input_file = "input.txt";
