@@ -2,7 +2,7 @@ def func(a:int, b:int, c:int)->int:
     # print(a, b, c)
     return a, b, c
 
-x:int = 1, y:int=4
+x:int = 1
 y:int = 2
 z:int = 3
 # func(x,y,z)

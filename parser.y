@@ -784,18 +784,21 @@ trailer: SMALL_OPEN arglist SMALL_CLOSE  {
     ;
 
 
-classdef: CLASS NAME {parameter_vec.clear(); is_param=1;}bracket_arglist_optional COLON {
-                                                    sym_table * new_table = new sym_table();
-                                                    create_entry(curr_sym_tbl.top(),$2->lexeme , "class" ,yylineno,2,new_table );
-                                                    curr_sym_tbl.push(new_table);
-                                                    add_parameters(curr_sym_tbl.top(), parameter_vec);
-                                                    is_param=0;
-                                                    }
-                                                    suite {
-                                                        $$=create_node(6,"Class_def",$1,$2,$4,$5,$7);
-                                                        if(curr_sym_tbl.size()>1)
-                                                            curr_sym_tbl.pop();
-                                                    };
+classdef: CLASS NAME {
+            parameter_vec.clear(); is_param=1;
+        }
+        bracket_arglist_optional COLON {
+            sym_table * new_table = new sym_table();
+            create_entry(curr_sym_tbl.top(),$2->lexeme , "class" ,yylineno,2,new_table );
+            curr_sym_tbl.push(new_table);
+            add_parameters(curr_sym_tbl.top(), parameter_vec);
+            is_param=0;
+        }
+        suite {
+            $$=create_node(6,"Class_def",$1,$2,$4,$5,$7);
+            if(curr_sym_tbl.size()>1)
+                curr_sym_tbl.pop();
+        };
 
 /* classdef: CLASS NAME bracket_arglist_optional COLON suite {
     $$=create_node(6,"Class_def",$1,$2,$3,$4,$5);
