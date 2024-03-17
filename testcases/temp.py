@@ -1,12 +1,14 @@
-def func(a:int, b:int, c:int)->int:
-    # print(a, b, c)
-    return a, b, c
+class fun():
+    def __init__(self,b:int)->None:
+        self.x:int = 110
+        self.y:int = b
 
-x:int = 1, y:int=4
-y:int = 2
-z:int = 3
-# func(x,y,z)
-# array:list[int] = [1,2,3,4,5,6,8]
-# x,y,z
-# x:int , y:int, z:int
+    def run(self)->None:
+        self.y=12
+        y:int = 8
+        self.y = y
+
+        print(self.y, y)
+        return
+
 

@@ -15,6 +15,12 @@
     sym_table * global_sym_table = new sym_table();    
     stack<sym_table*> curr_sym_tbl;
     vector<st_node> parameter_vec;
+    #define __CLASS__ 2
+    #define __FUNC__ 1
+    #define __DOT__ 1
+    #define __TDOT__ 2
+    int is_dot_name=0;
+    string after_dot_name = "";
 
 %}
 
@@ -90,9 +96,10 @@ if_stmt_deviation: elif_namedexpr_test_colon_suite_star ELSE COLON {
                                                 
 
 elif_namedexpr_test_colon_suite_star: ELIF {
-                                            sym_table * new_table = new sym_table();
-                                            create_entry(curr_sym_tbl.top(),"else_block" , "Else_stmt" ,yylineno,0,new_table );
-                                            curr_sym_tbl.push(new_table);} 
+        sym_table * new_table = new sym_table();
+        create_entry(curr_sym_tbl.top(),"else_block" , "Else_stmt" ,yylineno,0,new_table );
+        curr_sym_tbl.push(new_table);
+        } 
         namedexpr_test COLON suite {
             if(curr_sym_tbl.size()>1) curr_sym_tbl.pop();
         } 
@@ -181,24 +188,42 @@ except_clause: EXCEPT test_as_name_optional {$$ = create_node(3,"Except_block",$
 
 
 /*using this notation instead of below one*/
-funcdef:  DEF funcdef_title  func_body_suite { $$ = create_node(4,"Func_def",$1,$2,$3);
+funcdef:  DEF funcdef_title  func_body_suite { 
+    $$ = create_node(4,"Func_def",$1,$2,$3);
+    // cout << $2->lexeme << "TESSSSS"<< endl;
+    if(curr_sym_tbl.size()>1 && string($2->lexeme)!="__init__")
+    {
+            // cout<<"poping "<<curr_sym_tbl.top()->name<<endl; 
+            curr_sym_tbl.pop(); 
+    } 
 }
      /* | DEF NAME {parameter_vec.clear(); is_param=1;} parameters  COLON  func_body_suite { $$ = create_node(6,"Func_def",$1,$2,$3,$4,$5);}  */
     ;
 
 
-funcdef_title: NAME {parameter_vec.clear(); is_param=1;} parameters  func_type_hint_optional COLON { 
+funcdef_title: NAME {parameter_vec.clear(); is_param=1;} parameters func_type_hint_optional COLON { 
         $$ = create_node(5,"Func_def",$1,$3,$4,$5);
-        sym_table * new_table = new sym_table();
-        string func_type="func";
-        if($4!=NULL)
-            func_type=$4->lexeme;
-        create_entry(curr_sym_tbl.top(),  $1->lexeme,func_type,yylineno,1,new_table );
-        curr_sym_tbl.push(new_table);
-        add_parameters(curr_sym_tbl.top(), parameter_vec);
-        is_param=0;
-        $$->type_of_node= $4->lexeme;
-        curr_sym_tbl.top()->return_type= $4->lexeme;
+        $$->lexeme=$1->lexeme;
+        // cout << $1->lexeme << "TESSSSS"<< endl;
+        if(string($1->lexeme)=="__init__"){
+            //continue;
+            add_parameters(curr_sym_tbl.top(), parameter_vec);
+            is_param=0;
+            // cout<<endl<<"here ginf"<<endl;
+
+        }
+        else{
+            sym_table * new_table = new sym_table();
+            string func_type="func";
+            if($4!=NULL)
+                func_type=$4->lexeme;
+            create_entry(curr_sym_tbl.top(),  $1->lexeme,func_type,yylineno,__FUNC__,new_table );
+            curr_sym_tbl.push(new_table);
+            add_parameters(curr_sym_tbl.top(), parameter_vec);
+            is_param=0;
+            $$->type_of_node= $4->lexeme;
+            curr_sym_tbl.top()->return_type= $4->lexeme;
+        }
     }
     ;
 
@@ -233,10 +258,13 @@ comma_option_argument_star: comma_option_argument_star COMMA typedlist_argument 
 
 
 tfpdef: NAME { $$ = $1; 
+        // cout<<"this is running";
         if((string($1->lexeme)!="print" && string($1->lexeme)!="range"&& string($1->lexeme)!="len") &&  !search_sym_table(curr_sym_tbl.top(),$1->lexeme,0)){
             cout<<"Sym_tbl_error: Variable "<<$1->lexeme<<" not declared at line "<<yylineno<<endl;
+            // cout<<"this is running in if"<<endl;
             // give error as type hint not found
         }
+        $$->type_of_node= search_type_in_sym_table(curr_sym_tbl.top(),$1->lexeme);
         }
     | NAME TYPE_HINT { $$ = create_node(3,"Identifier",$1,$2); 
         if(is_param) {
@@ -246,20 +274,25 @@ tfpdef: NAME { $$ = $1;
         delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
         create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,NULL );
         }
+        $$->type_of_node= $2->lexeme;
+
     }
     | NAME COLON test {
         //ignore this production
         $$ = create_node(4,"Identifier",$1,$2,$3);
+        $$->type_of_node= search_type_in_sym_table(curr_sym_tbl.top(),$1->lexeme);
+
+
     }
     ;
 
 func_body_suite: simple_stmt {$$ = $1; 
-        if(curr_sym_tbl.size()>1)
-            curr_sym_tbl.pop();    
+        // if(curr_sym_tbl.size()>1)
+        //     curr_sym_tbl.pop();    
     }
     | NEWLINE INDENT stmt_plus DEDENT { $$ = $3;
-    if(curr_sym_tbl.size()>1)
-        curr_sym_tbl.pop();
+    // if(curr_sym_tbl.size()>1)
+    //     curr_sym_tbl.pop();
     }
 
 suite: simple_stmt {$$ = $1;}
@@ -349,7 +382,7 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
     }
     | testlist_star_expr augassign testlist {
     $$ = create_node(4,"Expr_stmt",$1,$2,$3);
-    if($2->lexeme=="&=" || $2->lexeme=="|=" || $2->lexeme=="^=" || $2->lexeme=="<<=" || $2->lexeme==">>="){
+    if(string($2->lexeme)=="&=" || string($2->lexeme)=="|=" || string($2->lexeme)=="^=" || string($2->lexeme)=="<<=" || string($2->lexeme)==">>="){
         if($1->type_of_node!="int" || $3->type_of_node!="int"){
             cout<<"Error --expr_stmt2-- invalid type at line " <<yylineno <<". Expected int\n";
         }
@@ -367,6 +400,8 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
         $$ = create_node(3,"Expr_stmt",$1,$2);
         if($1->type_of_node!=$2->type_of_node && (($1->type_of_node!="int" && $1->type_of_node!="float") || ( $2->type_of_node!="int" && $2->type_of_node!="float"))){
             cout<<"Error --expr_stmt4-- invalid type at line " <<yylineno <<". Expected "<<$1->type_of_node<<endl;
+            cout<<$1->type_of_node<<" "<<$2->type_of_node<<endl;
+            
         }
         $$->type_of_node= $1->type_of_node;
     }
@@ -413,6 +448,10 @@ testlist_star_expr: test testlist_star_expr_option1_star {
         //     $$->type_of_node= $1->type_of_node;
         // }
         $$->type_of_node= $1->type_of_node;
+        if($2 && $2->type_of_node!="undefined"){
+            $$->type_of_node= $2->type_of_node;
+        }
+        // cout<<$$->type_of_node<<" in line 4444"<<endl;
     }
     ;
 
@@ -709,6 +748,21 @@ power: atom_expr {$$ = $1;}
 
 atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
     | atom trailer_star{
+        
+        if(is_dot_name == __TDOT__){
+            string full_name=string($1->lexeme)+after_dot_name;
+            delete_sym_table(curr_sym_tbl.top(),full_name);
+            create_entry(curr_sym_tbl.top(),full_name,$2->type_of_node,yylineno,0,NULL );
+            // $$->type_of_node = $3->lexeme;
+            is_dot_name=0;
+        }
+        else if( is_dot_name== __DOT__){
+            string full_name=string($1->lexeme)+after_dot_name;
+            // cout<<$$->type_of_node<<" this is type"<<endl;
+            // cout<<full_name<<" this is full name"<<endl;
+            is_dot_name=0;
+        }
+
         $$=create_node(3,"Terms", $1,$2);
         if($2 && $2->type_of_node.substr(0,3)=="Box" && $2->type_of_node!="Box;int"){
             cout<<"Error --atom_expr--- invalid type at line " <<yylineno <<". Expected int\n";
@@ -734,7 +788,9 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                 $$->type_of_node= $1->type_of_node;
             }
             else{
-                $$->type_of_node= $2->type_of_node;
+                string full_name=string($1->lexeme)+after_dot_name;
+                $$->type_of_node = search_type_in_sym_table(curr_sym_tbl.top(),full_name);
+
             }
         }
     }
@@ -768,34 +824,46 @@ trailer: SMALL_OPEN arglist SMALL_CLOSE  {
         // cout<<"trailer"<<endl;
     }
     |DOT NAME TYPE_HINT {
+        is_dot_name=__TDOT__;
         $$ = create_node(4,"Identifier",$1,$2,$3);
-        delete_sym_table(curr_sym_tbl.top(),$2->lexeme);
-        create_entry(curr_sym_tbl.top(),  $2->lexeme,$3->lexeme,yylineno,0,NULL );
         $$->type_of_node = $3->lexeme;
+        after_dot_name="."+ string($2->lexeme);
+
+        // delete_sym_table(curr_sym_tbl.top(),$2->lexeme);
+        // create_entry(curr_sym_tbl.top(),  $2->lexeme,$3->lexeme,yylineno,0,NULL );
+        // $$->type_of_node = $3->lexeme;
     }
-    |DOT NAME { $$ = create_node(3,"Identifier",$1,$2);
-    if(!search_sym_table(curr_sym_tbl.top(),$2->lexeme,0)){
-        cout<<"Sym_tbl_error: Variable "<<$2->lexeme<<" not declared at line "<<yylineno<<endl;
-        // give error as type hint not found
-    }
-        $$->type_of_node = $2->type_of_node;
+    |DOT NAME { 
+        $$ = create_node(3,"Identifier",$1,$2);
+        is_dot_name=__DOT__;
+        after_dot_name="."+ string($2->lexeme);
+        // $$->type_of_node = search_type_in_sym_table(curr_sym_tbl.top(),$2->lexeme);
+        // if(!search_sym_table(curr_sym_tbl.top(),$2->lexeme,0)){
+        //     cout<<"Sym_tbl_error: Variable "<<$2->lexeme<<" not declared at line "<<yylineno<<endl;
+        //     cout<<curr_sym_tbl.top()->prev_sym_table->name<<" this also"<<endl;
+        //     // give error as type hint not found
+        // }
+        // $$->type_of_node = search_type_in_sym_table(curr_sym_tbl.top(),$2->lexeme);
 
     }
     ;
 
 
-classdef: CLASS NAME {parameter_vec.clear(); is_param=1;}bracket_arglist_optional COLON {
-                                                    sym_table * new_table = new sym_table();
-                                                    create_entry(curr_sym_tbl.top(),$2->lexeme , "class" ,yylineno,2,new_table );
-                                                    curr_sym_tbl.push(new_table);
-                                                    add_parameters(curr_sym_tbl.top(), parameter_vec);
-                                                    is_param=0;
-                                                    }
-                                                    suite {
-                                                        $$=create_node(6,"Class_def",$1,$2,$4,$5,$7);
-                                                        if(curr_sym_tbl.size()>1)
-                                                            curr_sym_tbl.pop();
-                                                    };
+classdef: CLASS NAME {
+            parameter_vec.clear(); is_param=1;
+        }
+        bracket_arglist_optional COLON {
+        sym_table * new_table = new sym_table();
+        create_entry(curr_sym_tbl.top(),$2->lexeme , "class" ,yylineno,__CLASS__,new_table );
+        curr_sym_tbl.push(new_table);
+        add_parameters(curr_sym_tbl.top(), parameter_vec);
+        is_param=0;
+        }
+        suite {
+            $$=create_node(6,"Class_def",$1,$2,$4,$5,$7);
+            if(curr_sym_tbl.size()>1)
+                curr_sym_tbl.pop();
+        };
 
 /* classdef: CLASS NAME bracket_arglist_optional COLON suite {
     $$=create_node(6,"Class_def",$1,$2,$3,$4,$5);
@@ -820,12 +888,15 @@ argument_list: argument_list COMMA argument { $$=create_node(4,"Arguments",$1,$2
     | argument { $$=$1;}
     ;
 
-subscriptlist: subscript_list COMMA {$$=create_node(3,"Terms",$1,$2);}
+subscriptlist: subscript_list COMMA {$$=create_node(3,"Terms",$1,$2);
+        $$->type_of_node=$1->type_of_node;
+    }
     | subscript_list { $$=$1;}
     ;
 
 subscript_list: subscript_list COMMA subscript { $$=create_node(4,"Terms",$1,$2,$3);
-    $$->type_of_node=$3->type_of_node;}
+        $$->type_of_node=$3->type_of_node;
+    }
     | subscript { $$=$1; }
     ;
 
@@ -837,7 +908,13 @@ subscript: test {$$=$1;}
 
 argument: test { $$ = $1;}
     | test comp_for {$$=create_node(3,"Terms",$1,$2);}
-    | test EQUAL test  {$$=create_node(4,"Assign_term",$1,$2,$3);}
+    | test EQUAL test  {$$=create_node(4,"Assign_term",$1,$2,$3);
+        if($1->type_of_node!=$3->type_of_node && (($1->type_of_node!="int" && $1->type_of_node!="float") || ( $3->type_of_node!="int" && $3->type_of_node!="float"))){
+            cout<<"Error --argument-- invalid type assign at line " <<yylineno <<".";
+        }
+        cout<<"arg working"<<endl;
+        // $$->type_of_node=$1->type_of_node;
+    }
     | POW test {$$=create_node(3,"Power_term",$1,$2);}
     | MUL test {$$=create_node(3,"Mul_term",$1,$2);}
     ;
@@ -973,6 +1050,7 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$
             cout<<"Sym_tbl_error: Variable "<<$1->lexeme<<" not declared at line "<<yylineno<<endl;
             // give error as type hint not found
         }
+        $$->type_of_node=curr_type;
     }
     | NAME TYPE_HINT {
         $$=create_node(3,"Identifier", $1, $2); 
@@ -1079,6 +1157,7 @@ int main(int argc, char* argv[]){
     create_entry(global_sym_table, "print", "print", 0, 1, NULL);
     create_entry(global_sym_table, "range", "list[int]", 0, 1, NULL);
     create_entry(global_sym_table, "len", "len", 0, 1, NULL);
+    create_entry(global_sym_table, "self", "self", 0, 1, NULL);
     curr_sym_tbl.push(global_sym_table);
 	string output_file = "";
     string input_file = "input.txt";
