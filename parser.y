@@ -76,8 +76,10 @@ async_stmt: ASYNC funcdef { $$ = create_node(3,"Async_stmt",$1,$2);}
 
 if_stmt: IF {           
             sym_table * new_table = new sym_table();
+            new_table->return_type=curr_sym_tbl.top()->return_type;
             create_entry(curr_sym_tbl.top(),"if_block" , "If_stmt" ,yylineno,1,new_table );
             curr_sym_tbl.push(new_table);
+
             }  
             namedexpr_test COLON suite {
                                     if(curr_sym_tbl.size()>1)
@@ -88,15 +90,20 @@ if_stmt: IF {
             };
 
 if_stmt_deviation: elif_namedexpr_test_colon_suite_star ELSE COLON {
-                                                    sym_table * new_table = new sym_table();
-                                                    create_entry(curr_sym_tbl.top(),"elif_block" , "Elif_stmt" ,yylineno,0,new_table );
-                                                    curr_sym_tbl.push(new_table);} 
-        suite { $$ = create_node(5,"elif_stmt",$1,$2,$3,$5);if(curr_sym_tbl.size()>1) curr_sym_tbl.pop();}
+        sym_table * new_table = new sym_table();
+        new_table->return_type=curr_sym_tbl.top()->return_type;
+        create_entry(curr_sym_tbl.top(),"elif_block" , "Elif_stmt" ,yylineno,0,new_table );
+        curr_sym_tbl.push(new_table);
+        } 
+        suite { 
+            $$ = create_node(5,"elif_stmt",$1,$2,$3,$5);if(curr_sym_tbl.size()>1) curr_sym_tbl.pop();
+        }
         |elif_namedexpr_test_colon_suite_star {$$ = $1;};
                                                 
 
 elif_namedexpr_test_colon_suite_star: ELIF {
         sym_table * new_table = new sym_table();
+        new_table->return_type=curr_sym_tbl.top()->return_type;
         create_entry(curr_sym_tbl.top(),"else_block" , "Else_stmt" ,yylineno,0,new_table );
         curr_sym_tbl.push(new_table);
         } 
@@ -112,20 +119,22 @@ elif_namedexpr_test_colon_suite_star: ELIF {
     ; */
 
 while_stmt: WHILE {
-                    sym_table * new_table = new sym_table();
-                    create_entry(curr_sym_tbl.top(),"while_block" , "While_stmt" ,yylineno,0,new_table );
-                    curr_sym_tbl.push(new_table);
-                }  
-            namedexpr_test COLON suite while_stmt_deviation { 
-                $$ = create_node(4,"While_stmt",$1,$3,$4);
-            }
+        sym_table * new_table = new sym_table();
+        new_table->return_type=curr_sym_tbl.top()->return_type;
+        create_entry(curr_sym_tbl.top(),"while_block" , "While_stmt" ,yylineno,0,new_table );
+        curr_sym_tbl.push(new_table);
+    }  
+    namedexpr_test COLON suite while_stmt_deviation { 
+        $$ = create_node(4,"While_stmt",$1,$3,$4);
+    }
     ;
 
 while_stmt_deviation: ELSE COLON {
-                    sym_table * new_table = new sym_table();
-                    create_entry(curr_sym_tbl.top(),"else_while_block" , "Else_while_stmt" ,yylineno,0,new_table );
-                    curr_sym_tbl.push(new_table);
-} suite { $$ = create_node(4,"Else_block",$1,$2,$4);
+        sym_table * new_table = new sym_table();
+        new_table->return_type=curr_sym_tbl.top()->return_type;
+        create_entry(curr_sym_tbl.top(),"else_while_block" , "Else_while_stmt" ,yylineno,0,new_table );
+        curr_sym_tbl.push(new_table);
+    } suite { $$ = create_node(4,"Else_block",$1,$2,$4);
     if(curr_sym_tbl.size()>1)
         curr_sym_tbl.pop();
     }
@@ -133,59 +142,43 @@ while_stmt_deviation: ELSE COLON {
     ;
 
 for_stmt: FOR {
-                sym_table * new_table = new sym_table();
-                create_entry(curr_sym_tbl.top(),"Block" , "For_block" ,yylineno,0,new_table );
-                curr_sym_tbl.push(new_table);
-                } 
-                exprlist IN testlist COLON suite {
-                    if(curr_sym_tbl.size()>1)
-                        curr_sym_tbl.pop();
-                } else_colon_suite_optional{
-                    $$ = create_node(8,"For_stmt",$1,$3,$4,$5,$6,$7,$9);
-                    //check if testlist is a list or range
-                    // cout<<$5->val<<endl;
-                    if(($5->type_of_node.size()<6 || $5->type_of_node.substr(0,4)!="list") ){
-                        cout<<"Error type is not iterable at line " <<yylineno <<". \n";
-                        // cout << $5->type_of_node.size()<<endl;
-                        // cout<<$5->type_of_node<<endl;
+    sym_table * new_table = new sym_table();
+    new_table->return_type=curr_sym_tbl.top()->return_type;
+    create_entry(curr_sym_tbl.top(),"Block" , "For_block" ,yylineno,0,new_table );
+    curr_sym_tbl.push(new_table);
+    } 
+    exprlist IN testlist COLON suite {
+        if(curr_sym_tbl.size()>1)
+            curr_sym_tbl.pop();
+    } else_colon_suite_optional{
+        $$ = create_node(8,"For_stmt",$1,$3,$4,$5,$6,$7,$9);
+        //check if testlist is a list or range
+        // cout<<$5->val<<endl;
+        if(($5->type_of_node.size()<6 || $5->type_of_node.substr(0,4)!="list") ){
+            cout<<"Error type is not iterable at line " <<yylineno <<". \n";
+            // cout << $5->type_of_node.size()<<endl;
+            // cout<<$5->type_of_node<<endl;
 
-                    }
-                    //check if the exprlist is same type as testlsit list [*]
-                    if(($5->type_of_node.substr(0,4)=="list") && $3->type_of_node!=$5->type_of_node.substr(5,$5->type_of_node.size()-6)){
-                        cout<<"Error  type is not same as iterable at line " <<yylineno <<". \n";
-                    }
-                    // cout<<$5->type_of_node<<endl;
-                }
+        }
+        //check if the exprlist is same type as testlsit list [*]
+        if(($5->type_of_node.substr(0,4)=="list") && $3->type_of_node!=$5->type_of_node.substr(5,$5->type_of_node.size()-6)){
+            cout<<"Error  type is not same as iterable at line " <<yylineno <<". \n";
+        }
+        // cout<<$5->type_of_node<<endl;
+    }
     ; 
 
 else_colon_suite_optional : ELSE COLON {
-                    sym_table * new_table = new sym_table();
-                    create_entry(curr_sym_tbl.top(),"Block" , "Else_block" ,yylineno,0,new_table );
-                    curr_sym_tbl.push(new_table);
-                    } suite { 
-                        $$ = create_node(4,"Else_block",$1,$2,$4);
-                        if(curr_sym_tbl.size()>1) curr_sym_tbl.pop();
-                    }
+    sym_table * new_table = new sym_table();
+    new_table->return_type=curr_sym_tbl.top()->return_type;
+    create_entry(curr_sym_tbl.top(),"Block" , "Else_block" ,yylineno,0,new_table );
+    curr_sym_tbl.push(new_table);
+    } suite { 
+        $$ = create_node(4,"Else_block",$1,$2,$4);
+        if(curr_sym_tbl.size()>1) curr_sym_tbl.pop();
+    }
     | { $$ = NULL;}
     ;
-
-/* try_stmt: TRY COLON suite FINALLY COLON suite {$$ = create_node(7,"Try_stmt",$1,$2,$3,$4,$5,$6);}
-    | TRY COLON suite except_clause_colon_suite try_stmt_options { $$ = create_node(6,"Try_stmt",$1,$2,$3,$4,$5);}
-    ;
-
-except_clause_colon_suite: except_clause COLON suite except_clause_colon_suite {$$ = create_node(5,"Except_block",$1,$2,$3,$4);}
-    | except_clause COLON suite { $$ = create_node(4,"Except_block",$1,$2,$3);}
-    ;
-    
-try_stmt_options: ELSE COLON suite FINALLY COLON suite { $$ = create_node(7,"Else_finally_block",$1,$2,$3,$4,$5,$6);}
-    | ELSE COLON suite {$$ = create_node(4,"Else_block",$1,$2,$3);}
-    | FINALLY COLON suite { $$ = create_node(4,"Finally_block",$1,$2,$3);}
-    | { $$ = NULL;{}}
-    ;
-
-except_clause: EXCEPT test_as_name_optional {$$ = create_node(3,"Except_block",$1,$2);} */
-
-
 
 /*using this notation instead of below one*/
 funcdef:  DEF funcdef_title  func_body_suite { 
@@ -201,35 +194,36 @@ funcdef:  DEF funcdef_title  func_body_suite {
     ;
 
 
-funcdef_title: NAME {parameter_vec.clear(); is_param=1;} parameters func_type_hint_optional COLON { 
-        $$ = create_node(5,"Func_def",$1,$3,$4,$5);
-        $$->lexeme=$1->lexeme;
-        // cout << $1->lexeme << "TESSSSS"<< endl;
-        if(string($1->lexeme)=="__init__"){
-            //continue;
-            add_parameters(curr_sym_tbl.top(), parameter_vec);
-            is_param=0;
-            // cout<<endl<<"here ginf"<<endl;
+funcdef_title: NAME {
+    parameter_vec.clear(); is_param=1;} parameters func_type_hint_optional COLON { 
+    $$ = create_node(5,"Func_def",$1,$3,$4,$5);
+    $$->lexeme=$1->lexeme;
+    // cout << $1->lexeme << "TESSSSS"<< endl;
+    if(string($1->lexeme)=="__init__"){
+        //continue;
+        add_parameters(curr_sym_tbl.top(), parameter_vec);
+        is_param=0;
+        // cout<<endl<<"here ginf"<<endl;
 
-        }
-        else{
-            sym_table * new_table = new sym_table();
-            string func_type="func";
-            if($4!=NULL){
-                func_type=$4->lexeme;
-                
-            }
-            else
-                func_type="None";
-            create_entry(curr_sym_tbl.top(),  $1->lexeme,func_type,yylineno,__FUNC__,new_table );
-            curr_sym_tbl.push(new_table);
-            add_parameters(curr_sym_tbl.top(), parameter_vec);
-            is_param=0;
-            $$->type_of_node= func_type;
-            curr_sym_tbl.top()->return_type= func_type;
-        }
     }
-    ;
+    else{
+        sym_table * new_table = new sym_table();
+        string func_type="func";
+        if($4!=NULL){
+            func_type=$4->lexeme;
+            
+        }
+        else
+            func_type="None";
+        create_entry(curr_sym_tbl.top(),  $1->lexeme,func_type,yylineno,__FUNC__,new_table );
+        curr_sym_tbl.push(new_table);
+        add_parameters(curr_sym_tbl.top(), parameter_vec);
+        is_param=0;
+        $$->type_of_node= func_type;
+        curr_sym_tbl.top()->return_type= func_type;
+    }
+}
+;
 
 func_type_hint_optional: FUNC_TYPE_HINT {$$ = $1; $$->type_of_node= $1->val;}
     | { $$ = NULL;}
@@ -353,6 +347,7 @@ return_stmt: RETURN testlist_star_expr {
           //continue; change int val to float
         }
         else if($2->type_of_node!=curr_sym_tbl.top()->return_type){
+            cout<<$2->type_of_node<<" "<<curr_sym_tbl.top()->name<<" hehe"<<endl;
             cout<<"Error --return_stmt-- invalid return type at line " <<yylineno <<". Expected "<<curr_sym_tbl.top()->return_type<<endl;
         }
         
@@ -694,7 +689,8 @@ symbol_factor: MUL factor {
         if($2->type_of_node!="int" && $2->type_of_node!="float"){
             cout<<"Error --symbol_factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
         }
-        $$->type_of_node = $2->type_of_node;
+        $$->type_of_node = "float";
+        // $$->type_of_node = $2->type_of_node;
     }
     | FLOOR_DIV factor {
         $$ = create_node(3,"Div_term",$1,$2);
@@ -879,7 +875,8 @@ classdef: CLASS NAME {
 }; */
 
 bracket_arglist_optional: SMALL_OPEN SMALL_CLOSE {$$=create_node(3,"Parantheses",$1,$2);}
-    | SMALL_OPEN arglist SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$3);}
+    | SMALL_OPEN arglist SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$3);
+    }
     | {$$=NULL;}
     ;
 
@@ -1042,7 +1039,10 @@ test: or_test {$$=$1;}
     cout<<$$->type_of_node<<"hello"<<endl;
     };
 
-atom: SMALL_OPEN testlist_comp SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$3);}
+atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
+        $$=create_node(4,"Arguments",$1,$2,$3);
+        $$->type_of_node = $2->type_of_node;
+    }
     | SMALL_OPEN SMALL_CLOSE {$$=create_node(3,"Parantheses",$1,$2);}
     | BOX_OPEN testlist_comp BOX_CLOSE {$$=create_node(4,"Square_bracket",$1,$2,$3);$$->type_of_node="list["+$2->type_of_node+"]";}
     | BOX_OPEN BOX_CLOSE {$$=create_node(3,"Square_bracket",$1,$2);}
@@ -1161,7 +1161,7 @@ int main(int argc, char* argv[]){
     global_sym_table->return_type = "undefined";
     create_entry(global_sym_table, "print", "print", 0, 1, NULL);
     create_entry(global_sym_table, "range", "list[int]", 0, 1, NULL);
-    create_entry(global_sym_table, "len", "len", 0, 1, NULL);
+    create_entry(global_sym_table, "len", "int", 0, 1, NULL);
     create_entry(global_sym_table, "self", "self", 0, 1, NULL);
     create_entry(global_sym_table, "__name__", "__name__", 0, 1, NULL);
     curr_sym_tbl.push(global_sym_table);
