@@ -22,7 +22,12 @@ a : myclass = myclass(1,2)  <---- valid
 
 myclass(1,2) <--- invalid
 
-
+/////////// should this work? 
+1. public1.py
+add bool
+2. public2.py
+min_value: float = None
+//////////
 
 
 
