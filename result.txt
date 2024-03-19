@@ -1,1 +1,4 @@
-3 undefined t1 t45 t41 
+t1 = ~ 4
+t2 = 2 * t1
+t3 = 3 + t2
+t4 = ~ x

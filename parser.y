@@ -429,7 +429,6 @@ expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus {
     }
     $$->type_of_node= $2->type_of_node;
 }
-    // |TYPE_HINT EQUAL testlist_star_expr
     | EQUAL testlist_star_expr {$$ = create_node(3,"Expr_stmt",$1,$2);
         $$->type_of_node= $2->type_of_node;
     }
@@ -610,10 +609,14 @@ arith_expr: term symbol_term_star  {
     }
     if($2!=NULL && $2->type_of_node!="undefined"){
         string reg=newTemp();
-        $1->addr="t45";
-        $2->addr="t41";
+        // $1->addr="t45";
+        // $2->addr="t41";
         create_ins(3,$2->residual_ins, reg,$1->addr, $2->addr);
         $$->addr=reg;
+    }
+    else{
+        $$->addr=$1->addr;
+    
     }
 } ;
 
@@ -634,12 +637,16 @@ symbol_term_star: /*empty*/ {$$=NULL;}
         }
         if($3!=NULL && $3->type_of_node!="undefined"){
         string reg=newTemp();
-        $2->addr="t45";
-        $3->addr="t45";
-        $1->addr="t34";
+        // $2->addr="t45";
+        // $3->addr="t45";
+        // $1->addr="t34";
         create_ins(3,$3->residual_ins, reg,$2->addr, $3->addr);
         $$->addr=reg;
         $$->residual_ins="+";
+        }
+        else{
+            $$->addr=$2->addr;
+            $$->residual_ins="+";
         }
     }
     | SUB term symbol_term_star {
@@ -658,10 +665,15 @@ symbol_term_star: /*empty*/ {$$=NULL;}
         
         }
         if($3!=NULL && $3->type_of_node!="undefined"){
-        string reg=newTemp();
-        // create_ins(3,$3->residual_ins, reg,$2->addr, $3->addr);
-        // $$->addr=reg;
-        // $$->residual_ins="+";
+            string reg=newTemp();
+            create_ins(3,$3->residual_ins, reg,$2->addr, $3->addr);
+            $$->addr=reg;
+            $$->residual_ins="+";
+        }
+        else{
+            $$->addr=$2->addr;
+            $$->residual_ins="+";
+        
         }
     }
     ;
@@ -683,6 +695,14 @@ term: factor symbol_factor_star {
         else
             $$->type_of_node= "int";
     }
+    if($2!=NULL && $2->type_of_node!="undefined"){
+        string reg=newTemp();
+        create_ins(3,$2->residual_ins, reg,$1->addr, $2->addr);
+        $$->addr=reg;
+    }
+    else {
+        $$->addr=$1->addr;
+    }
     };
     
 
@@ -701,6 +721,16 @@ symbol_factor_star: /*empty*/ {$$=NULL;}
     else
         $$->type_of_node= "int";
     
+    if($2!=NULL && $2->type_of_node!="undefined"){
+        string reg=newTemp();
+        create_ins(3,$2->residual_ins, reg,$1->addr, $2->addr);
+        $$->addr=reg;
+        $$->residual_ins= $1->residual_ins;
+    }
+    else {
+        $$->addr=$1->addr;
+        $$->residual_ins=$1->residual_ins;
+    }
     };
 
 symbol_factor: MUL factor {
@@ -709,6 +739,8 @@ symbol_factor: MUL factor {
             cout<<"Error --symbol_factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
         }
         $$->type_of_node = $2->type_of_node;
+        $$->addr=$2->addr;
+        $$->residual_ins="*";
     }
     // | AT factor {$$ = create_node(3,"At_term",$1,$2);}
     | DIV factor {
@@ -718,6 +750,8 @@ symbol_factor: MUL factor {
         }
         $$->type_of_node = "float";
         // $$->type_of_node = $2->type_of_node;
+        $$->addr=$2->addr;
+        $$->residual_ins="/";
     }
     | FLOOR_DIV factor {
         $$ = create_node(3,"Div_term",$1,$2);
@@ -725,6 +759,8 @@ symbol_factor: MUL factor {
             cout<<"Error --symbol_factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
         }
         $$->type_of_node = $2->type_of_node;
+        $$->addr=$2->addr;
+        $$->residual_ins="//";
     }
     | MOD factor {
         $$ = create_node(3,"Mod_term",$1,$2);
@@ -732,6 +768,8 @@ symbol_factor: MUL factor {
             cout<<"Error --symbol_factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
         }
         $$->type_of_node = $2->type_of_node;
+        $$->addr=$2->addr;
+        $$->residual_ins="%";
     }
     ;
 
@@ -741,6 +779,7 @@ factor: ADD factor {
             cout<<"Error --factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
         }
         $$->type_of_node = $2->type_of_node;
+        $$->addr=$2->addr;
     }
     | SUB factor {
         $$ = create_node(3,"Sub_term",$1,$2);
@@ -748,6 +787,9 @@ factor: ADD factor {
             cout<<"Error --factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
         }
         $$->type_of_node = $2->type_of_node;
+        string reg=newTemp();
+        create_ins(3,"*", reg,$2->addr, "-1");
+        $$->addr=reg;
     }
     | TILDE factor {
         $$ = create_node(3,"Tilde_term",$1,$2);
@@ -755,6 +797,9 @@ factor: ADD factor {
             cout<<"Error --factor-tilde-- invalid type at line " <<yylineno <<". Expected int or float\n";
         }
         $$->type_of_node = $2->type_of_node;
+        string reg=newTemp();
+        create_ins(2,"~", reg,$2->addr,"");
+        $$->addr=reg;
     }
     | power {$$ = $1;}
     ;
@@ -771,6 +816,10 @@ power: atom_expr {$$ = $1;}
             else
                 $$->type_of_node= "int";
         }
+
+        string reg=newTemp();
+        create_ins(3,"**", reg,$1->addr, $3->addr);
+        $$->addr=reg;         
     }
     ;
 
@@ -820,6 +869,11 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                 $$->type_of_node = search_type_in_sym_table(curr_sym_tbl.top(),full_name);
 
             }
+        }
+
+        if($2==NULL || $2->type_of_node=="undefined"){
+            $$->addr=$1->addr;
+            $$->residual_ins=$1->residual_ins;
         }
     }
     ;
@@ -1099,9 +1153,20 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
     }
     | number {$$=$1;}
     | string_plus {$$=$1;}
-    | TRUE {$$=$1;$$->type_of_node="int";}
-    | FALSE {$$=$1;$$->type_of_node="int";}
-    | NONE {$$=$1;$$->type_of_node="None";}
+    | TRUE {$$=$1;
+        $$->type_of_node="int";
+        $$->addr="True";
+    }
+    | FALSE {
+        $$=$1;
+        $$->type_of_node="int";
+        $$->addr="False";
+    }
+    | NONE {
+        $$=$1;
+        $$->type_of_node="None";
+        $$->addr="None";
+    }
     ;
 // dictionary , setliterals are to be ignored
 
@@ -1113,7 +1178,9 @@ number: INTEGER {$$ = $1;
     }
     ;
 
-string_plus: STRING string_plus {$$=create_node(3,"Strings", $1, $2);}
+string_plus: STRING string_plus {$$=create_node(3,"Strings", $1, $2);
+    $$->addr=$1->lexeme + $2->addr;
+    }
     | STRING {$$=$1;
         $$->addr=$$->lexeme;
     }
@@ -1204,9 +1271,12 @@ void create_ins(int type, string optype, string addr1,string addr2, string addr3
 }
 
 void print_instructions(){
-    for(int i=0;i<instructions.size();i++){
-        for(int j=0;j<instructions[i].size();j++){
-            cout<<instructions[i][j]<<" ";
+    for(auto ins: instructions){
+        if(ins[0]=="3"){
+            cout << ins[2] << " = " << ins[3] << " " << ins[1] << " " << ins[4] << endl; 
+        }
+        else if(ins[0]=="2"){
+            cout << ins[2] << " = " << ins[1] << " " << ins[3] << endl;
         }
     }
 }
