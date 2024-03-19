@@ -21,6 +21,11 @@
     #define __TDOT__ 2
     int is_dot_name=0;
     string after_dot_name = "";
+    int tempCount=1;
+    int instCount=0;
+    string newTemp();
+    void create_ins(int type, string optype, string addr1, string addr2, string addr3);
+    vector<vector<string>> instructions;
 
 %}
 
@@ -603,6 +608,13 @@ arith_expr: term symbol_term_star  {
     }else{
         $$->type_of_node= "int";
     }
+    if($2!=NULL && $2->type_of_node!="undefined"){
+        string reg=newTemp();
+        $1->addr="t45";
+        $2->addr="t41";
+        create_ins(3,$2->residual_ins, reg,$1->addr, $2->addr);
+        $$->addr=reg;
+    }
 } ;
 
 symbol_term_star: /*empty*/ {$$=NULL;}
@@ -620,6 +632,15 @@ symbol_term_star: /*empty*/ {$$=NULL;}
         }else{
             $$->type_of_node= "int";
         }
+        if($3!=NULL && $3->type_of_node!="undefined"){
+        string reg=newTemp();
+        $2->addr="t45";
+        $3->addr="t45";
+        $1->addr="t34";
+        create_ins(3,$3->residual_ins, reg,$2->addr, $3->addr);
+        $$->addr=reg;
+        $$->residual_ins="+";
+        }
     }
     | SUB term symbol_term_star {
         $$ = create_node(4,"Operator_expr",$1,$2,$3);
@@ -635,6 +656,12 @@ symbol_term_star: /*empty*/ {$$=NULL;}
         }else{
             $$->type_of_node= "int";
         
+        }
+        if($3!=NULL && $3->type_of_node!="undefined"){
+        string reg=newTemp();
+        // create_ins(3,$3->residual_ins, reg,$2->addr, $3->addr);
+        // $$->addr=reg;
+        // $$->residual_ins="+";
         }
     }
     ;
@@ -1051,6 +1078,7 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         string curr_type = search_type_in_sym_table(curr_sym_tbl.top(),$1->lexeme);
         $1->type_of_node = curr_type; 
         $$=$1;
+        $$->addr=$1->lexeme;
         if((string($1->lexeme)!="print" && string($1->lexeme)!="range"&& string($1->lexeme)!="len"&& string($1->lexeme)!="main") &&  !search_sym_table(curr_sym_tbl.top(),$1->lexeme,0)){
             cout<<"Sym_tbl_error: Variable "<<$1->lexeme<<" not declared at line "<<yylineno<<endl;
             // give error as type hint not found
@@ -1059,6 +1087,7 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
     }
     | NAME TYPE_HINT {
         $$=create_node(3,"Identifier", $1, $2); 
+        $$->addr=$1->lexeme;
         $$->type_of_node = $2->lexeme;
     if(is_param) {
         add_to_vector(parameter_vec, $1->lexeme, $2->lexeme,yylineno);
@@ -1076,12 +1105,18 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
     ;
 // dictionary , setliterals are to be ignored
 
-number: INTEGER {$$ = $1;}
-    | FLOAT {$$ = $1;}
+number: INTEGER {$$ = $1;
+        $$->addr=$$->lexeme;
+    }
+    | FLOAT {$$ = $1;
+        $$->addr=$$->lexeme;
+    }
     ;
 
 string_plus: STRING string_plus {$$=create_node(3,"Strings", $1, $2);}
-    | STRING {$$=$1;}
+    | STRING {$$=$1;
+        $$->addr=$$->lexeme;
+    }
     ;
 
 
@@ -1153,6 +1188,28 @@ void MakeDOTFile(NODE*cell) {
         MakeDOTFile(cell->children[i]);
     }
 } 
+
+string newTemp(){
+    string temp = "t" + to_string(tempCount);
+    tempCount++;
+    return temp;
+
+}
+
+void create_ins(int type, string optype, string addr1,string addr2, string addr3 ){
+    vector<string> instruct{to_string(type), optype, addr1, addr2, addr3};
+    instructions.push_back(instruct);
+    instCount++;
+
+}
+
+void print_instructions(){
+    for(int i=0;i<instructions.size();i++){
+        for(int j=0;j<instructions[i].size();j++){
+            cout<<instructions[i][j]<<" ";
+        }
+    }
+}
 
 int main(int argc, char* argv[]){
     indent_stack.push(0);
@@ -1257,7 +1314,8 @@ int main(int argc, char* argv[]){
     MakeDOTFile(ast);
 
     /* MakeDOTFile(start_node); */
-    print_sym_table(global_sym_table);
+    /* print_sym_table(global_sym_table); */
+    print_instructions();
 
 
     fout<<"}";
