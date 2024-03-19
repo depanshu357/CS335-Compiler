@@ -409,6 +409,7 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
             
         }
         $$->type_of_node= $1->type_of_node;
+        create_ins(2,$2->residual_ins, $1->addr,$2->addr, "");
     }
     ;
     
@@ -427,10 +428,19 @@ expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus {
     if($3!=NULL && $3->type_of_node!=$2->type_of_node){
         cout<<"Error --expr_stmt_option1_plus-- invalid type at line " <<yylineno <<". Expected "<<$2->type_of_node<<endl;
     }
+    
+    create_ins(2,$3->residual_ins, $2->addr,$3->addr, "");
+    $$->addr=$2->addr;
+    $$->residual_ins=$1->lexeme;
+    
     $$->type_of_node= $2->type_of_node;
-}
+
+    }
     | EQUAL testlist_star_expr {$$ = create_node(3,"Expr_stmt",$1,$2);
         $$->type_of_node= $2->type_of_node;
+        
+        $$->addr=$2->addr;
+        $$->residual_ins=$1->lexeme;
     }
     ;
 
@@ -455,6 +465,12 @@ testlist_star_expr: test testlist_star_expr_option1_star {
         if($2 && $2->type_of_node!="undefined"){
             $$->type_of_node= $2->type_of_node;
         }
+
+        if($2==NULL || $2->type_of_node=="undefined"){
+            $$->addr= $1->addr;
+            $$->residual_ins= $1->residual_ins;
+        }
+        
         // cout<<$$->type_of_node<<" in line 4444"<<endl;
     }
     ;
@@ -502,6 +518,12 @@ expr: xor_expr symbol_xor_expr_star {
         }
         $$->type_of_node= $1->type_of_node;
     }
+
+    if($2==NULL || $2->type_of_node=="undefined"){
+        $$->addr= $1->addr;
+        $$->residual_ins= $1->residual_ins;
+    }
+    
 }
 
 /* star_expr: MUL expr {
@@ -533,6 +555,11 @@ xor_expr: and_expr symbol_and_expr_star {
         }
         $$->type_of_node= $2->type_of_node;
     }
+    
+    if($2==NULL || $2->type_of_node=="undefined"){
+        $$->addr= $1->addr;
+        $$->residual_ins= $1->residual_ins;
+    }
 };
 
 symbol_and_expr_star: BITWISE_XOR and_expr symbol_and_expr_star {
@@ -554,6 +581,11 @@ and_expr: shift_expr symbol_shift_expr_star {
             cout<<"Error --and_expr-- invalid type at line " <<yylineno <<". Expected int\n";
         }
         $$->type_of_node= $2->type_of_node;
+    }
+    
+    if($2==NULL || $2->type_of_node=="undefined"){
+        $$->addr= $1->addr;
+        $$->residual_ins= $1->residual_ins;
     }
 };
 
@@ -577,6 +609,12 @@ shift_expr: arith_expr shift_arith_expr_star {
         }
         $$->type_of_node= $2->type_of_node;
     }
+    
+    if($2==NULL || $2->type_of_node=="undefined"){
+        $$->addr= $1->addr;
+        $$->residual_ins= $1->residual_ins;
+    }
+
 };
 
 shift_arith_expr_star: /*empty*/ {$$=NULL;}
@@ -618,6 +656,8 @@ arith_expr: term symbol_term_star  {
         $$->addr=$1->addr;
     
     }
+
+
 } ;
 
 symbol_term_star: /*empty*/ {$$=NULL;}
@@ -1029,6 +1069,12 @@ or_test: and_test or_and_test_star{$$=create_node(3,"Expressions",$1,$2);
     else{
         // karna hai
         }
+    
+    if($2==NULL || $2->type_of_node=="undefined"){
+        $$->addr=$1->addr;
+        $$->residual_ins=$1->residual_ins;
+    }
+  
     };
 
 or_and_test_star:OR and_test or_and_test_star {$$=create_node(4,"OR_term",$1,$2,$3);}
@@ -1041,17 +1087,20 @@ and_test: not_test and_not_test_star {$$=create_node(3,"Expressions",$1,$2);
     else{
         // karna hai
         }
+    if($2==NULL || $2->type_of_node=="undefined"){
+        $$->addr=$1->addr;
+        $$->residual_ins=$1->residual_ins;
+    }
 };
 
 and_not_test_star: AND not_test and_not_test_star {$$=create_node(4,"And_term",$1,$2,$3);}
     | { $$ = NULL;}
     ;
 
-not_test: NOT not_test {$$=create_node(3,"Not_term",$1,$2);}
-    | comparison {$$=$1;
-    $$->type_of_node=$1->type_of_node;
+not_test: NOT not_test {
+        $$=create_node(3,"Not_term",$1,$2);
     }
-    ;
+    | comparison {$$=$1;}    ;
     
 comparison: expr comp_op_expr_plus {$$=create_node(3,"Expressions",$1,$2);
     if($2==NULL)
@@ -1060,10 +1109,9 @@ comparison: expr comp_op_expr_plus {$$=create_node(3,"Expressions",$1,$2);
         // karna hai
         }
     }
-    |expr {$$=$1;
-    $$->type_of_node=$1->type_of_node;
+    |expr {
+        $$=$1 ;
     }
-   ;
 
 comp_op_expr_plus: comp_op expr comp_op_expr_plus {$$=create_node(3,"Expresions",$1,$2);}
     | comp_op expr {$$=create_node(3,"Expressions",$1,$2);}
@@ -1111,13 +1159,17 @@ namedexpr_test_star_expr_option: namedexpr_test {$$=$1;}
 
 namedexpr_test: test {$$=$1;};
 
-test: or_test {$$=$1;}
+test: or_test {$$=$1;
+        $$->addr=$1->addr;
+        $$->residual_ins=$1->residual_ins;
+    }
     |or_test IF or_test ELSE test {$$=create_node(6,"Expressions",$1,$2,$3,$4,$5);
     if($1->type_of_node!=$5->type_of_node){
         cout<<"Error --test-- invalid type assign at line " <<yylineno <<".";
     }
     $$->type_of_node=$1->type_of_node;
     cout<<$$->type_of_node<<"hello"<<endl;
+
     };
 
 atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
@@ -1276,7 +1328,12 @@ void print_instructions(){
             cout << ins[2] << " = " << ins[3] << " " << ins[1] << " " << ins[4] << endl; 
         }
         else if(ins[0]=="2"){
-            cout << ins[2] << " = " << ins[1] << " " << ins[3] << endl;
+            if(ins[1] == "="){
+                cout << ins[2] << " = " << ins[3] << endl;
+            }
+            else{
+                cout << ins[2] << " = " << ins[1] << ins[3] << endl;
+            }
         }
     }
 }
