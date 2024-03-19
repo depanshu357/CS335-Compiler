@@ -6,12 +6,12 @@ fontsize  = 30
 labelloc  = t
 
 node   [ fontname="Cascadia code" ]
-	72		[ style = solid label = "START"  ];
-	72 -> 71
-	71		[ style = solid label = "File Input"  ];
-	71 -> 38
-	38		[ style = solid label = "Expr_stmt"  ];
-	38 -> 2
+	140		[ style = solid label = "START"  ];
+	140 -> 139
+	139		[ style = solid label = "File Input"  ];
+	139 -> 36
+	36		[ style = solid label = "Expr_stmt"  ];
+	36 -> 2
 	2		[ style = solid label = "Identifier"  ];
 	2 -> 0
 	0		[ style = solid label = "IDENTIFIER 
@@ -19,60 +19,121 @@ node   [ fontname="Cascadia code" ]
 	2 -> 1
 	1		[ style = solid label = "TYPE_HINT 
 (:int)" color = red shape = rectangle ];
-	38 -> 37
-	37		[ style = solid label = "Expr_stmt"  ];
-	37 -> 3
+	36 -> 35
+	35		[ style = solid label = "Expr_stmt"  ];
+	35 -> 3
 	3		[ style = solid label = "ASSIGNMENT_OP 
 (=)" color = red shape = rectangle ];
-	37 -> 29
-	29		[ style = solid label = "Expressions"  ];
-	29 -> 14
+	35 -> 27
+	27		[ style = solid label = "Expressions"  ];
+	27 -> 14
 	14		[ style = solid label = "INTEGER 
-(3)" color = red shape = rectangle ];
-	29 -> 28
-	28		[ style = solid label = "Operator_expr"  ];
-	28 -> 15
+(4)" color = red shape = rectangle ];
+	27 -> 26
+	26		[ style = solid label = "Operator_expr"  ];
+	26 -> 15
 	15		[ style = solid label = "ARITHMETIC_OP 
 (+)" color = red shape = rectangle ];
-	28 -> 27
-	27		[ style = solid label = "Terms"  ];
-	27 -> 18
+	26 -> 25
+	25		[ style = solid label = "Terms"  ];
+	25 -> 18
 	18		[ style = solid label = "INTEGER 
-(2)" color = red shape = rectangle ];
-	27 -> 25
-	25		[ style = solid label = "Mul_term"  ];
-	25 -> 19
+(5)" color = red shape = rectangle ];
+	25 -> 23
+	23		[ style = solid label = "Mul_term"  ];
+	23 -> 19
 	19		[ style = solid label = "ARITHMETIC_OP 
 (*)" color = red shape = rectangle ];
-	25 -> 24
-	24		[ style = solid label = "Tilde_term"  ];
-	24 -> 21
-	21		[ style = solid label = "BITWISE_OP 
-(~)" color = red shape = rectangle ];
-	24 -> 22
-	22		[ style = solid label = "INTEGER 
-(4)" color = red shape = rectangle ];
-	71 -> 68
-	68		[ style = solid label = "Expr_stmt"  ];
-	68 -> 42
-	42		[ style = solid label = "Identifier"  ];
-	42 -> 40
-	40		[ style = solid label = "IDENTIFIER 
-(y)" color = red shape = rectangle ];
-	42 -> 41
-	41		[ style = solid label = "TYPE_HINT 
+	23 -> 21
+	21		[ style = solid label = "INTEGER 
+(8)" color = red shape = rectangle ];
+	139 -> 138
+	138		[ style = solid label = "File Input"  ];
+	138 -> 76
+	76		[ style = solid label = "Expr_stmt"  ];
+	76 -> 40
+	40		[ style = solid label = "Identifier"  ];
+	40 -> 38
+	38		[ style = solid label = "IDENTIFIER 
+(z)" color = red shape = rectangle ];
+	40 -> 39
+	39		[ style = solid label = "TYPE_HINT 
 (:int)" color = red shape = rectangle ];
-	68 -> 67
-	67		[ style = solid label = "Expr_stmt"  ];
-	67 -> 43
-	43		[ style = solid label = "ASSIGNMENT_OP 
+	76 -> 75
+	75		[ style = solid label = "Expr_stmt"  ];
+	75 -> 41
+	41		[ style = solid label = "ASSIGNMENT_OP 
 (=)" color = red shape = rectangle ];
-	67 -> 57
-	57		[ style = solid label = "Tilde_term"  ];
-	57 -> 54
-	54		[ style = solid label = "BITWISE_OP 
-(~)" color = red shape = rectangle ];
-	57 -> 55
-	55		[ style = solid label = "IDENTIFIER 
+	75 -> 67
+	67		[ style = solid label = "Expressions"  ];
+	67 -> 60
+	60		[ style = solid label = "Terms"  ];
+	60 -> 52
+	52		[ style = solid label = "IDENTIFIER 
 (x)" color = red shape = rectangle ];
+	60 -> 58
+	58		[ style = solid label = "Mul_term"  ];
+	58 -> 53
+	53		[ style = solid label = "ARITHMETIC_OP 
+(*)" color = red shape = rectangle ];
+	58 -> 55
+	55		[ style = solid label = "INTEGER 
+(4)" color = red shape = rectangle ];
+	67 -> 66
+	66		[ style = solid label = "Operator_expr"  ];
+	66 -> 56
+	56		[ style = solid label = "ARITHMETIC_OP 
+(+)" color = red shape = rectangle ];
+	66 -> 64
+	64		[ style = solid label = "Tilde_term"  ];
+	64 -> 61
+	61		[ style = solid label = "BITWISE_OP 
+(~)" color = red shape = rectangle ];
+	64 -> 62
+	62		[ style = solid label = "INTEGER 
+(3)" color = red shape = rectangle ];
+	138 -> 135
+	135		[ style = solid label = "Expr_stmt"  ];
+	135 -> 80
+	80		[ style = solid label = "Identifier"  ];
+	80 -> 78
+	78		[ style = solid label = "IDENTIFIER 
+(m)" color = red shape = rectangle ];
+	80 -> 79
+	79		[ style = solid label = "TYPE_HINT 
+(:int)" color = red shape = rectangle ];
+	135 -> 134
+	134		[ style = solid label = "Expr_stmt"  ];
+	134 -> 81
+	81		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	134 -> 92
+	92		[ style = solid label = "IDENTIFIER 
+(z)" color = red shape = rectangle ];
+	134 -> 133
+	133		[ style = solid label = "Expr_stmt"  ];
+	133 -> 93
+	93		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	133 -> 104
+	104		[ style = solid label = "IDENTIFIER 
+(x)" color = red shape = rectangle ];
+	133 -> 132
+	132		[ style = solid label = "Expr_stmt"  ];
+	132 -> 105
+	105		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	132 -> 123
+	123		[ style = solid label = "Terms"  ];
+	123 -> 116
+	116		[ style = solid label = "INTEGER 
+(4)" color = red shape = rectangle ];
+	123 -> 121
+	121		[ style = solid label = "Mul_term"  ];
+	121 -> 117
+	117		[ style = solid label = "ARITHMETIC_OP 
+(*)" color = red shape = rectangle ];
+	121 -> 119
+	119		[ style = solid label = "INTEGER 
+(3)" color = red shape = rectangle ];
 }
