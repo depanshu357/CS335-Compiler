@@ -11,6 +11,9 @@ typedef struct node{
     char * lexeme;
     char* val;
     bool is_terminal;
+    string addr;
+    int ins;
+    string residual_ins;
     string type_of_node;
     vector<struct node*> children;
 }NODE;

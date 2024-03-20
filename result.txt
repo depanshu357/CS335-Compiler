@@ -1,79 +1,11 @@
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: 
-parameters start-------
-parameters end-------
-0,print,print,0,1,4,0
-1,range,list[int],0,1,4,4
-2,len,int,0,1,4,8
-3,self,self,0,1,4,12
-4,__name__,__name__,0,1,4,16
-5,binarySearch,int,1,1,4,20
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: binarySearch
-parameters start-------
-0,array,list[int],1,0,4,0
-1,x,int,1,0,4,4
-2,low,int,1,0,4,8
-3,high,int,1,0,4,12
-parameters end-------
-0,while_block,While_stmt,2,0,4,16
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: while_block
-parameters start-------
-parameters end-------
-0,mid,int,3,0,4,0
-1,if_block,If_stmt,4,1,4,4
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: if_block
-parameters start-------
-parameters end-------
------------sub table end-----------
-2,else_block,Else_stmt,6,0,4,8
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: else_block
-parameters start-------
-parameters end-------
------------sub table end-----------
-3,elif_block,Elif_stmt,8,0,4,12
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: elif_block
-parameters start-------
-parameters end-------
------------sub table end-----------
------------sub table end-----------
-1,main,None,13,1,4,20
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: main
-parameters start-------
-parameters end-------
-0,array,list[int],14,0,4,0
-1,result,int,15,0,4,4
-2,if_block,If_stmt,17,1,4,8
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: if_block
-parameters start-------
-parameters end-------
------------sub table end-----------
-3,elif_block,Elif_stmt,20,0,4,12
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: elif_block
-parameters start-------
-parameters end-------
------------sub table end-----------
------------sub table end-----------
-2,if_block,If_stmt,24,1,4,24
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: if_block
-parameters start-------
-parameters end-------
------------sub table end-----------
------------sub table end-----------
+t1 = 5 * 8
+t2 = 4 + t1
+x = t2
+t3 = x * 4
+t4 = ~3
+t5 = t3 + t4
+z = t5
+t6 = 4 * 3
+x = t6
+z = x
+m = z
