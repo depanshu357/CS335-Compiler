@@ -1,7 +1,5 @@
-Var redefine error at line 10
-Var redefine error at line 12
-Error --expr_stmt4-- invalid type at line 12. Expected int
-int str
+Error --symbol_factor-- invalid type at line 3. Expected int or float
+Error --symbol_factor_star-- invalid type at line 3. Expected int or float or bool
 entry_no,name,type,line_no,sp_type,size,offset
 symbol table name: 
 parameters start-------
@@ -11,16 +9,4 @@ parameters end-------
 2,len,int,0,1,4,8
 3,self,self,0,1,4,12
 4,__name__,__name__,0,1,4,16
-5,x,int,1,0,4,20
-6,foo,None,3,1,4,24
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: foo
-parameters start-------
-parameters end-------
------------sub table end-----------
-7,x,int,10,0,4,28
-8,x,int,12,0,4,32
-x = 0
-x = 0
-x = "Hello"
+t1 = "hello" * "hello"
