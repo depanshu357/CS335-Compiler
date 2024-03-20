@@ -17,6 +17,7 @@ typedef struct sym_table {
     int total_offset = 0;
     string return_type;
     sym_table * prev_sym_table;
+    vector<string>global_vars;
     vector<st_node> sym_tbl_entry; //this will contain entries of sym_table
     vector<st_node> parameters; //this will contain entries of parameters
 } sym_table;
@@ -73,6 +74,15 @@ void create_entry(sym_table * curr_sym_tbl,string name, string type, int line_no
     curr_sym_tbl->sym_tbl_entry.push_back(new_entry);
 }
 
+int check_is_in_global(sym_table * symbol_table, string name){
+    for(int i=0;i<symbol_table->global_vars.size();i++){
+        if(symbol_table->global_vars[i] == name){
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int search_sym_table(sym_table * symbol_table,string name, int sp_type){
     sym_table * curr = symbol_table;
     while(curr!=NULL){
@@ -93,6 +103,20 @@ int search_sym_table(sym_table * symbol_table,string name, int sp_type){
     return 0;
 }
 
+int search_in_curr_scope(sym_table * symbol_table,string name, int sp_type){
+    for(int i=0;i<symbol_table->parameters.size();i++){
+        if(symbol_table->parameters[i].name == name){
+            return 1;
+        }
+    }
+    for(int i=0;i<symbol_table->sym_tbl_entry.size();i++){
+        if(symbol_table->sym_tbl_entry[i].name == name){
+            return 1;
+        }
+    }
+    return 0;
+}
+
 string search_type_in_sym_table(sym_table * symbol_table,string name){
     sym_table * curr = symbol_table;
     while(curr!=NULL){
@@ -110,6 +134,25 @@ string search_type_in_sym_table(sym_table * symbol_table,string name){
     }
 
     return "NULL";
+}
+
+int search_is_var_in_sym_table(sym_table * symbol_table,string name){
+    sym_table * curr = symbol_table;
+    while(curr!=NULL){
+        for(int i=0;i<curr->parameters.size();i++){
+            if(curr->parameters[i].name == name ){
+                return curr->parameters[i].sp_type;
+            }
+        }
+        for(int i=0;i<curr->sym_tbl_entry.size();i++){
+            if(curr->sym_tbl_entry[i].name == name){
+                return curr->sym_tbl_entry[i].sp_type;
+            }
+        }
+        curr = curr->prev_sym_table;
+    }
+
+    return -1;
 }
 
 void add_to_vector(vector<st_node>&v, string name, string type, int line_no){

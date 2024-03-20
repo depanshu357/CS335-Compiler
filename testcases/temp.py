@@ -1,3 +1,12 @@
-x:int = 4+5*8
-z:int = x*4 + ~3
-m:int=z = x =4*3
+x:int=0
+
+def foo()->None:
+    # global x
+    # x = "Hello"
+    # x = 5
+    return
+    
+if(True):
+    x:int=0
+else:
+    x:int="Hello"
