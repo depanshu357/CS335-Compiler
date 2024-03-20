@@ -195,7 +195,11 @@ typedlist_argument: tfpdef  { $$ = $1;}
     |  tfpdef EQUAL test { 
         $$ = create_node(4,"Assign_expr",$1,$2,$3);
         
-        if($1->type_of_node!=$3->type_of_node && (($1->type_of_node!="int" && $1->type_of_node!="float") || ( $3->type_of_node!="int" && $3->type_of_node!="float"))){
+        if(
+            $1->type_of_node!=$3->type_of_node && 
+            (($1->type_of_node!="int" && $1->type_of_node!="float") || ( $3->type_of_node!="int" && $3->type_of_node!="float")) &&
+            (($1->type_of_node!="int" && $1->type_of_node!="bool") || ( $3->type_of_node!="int" && $3->type_of_node!="bool"))
+        ){
             cout<<"Error --typedlist_argument-- invalid type at line " <<yylineno <<endl;
         }
         $$->type_of_node= $1->type_of_node;
@@ -517,6 +521,8 @@ xor_expr: and_expr symbol_and_expr_star {
     if($2==NULL || $2->type_of_node=="undefined"){
         $$->addr= $1->addr;
         $$->residual_ins= $1->residual_ins;
+    }else{
+        // karna hai
     }
 };
 
@@ -562,10 +568,10 @@ shift_expr: arith_expr shift_arith_expr_star {
     if($2==NULL || $2->type_of_node=="undefined"){
         $$->type_of_node= $1->type_of_node;
     }else{
-        if($2->type_of_node!="int" || $1->type_of_node!="int"){
+        if(($2->type_of_node!="int" && $2->type_of_node!="bool") || ($1->type_of_node!="int" && $1->type_of_node!="bool")){
             cout<<"Error --shift_expr-- invalid type at line " <<yylineno <<". Expected int\n";
         }
-        $$->type_of_node= $2->type_of_node;
+        $$->type_of_node= "int";
     }
     
     if($2==NULL || $2->type_of_node=="undefined"){
@@ -578,14 +584,14 @@ shift_expr: arith_expr shift_arith_expr_star {
 shift_arith_expr_star: /*empty*/ {$$=NULL;}
     | SHIFT_LEFT arith_expr shift_arith_expr_star {
         $$ = create_node(4,"Shift_left_expr",$1,$2,$3);
-        if($2->type_of_node!="int" ){
+        if($2->type_of_node!="int" && $2->type_of_node!="bool"){
             cout<<"Error --shift_arith_expr_star-- invalid type at line " <<yylineno <<". Expected int\n";
         }
         $$->type_of_node = $2->type_of_node;
     }
     | SHIFT_RIGHT arith_expr shift_arith_expr_star {
         $$ = create_node(4,"Shift_right_expr",$1,$2,$3);
-        if($2->type_of_node!="int" ){
+        if($2->type_of_node!="int" && $2->type_of_node!="bool"){
             cout<<"Error --shift_arith_expr_star-- invalid type at line " <<yylineno <<". Expected int\n";
         }
         $$->type_of_node = $2->type_of_node;
@@ -596,7 +602,7 @@ arith_expr: term symbol_term_star  {
     $$ = create_node(3,"Expressions",$1,$2);
     if($2==NULL || $2->type_of_node=="undefined"){
         $$->type_of_node= $1->type_of_node;
-    }else if($2->type_of_node!="int" && $2->type_of_node!="float"){
+    }else if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
         cout<<"Error --arith_expr-- invalid type at line " <<yylineno <<". Expected int or float\n";
     }else if($1->type_of_node=="float" || $2->type_of_node=="float"){
         $$->type_of_node= "float";
@@ -621,13 +627,13 @@ arith_expr: term symbol_term_star  {
 symbol_term_star: /*empty*/ {$$=NULL;}
     | ADD term symbol_term_star {
         $$ = create_node(4,"Operator_expr",$1,$2,$3);
-        if($2->type_of_node!="int" && $2->type_of_node!="float"){
-            cout<<"Error --symbol_term_star-- invalid type at line " <<yylineno <<". Expected int or float\n";
+        if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
+            cout<<"Error --symbol_term_star-- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
         }
         if($3==NULL || $3->type_of_node=="undefined"){
             $$->type_of_node= $2->type_of_node;
-        }else if($3->type_of_node!="int" && $3->type_of_node!="float"){
-            cout<<"Error --symbol_term_star-- invalid type at line " <<yylineno <<". Expected int or float\n";
+        }else if($3->type_of_node!="int" && $3->type_of_node!="float" && $3->type_of_node!="bool"){
+            cout<<"Error --symbol_term_star-- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
         }else if($2->type_of_node=="float" || $3->type_of_node=="float"){
             $$->type_of_node= "float";
         }else{
@@ -649,13 +655,13 @@ symbol_term_star: /*empty*/ {$$=NULL;}
     }
     | SUB term symbol_term_star {
         $$ = create_node(4,"Operator_expr",$1,$2,$3);
-        if($2->type_of_node!="int" && $2->type_of_node!="float"){
-            cout<<"Error --symbol_term_star-- invalid type at line " <<yylineno <<". Expected int or float\n";
+        if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
+            cout<<"Error --symbol_term_star-- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
         }
         if($3==NULL || $3->type_of_node=="undefined"){
             $$->type_of_node= $2->type_of_node;
-        }else if($3->type_of_node!="int" && $3->type_of_node!="float"){
-            cout<<"Error -- invalid type at line " <<yylineno <<". Expected int or float\n";
+        }else if($3->type_of_node!="int" && $3->type_of_node!="float" && $3->type_of_node!="bool"){
+            cout<<"Error -- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
         }else if($2->type_of_node=="float" || $3->type_of_node=="float"){
             $$->type_of_node= "float";
         }else{
@@ -680,12 +686,12 @@ term: factor symbol_factor_star {
     $$ = create_node(3,"Terms",$1,$2);
     if($2==NULL){
         $$->type_of_node= $1->type_of_node;
-    }else if($2->type_of_node!="int" && $2->type_of_node!="float"){
+    }else if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
         cout<<"line 495 ";
-        cout<<"Error --term-- invalid type at line " <<yylineno <<". Expected int or float\n";
+        cout<<"Error --term-- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
         
-    }else if($1->type_of_node!="float" && $1->type_of_node!="int"){
-        cout<<"Error --term-- invalid type at line " <<yylineno <<". Expected int or float\n";
+    }else if($1->type_of_node!="float" && $1->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="int"){
+        cout<<"Error --term-- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
     }
     else {
         if($1->type_of_node=="float" || $2->type_of_node=="float")
@@ -707,11 +713,11 @@ term: factor symbol_factor_star {
 
 symbol_factor_star: /*empty*/ {$$=NULL;}
     | symbol_factor symbol_factor_star {$$ = create_node(3,"Terms",$1,$2);
-    if($1->type_of_node!="int" && $1->type_of_node!="float"){
-        cout<<"Error --symbol_factor_star-- invalid type at line " <<yylineno <<". Expected int or float\n";
+    if($1->type_of_node!="int" && $1->type_of_node!="float" && $1->type_of_node!="bool"){
+        cout<<"Error --symbol_factor_star-- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
     }
-    if($2!=NULL && $2->type_of_node!="int" && $2->type_of_node!="float"){
-        cout<<"Error --symbol_factor_star-- invalid type at line " <<yylineno <<". Expected int or float\n";
+    if($2!=NULL && $2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
+        cout<<"Error --symbol_factor_star-- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
     }
 
     if($1->type_of_node=="float" || ($2!=NULL && $2->type_of_node=="float"))
@@ -733,7 +739,7 @@ symbol_factor_star: /*empty*/ {$$=NULL;}
 
 symbol_factor: MUL factor {
         $$ = create_node(3,"Mul_term",$1,$2);
-        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+        if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
             cout<<"Error --symbol_factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
         }
         $$->type_of_node = $2->type_of_node;
@@ -743,7 +749,7 @@ symbol_factor: MUL factor {
     // | AT factor {$$ = create_node(3,"At_term",$1,$2);}
     | DIV factor {
         $$ = create_node(3,"Div_term",$1,$2);
-        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+        if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
             cout<<"Error --symbol_factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
         }
         $$->type_of_node = "float";
@@ -753,7 +759,7 @@ symbol_factor: MUL factor {
     }
     | FLOOR_DIV factor {
         $$ = create_node(3,"Div_term",$1,$2);
-        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+        if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
             cout<<"Error --symbol_factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
         }
         $$->type_of_node = $2->type_of_node;
@@ -762,7 +768,7 @@ symbol_factor: MUL factor {
     }
     | MOD factor {
         $$ = create_node(3,"Mod_term",$1,$2);
-        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+        if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
             cout<<"Error --symbol_factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
         }
         $$->type_of_node = $2->type_of_node;
@@ -773,7 +779,7 @@ symbol_factor: MUL factor {
 
 factor: ADD factor {
         $$ = create_node(3,"Add_term",$1,$2);
-        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+        if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
             cout<<"Error --factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
         }
         $$->type_of_node = $2->type_of_node;
@@ -781,7 +787,7 @@ factor: ADD factor {
     }
     | SUB factor {
         $$ = create_node(3,"Sub_term",$1,$2);
-        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+        if($2->type_of_node!="int" && $2->type_of_node!="float" &&  $2->type_of_node!="bool"){
             cout<<"Error --factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
         }
         $$->type_of_node = $2->type_of_node;
@@ -791,7 +797,7 @@ factor: ADD factor {
     }
     | TILDE factor {
         $$ = create_node(3,"Tilde_term",$1,$2);
-        if($2->type_of_node!="int" && $2->type_of_node!="float"){
+        if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
             cout<<"Error --factor-tilde-- invalid type at line " <<yylineno <<". Expected int or float\n";
         }
         $$->type_of_node = $2->type_of_node;
@@ -804,10 +810,10 @@ factor: ADD factor {
     
 power: atom_expr {$$ = $1;}
     | atom_expr POW factor {$$ = create_node(4,"Power_term",$1,$2,$3);
-        if(!($3->type_of_node=="int" || $3->type_of_node=="float")){
-            cout<<"Error --power-- invalid power type at line " <<yylineno <<". Expected int or float.\n";
-        }else if(!($1->type_of_node=="int" || $1->type_of_node=="float")){
-            cout<<"Error --power2-- invalid power type at line " <<yylineno <<". Expected int or float\n";
+        if(!($3->type_of_node=="int" || $3->type_of_node=="float" || $3->type_of_node=="bool")){
+            cout<<"Error --power-- invalid power type at line " <<yylineno <<". Expected int or float or bool.\n";
+        }else if(!($1->type_of_node=="int" || $1->type_of_node=="float" || $1->type_of_node=="bool")){
+            cout<<"Error --power2-- invalid power type at line " <<yylineno <<". Expected int or float or bool\n";
         }else{
             if($1->type_of_node=="float" || $3->type_of_node=="float")
                 $$->type_of_node= "float";
@@ -990,7 +996,11 @@ subscript: test {$$=$1;}
 argument: test { $$ = $1;}
     | test comp_for {$$=create_node(3,"Terms",$1,$2);}
     | test EQUAL test  {$$=create_node(4,"Assign_term",$1,$2,$3);
-        if($1->type_of_node!=$3->type_of_node && (($1->type_of_node!="int" && $1->type_of_node!="float") || ( $3->type_of_node!="int" && $3->type_of_node!="float"))){
+        if(
+            $1->type_of_node!=$3->type_of_node && 
+            (($1->type_of_node!="int" && $1->type_of_node!="float") || ( $3->type_of_node!="int" && $3->type_of_node!="float")) && 
+            (($1->type_of_node!="bool" && $1->type_of_node!="int") || ($3->type_of_node!="bool" && $3->type_of_node!="int"))
+        ){
             cout<<"Error --argument-- invalid type assign at line " <<yylineno <<".";
         }
         cout<<"arg working"<<endl;
@@ -1172,12 +1182,12 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
     | number {$$=$1;}
     | string_plus {$$=$1;}
     | TRUE {$$=$1;
-        $$->type_of_node="int";
+        $$->type_of_node="bool";
         $$->addr="True";
     }
     | FALSE {
         $$=$1;
-        $$->type_of_node="int";
+        $$->type_of_node="bool";
         $$->addr="False";
     }
     | NONE {

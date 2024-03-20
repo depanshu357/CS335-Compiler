@@ -6,117 +6,31 @@ fontsize  = 30
 labelloc  = t
 
 node   [ fontname="Cascadia code" ]
-	126		[ style = solid label = "START"  ];
-	126 -> 125
-	125		[ style = solid label = "File Input"  ];
-	125 -> 26
-	26		[ style = solid label = "Expr_stmt"  ];
-	26 -> 2
-	2		[ style = solid label = "Identifier"  ];
-	2 -> 0
+	32		[ style = solid label = "START"  ];
+	32 -> 20
+	20		[ style = solid label = "Terms"  ];
+	20 -> 0
 	0		[ style = solid label = "IDENTIFIER 
-(x)" color = red shape = rectangle ];
-	2 -> 1
-	1		[ style = solid label = "TYPE_HINT 
-(:int)" color = red shape = rectangle ];
-	26 -> 25
-	25		[ style = solid label = "Expr_stmt"  ];
-	25 -> 3
-	3		[ style = solid label = "ASSIGNMENT_OP 
-(=)" color = red shape = rectangle ];
-	25 -> 14
-	14		[ style = solid label = "INTEGER 
-(0)" color = red shape = rectangle ];
-	125 -> 124
-	124		[ style = solid label = "File Input"  ];
-	124 -> 38
-	38		[ style = solid label = "Func_def"  ];
-	38 -> 28
-	28		[ style = solid label = "KEYWORD 
-(def)" color = red shape = rectangle ];
-	38 -> 35
-	35		[ style = solid label = "Func_def"  ];
-	35 -> 29
-	29		[ style = solid label = "IDENTIFIER 
-(foo)" color = red shape = rectangle ];
-	35 -> 32
-	32		[ style = solid label = "Parantheses"  ];
-	32 -> 30
-	30		[ style = solid label = "DELIMITER 
+(print)" color = red shape = rectangle ];
+	20 -> 18
+	18		[ style = solid label = "Arguments"  ];
+	18 -> 1
+	1		[ style = solid label = "DELIMITER 
 (()" color = red shape = rectangle ];
-	32 -> 31
-	31		[ style = solid label = "DELIMITER 
+	18 -> 10
+	10		[ style = solid label = "Terms"  ];
+	10 -> 2
+	2		[ style = solid label = "STRING_LITERAL 
+(\"hello\")" color = red shape = rectangle ];
+	10 -> 8
+	8		[ style = solid label = "Mul_term"  ];
+	8 -> 3
+	3		[ style = solid label = "ARITHMETIC_OP 
+(*)" color = red shape = rectangle ];
+	8 -> 5
+	5		[ style = solid label = "STRING_LITERAL 
+(\"hello\")" color = red shape = rectangle ];
+	18 -> 6
+	6		[ style = solid label = "DELIMITER 
 ())" color = red shape = rectangle ];
-	35 -> 33
-	33		[ style = solid label = "TYPE_HINT 
-(->None)" color = red shape = rectangle ];
-	35 -> 34
-	34		[ style = solid label = "DELIMITER 
-(:)" color = red shape = rectangle ];
-	38 -> 36
-	36		[ style = solid label = "KEYWORD 
-(return)" color = red shape = rectangle ];
-	124 -> 122
-	122		[ style = solid label = "If_stmt"  ];
-	122 -> 39
-	39		[ style = solid label = "KEYWORD 
-(if)" color = red shape = rectangle ];
-	122 -> 52
-	52		[ style = solid label = "Arguments"  ];
-	52 -> 40
-	40		[ style = solid label = "DELIMITER 
-(()" color = red shape = rectangle ];
-	52 -> 41
-	41		[ style = solid label = "KEYWORD 
-(True)" color = red shape = rectangle ];
-	52 -> 42
-	42		[ style = solid label = "DELIMITER 
-())" color = red shape = rectangle ];
-	122 -> 53
-	53		[ style = solid label = "DELIMITER 
-(:)" color = red shape = rectangle ];
-	122 -> 89
-	89		[ style = solid label = "Expr_stmt"  ];
-	89 -> 65
-	65		[ style = solid label = "Identifier"  ];
-	65 -> 63
-	63		[ style = solid label = "IDENTIFIER 
-(x)" color = red shape = rectangle ];
-	65 -> 64
-	64		[ style = solid label = "TYPE_HINT 
-(:int)" color = red shape = rectangle ];
-	89 -> 88
-	88		[ style = solid label = "Expr_stmt"  ];
-	88 -> 66
-	66		[ style = solid label = "ASSIGNMENT_OP 
-(=)" color = red shape = rectangle ];
-	88 -> 77
-	77		[ style = solid label = "INTEGER 
-(0)" color = red shape = rectangle ];
-	122 -> 121
-	121		[ style = solid label = "elif_stmt"  ];
-	121 -> 91
-	91		[ style = solid label = "KEYWORD 
-(else)" color = red shape = rectangle ];
-	121 -> 92
-	92		[ style = solid label = "DELIMITER 
-(:)" color = red shape = rectangle ];
-	121 -> 119
-	119		[ style = solid label = "Expr_stmt"  ];
-	119 -> 95
-	95		[ style = solid label = "Identifier"  ];
-	95 -> 93
-	93		[ style = solid label = "IDENTIFIER 
-(x)" color = red shape = rectangle ];
-	95 -> 94
-	94		[ style = solid label = "TYPE_HINT 
-(:int)" color = red shape = rectangle ];
-	119 -> 118
-	118		[ style = solid label = "Expr_stmt"  ];
-	118 -> 96
-	96		[ style = solid label = "ASSIGNMENT_OP 
-(=)" color = red shape = rectangle ];
-	118 -> 107
-	107		[ style = solid label = "STRING_LITERAL 
-(\"Hello\")" color = red shape = rectangle ];
 }
