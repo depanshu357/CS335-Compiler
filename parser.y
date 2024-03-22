@@ -23,6 +23,8 @@
     string after_dot_name = "";
     int tempCount=1;
     int instCount=0;
+    string dot_is_spl_type;
+    int is_class_arg=0;
     string newTemp();
     void create_ins(int type, string optype, string addr1, string addr2, string addr3);
     vector<vector<string>> instructions;
@@ -842,6 +844,20 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             // cout<<$$->type_of_node<<" this is type"<<endl;
             // cout<<full_name<<" this is full name"<<endl;
             is_dot_name=0;
+            if(dot_is_spl_type.size()>0){
+                if(dot_is_spl_type.substr(0,3)=="Box"){
+                    if(search_type_in_sym_table(curr_sym_tbl.top(),full_name).substr(0,4) !="list"){
+                        cout<<"Error --atom_expr-- invalid dereferencing of a type at line no "<<yylineno<<endl;
+                    }
+                }
+                else if(dot_is_spl_type.size()>=5 && dot_is_spl_type.substr(0,5)=="Small"){
+                    int func_exist=search_class_func(global_sym_table,search_type_in_sym_table(curr_sym_tbl.top(),$1->lexeme),after_dot_name.substr(1,after_dot_name.size()-1));
+                    if(!func_exist){
+                        // cout<<$1->lexeme<<" "<<after_dot_name<<" this is full name"<<endl;
+                        cout<<"Error --atom_expr-- invalid func call at line no "<<yylineno<<endl;
+                    }
+                }
+            }
         }
 
         $$=create_node(3,"Terms", $1,$2);
@@ -890,7 +906,17 @@ trailer_star:  trailer trailer_star  {
             if($1->type_of_node.substr(0,3)=="Box" || ($1->type_of_node.size()>=5 && $1->type_of_node.substr(0,5)=="Small")){
                     cout<<"Error --trailer_star-- invalid sequence of dereferencing at line no "<<yylineno<<endl;
             }
-            
+            // cout<<"line 908"<<endl;
+            // cout<<$2->type_of_node<<" this is type"<<endl;
+            if($2->type_of_node.size()>=5 && ($2->type_of_node.substr(0,3)=="Box" || ($2->type_of_node.size()>=5 && $2->type_of_node.substr(0,5)=="Small"))){
+                    dot_is_spl_type=$2->type_of_node;
+                    // cout<<"line 911"<<endl;
+
+            }else{
+                dot_is_spl_type="";
+            }
+        }else{
+            dot_is_spl_type="";
         }
     }
     | /*empty*/{$$=NULL;}
@@ -923,6 +949,7 @@ trailer: SMALL_OPEN arglist SMALL_CLOSE  {
         $$ = create_node(3,"Identifier",$1,$2);
         is_dot_name=__DOT__;
         after_dot_name="."+ string($2->lexeme);
+        $$->type_of_node = search_type_in_sym_table(curr_sym_tbl.top(),$2->lexeme);
         // $$->type_of_node = search_type_in_sym_table(curr_sym_tbl.top(),$2->lexeme);
         // if(!search_sym_table(curr_sym_tbl.top(),$2->lexeme,0)){
         //     cout<<"Sym_tbl_error: Variable "<<$2->lexeme<<" not declared at line "<<yylineno<<endl;
@@ -937,12 +964,16 @@ trailer: SMALL_OPEN arglist SMALL_CLOSE  {
 
 classdef: CLASS NAME {
             parameter_vec.clear(); is_param=1;
+            is_class_arg=1;
         }
         bracket_arglist_optional COLON {
+        is_class_arg=0;
         sym_table * new_table = new sym_table();
         create_entry(curr_sym_tbl.top(),$2->lexeme , $2->lexeme ,yylineno,__CLASS__,new_table );
         curr_sym_tbl.push(new_table);
         add_parameters(curr_sym_tbl.top(), parameter_vec);
+        if($4!=NULL)
+            add_parent_class(global_sym_table,curr_sym_tbl.top(), $4->type_of_node);
         is_param=0;
         }
         suite {
@@ -961,6 +992,7 @@ classdef: CLASS NAME {
 
 bracket_arglist_optional: SMALL_OPEN SMALL_CLOSE {$$=create_node(3,"Parantheses",$1,$2);}
     | SMALL_OPEN arglist SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$3);
+        $$->type_of_node=$2->type_of_node;
     }
     | {$$=NULL;}
     ;
@@ -972,7 +1004,9 @@ arglist: argument_list COMMA {
     ;
 
 argument_list: argument_list COMMA argument { $$=create_node(4,"Arguments",$1,$2,$3);}
-    | argument { $$=$1;}
+    | argument { 
+        $$=$1;
+    }
     ;
 
 subscriptlist: subscript_list COMMA {$$=create_node(3,"Terms",$1,$2);

@@ -96,7 +96,6 @@ int search_sym_table(sym_table * symbol_table,string name, int sp_type){
                 return 1;
             }
         }
-
         curr = curr->prev_sym_table;
     }
 
@@ -117,7 +116,38 @@ int search_in_curr_scope(sym_table * symbol_table,string name, int sp_type){
     return 0;
 }
 
-string search_type_in_sym_table(sym_table * symbol_table,string name){
+int search_class_func(sym_table * symbol_table,string class_name, string func_name){
+    sym_table * curr = symbol_table;
+    for(int i=0;i<curr->sym_tbl_entry.size();i++){
+        if(curr->sym_tbl_entry[i].name == class_name && curr->sym_tbl_entry[i].type == class_name){
+            curr=curr->sym_tbl_entry[i].sub_symbol_table;
+            while(curr!=symbol_table){
+                for(int i=0;i<curr->sym_tbl_entry.size();i++){
+                    if(curr->sym_tbl_entry[i].name == func_name){
+                        return 1;
+                    }
+                }
+                curr = curr->prev_sym_table;
+            }
+        }
+    }
+
+    return 0;
+}
+
+void add_parent_class(sym_table*global, sym_table * derived_class, string parent_class){
+    sym_table * curr = global;
+    for(int i=0;i<curr->sym_tbl_entry.size();i++){
+        if(curr->sym_tbl_entry[i].name == parent_class && curr->sym_tbl_entry[i].type == parent_class){
+            derived_class->prev_sym_table = curr->sym_tbl_entry[i].sub_symbol_table;
+            return;
+        }
+    }
+}
+
+    string
+    search_type_in_sym_table(sym_table *symbol_table, string name)
+{
     sym_table * curr = symbol_table;
     while(curr!=NULL){
         for(int i=0;i<curr->parameters.size();i++){
