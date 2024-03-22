@@ -6,19 +6,21 @@ integer <-> bool
 
 integer <-> float
 
- 2. The following situation should be an error.
+Bool to float not allowed
+
+2. The following situation should be an error.
 
 i : float = 3.14
 
-def or use of mylist[i]   <----- error
+def or use of mylist[i]   <----- error
 
-3. We will use two forms of the range() function: range(start, stop) and range(stop). It is okay if you want to handle these specially in your implementation.
+3. We will use two forms of the range() function: range(start, stop) and range(stop). It is okay if you want to handle these specially in your implementation.
 
-4. A function in the global scope and a class method can have the same name.  
+4. A function in the global scope and a class method can have the same name.  
 
 5. Objects will always be created with explicit constructor calls and a l-value on the LHS. You can assume that the test cases will respect this constraint.
 
-a : myclass = myclass(1,2)  <---- valid
+a : myclass = myclass(1,2)  <---- valid
 
 myclass(1,2) <--- invalid
 
@@ -26,7 +28,7 @@ myclass(1,2) <--- invalid
 1. public1.py
 add bool
 2. public2.py
-min_value: float = None
+min_value: float = None -> DONE it is not allowed
 //////////
 
 
@@ -37,3 +39,10 @@ None
 empty
 ""
 NULL
+
+
+//////
+1. Dynamic resizing isn't allowed
+2. Treat strings as immutable
+//////
+

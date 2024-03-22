@@ -1,11 +1,12 @@
-t1 = 5 * 8
-t2 = 4 + t1
-x = t2
-t3 = x * 4
-t4 = ~3
-t5 = t3 + t4
-z = t5
-t6 = 4 * 3
-x = t6
-z = x
-m = z
+Error --symbol_factor-- invalid type at line 3. Expected int or float
+Error --symbol_factor_star-- invalid type at line 3. Expected int or float or bool
+entry_no,name,type,line_no,sp_type,size,offset
+symbol table name: 
+parameters start-------
+parameters end-------
+0,print,print,0,1,4,0
+1,range,list[int],0,1,4,4
+2,len,int,0,1,4,8
+3,self,self,0,1,4,12
+4,__name__,__name__,0,1,4,16
+t1 = "hello" * "hello"

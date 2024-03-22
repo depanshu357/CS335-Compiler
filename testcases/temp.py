@@ -1,3 +1,3 @@
-x:int = 4+5*8
-z:int = x*4 + ~3
-m:int=z = x =4*3
+# print(type(4/2))
+# print(type(4/3))
+print("hello"*"hello")

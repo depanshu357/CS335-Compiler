@@ -107,7 +107,7 @@ ERRORCHAR "$"|"?"|"`"
 }
 
 
-{KEYWORD} { 
+<INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>{KEYWORD} { 
     string lexeme_out=string(yytext);
     lexeme_out="KEYWORD \n("+lexeme_out+")";
     const char* charPtr = lexeme_out.c_str();
