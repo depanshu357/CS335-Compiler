@@ -1,69 +1,15 @@
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: 
-parameters start-------
-parameters end-------
-0,print,print,0,1,4,0
-1,range,list[int],0,1,4,4
-2,len,int,0,1,4,8
-3,self,self,0,1,4,12
-4,__name__,__name__,0,1,4,16
-5,ShiftReduceParser,ShiftReduceParser,1,2,4,20
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: ShiftReduceParser
-parameters start-------
-0,name_,str,3,0,4,0
-parameters end-------
-0,self.srname,str,4,0,4,4
------------sub table end-----------
-6,LR0Parser,LR0Parser,7,2,4,24
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: LR0Parser
-parameters start-------
-0,myname_,str,9,0,4,0
-1,parentname_,str,9,0,4,4
-parameters end-------
-0,self.lr0name,str,10,0,4,8
------------sub table end-----------
-7,CLRParser,CLRParser,14,2,4,28
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: CLRParser
-parameters start-------
-0,myname_,str,16,0,4,0
-1,parentname_,str,16,0,4,4
-parameters end-------
-0,self.clrname,str,17,0,4,8
------------sub table end-----------
-8,LALRParser,LALRParser,21,2,4,32
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: LALRParser
-parameters start-------
-0,myname_,str,23,0,4,0
-1,clrname_,str,23,0,4,4
-2,srname_,str,23,0,4,8
-parameters end-------
-0,self.lalrname,str,24,0,4,12
-1,print_name,None,27,1,4,16
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: print_name
-parameters start-------
-parameters end-------
------------sub table end-----------
------------sub table end-----------
-9,main,None,36,1,4,36
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: main
-parameters start-------
-parameters end-------
-0,obj,LALRParser,37,0,4,0
------------sub table end-----------
-undefined = name_
-undefined = myname_
-undefined = myname_
-undefined = myname_
-obj = undefined
+or
+x = 2
+t1 = 3 << 3
+t2 = 6 ^ 5
+t3 = t1 ^ t2
+t4 = 3 << 3
+t5 = t4 & 5
+t6 = t3 | t5
+y = t6
+t7 = x or x
+t8 = x + x
+x = t8
+t9 = not x
+t10 = x + x
+x = t10

@@ -46,3 +46,5 @@ NULL
 2. Treat strings as immutable
 //////
 
+
+// can variable name be t+number coz they are regsiter names in 3ac
