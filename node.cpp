@@ -12,7 +12,7 @@ NODE* create_node(int n_args, ...)
     element->is_terminal = false;
     element->type_of_node="undefined";
     element->addr="undefined";
-    // element->ins=0;
+    element->ins=0;
     element->residual_ins="undefined";
     NODE*child;
     va_list valist;

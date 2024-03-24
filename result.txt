@@ -1,15 +1,8 @@
-or
-x = 2
 t1 = 3 << 3
-t2 = 6 ^ 5
-t3 = t1 ^ t2
-t4 = 3 << 3
-t5 = t4 & 5
-t6 = t3 | t5
-y = t6
-t7 = x or x
-t8 = x + x
-x = t8
-t9 = not x
-t10 = x + x
-x = t10
+t2 = 5 > t1
+z = t2
+t3 = 3 > 2
+t4 = 5 < 3
+t5 = t3 and t4
+x = 4
+y = 3

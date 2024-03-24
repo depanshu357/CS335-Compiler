@@ -16,9 +16,6 @@ typedef struct node{
     string residual_ins;
     string type_of_node;
     vector<struct node*> children;
-    vector<int> truelist;
-    vector<int> falselist;
-    vector<int> nextlist;
 }NODE;
 
 NODE* create_node(int n_args, ...);

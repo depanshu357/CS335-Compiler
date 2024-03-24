@@ -28,9 +28,6 @@
     string newTemp();
     void create_ins(int type, string optype, string addr1, string addr2, string addr3);
     vector<vector<string>> instructions;
-    vector<int> makelist(int i);
-	vector<int> merge(vector<int> p1,vector<int> p2);
-	void backpatch(vector<int> p,int i);
 
 %}
 
@@ -59,7 +56,8 @@ start : file_input {$$ = create_node(2,"START", $1); start_node=$$;}
     ;
 
 file_input: NEWLINE file_input {$$ = $2;}
-    | stmt file_input {$$ = create_node(3,"File Input",$1,$2);}
+    | stmt file_input {$$ = create_node(3,"File Input",$1,$2);
+    }
     | {$$ = NULL;}	
     ;
 
@@ -81,8 +79,9 @@ async_stmt: ASYNC funcdef { $$ = create_node(3,"Async_stmt",$1,$2);}
     | ASYNC for_stmt { $$ = create_node(3,"Async_stmt",$1,$2);}
     ;
 
-if_stmt: IF namedexpr_test COLON suite if_stmt_deviation {
-        $$ = create_node(6,"If_stmt",$1,$2,$3,$4,$5);
+if_stmt: IF {
+    } namedexpr_test COLON suite if_stmt_deviation {
+        $$ = create_node(6,"If_stmt",$1,$3,$4,$5,$6);
     };
 
 if_stmt_deviation: elif_namedexpr_test_colon_suite_star ELSE COLON suite { 
@@ -433,9 +432,10 @@ testlist_star_expr: test testlist_star_expr_option1_star {
             $$->type_of_node= $2->type_of_node;
         }
 
-        if($2==NULL){
+        if($2==NULL || $2->type_of_node=="undefined"){
             $$->addr= $1->addr;
             $$->residual_ins= $1->residual_ins;
+            $$->type_of_node= $1->type_of_node;
         }
         
         // cout<<$$->type_of_node<<" in line 4444"<<endl;
@@ -702,7 +702,6 @@ arith_expr: term symbol_term_star  {
         $$->addr=$1->addr;
     
     }
-    // cout<<"line 659 "<<$$->addr<<endl;
 
 } ;
 
@@ -987,12 +986,9 @@ trailer_star:  trailer trailer_star  {
             if($1->type_of_node.substr(0,3)=="Box" || ($1->type_of_node.size()>=5 && $1->type_of_node.substr(0,5)=="Small")){
                     cout<<"Error --trailer_star-- invalid sequence of dereferencing at line no "<<yylineno<<endl;
             }
-            // cout<<"line 908"<<endl;
-            // cout<<$2->type_of_node<<" this is type"<<endl;
             if($2->type_of_node.size()>=5 && ($2->type_of_node.substr(0,3)=="Box" || ($2->type_of_node.size()>=5 && $2->type_of_node.substr(0,5)=="Small"))){
                     dot_is_spl_type=$2->type_of_node;
                     // cout<<"line 911"<<endl;
-
             }else{
                 dot_is_spl_type="";
             }
@@ -1118,7 +1114,7 @@ argument: test { $$ = $1;}
         ){
             cout<<"Error --argument-- invalid type assign at line " <<yylineno <<".";
         }
-        cout<<"arg working"<<endl;
+        // cout<<"arg working"<<endl;
         // $$->type_of_node=$1->type_of_node;
     }
     | POW test {$$=create_node(3,"Power_term",$1,$2);}
@@ -1156,13 +1152,11 @@ or_test: and_test or_and_test_star{$$=create_node(3,"Expressions",$1,$2);
     if($2==NULL ){
         $$->addr=$1->addr;
         $$->residual_ins=$1->residual_ins;
-        // cout<<"yeh kyu when line "<<yylineno<<endl;
     }else{
-        // cout<<"line 1128 "<<$2->addr<<" "<<yylineno<<endl;
         string reg = newTemp();
         create_ins(3,$2->residual_ins,reg,$1->addr,$2->addr);
         $$->addr = reg;
-        cout<<$2->residual_ins<<endl;
+        // cout<<$2->residual_ins<<endl;
         $$->residual_ins = $1->residual_ins;
     }
     };
@@ -1201,7 +1195,7 @@ and_test: not_test and_not_test_star {
         string reg = newTemp();
         create_ins(3,$2->residual_ins,reg,$1->addr,$2->addr);
         $$->addr = reg;
-        cout<<$2->residual_ins<<endl;
+        // cout<<$2->residual_ins<<endl;
         $$->residual_ins = $1->residual_ins;
     }
 };
@@ -1219,6 +1213,7 @@ and_not_test_star: AND not_test and_not_test_star {
             create_ins(2,$3->residual_ins, reg,$2->addr,$3->addr);
             $$->residual_ins = $1->lexeme;
             $$->addr = reg;
+
         }
         // cout<<"Line 1158 "<<$$->addr<<" "<<$$->residual_ins<<" "<<endl;
     }
@@ -1227,10 +1222,12 @@ and_not_test_star: AND not_test and_not_test_star {
 
 not_test: NOT not_test {
         $$=create_node(3,"Not_term",$1,$2);
+        $$->type_of_node=$2->type_of_node;
         string reg = newTemp();
         $$->residual_ins=$1->lexeme;
         create_ins(2,$1->lexeme, reg,$2->addr,"");
         $$->addr = reg;
+
     }
     | comparison {$$=$1;};
     
@@ -1240,11 +1237,29 @@ comparison: expr comp_op_expr_plus {
             $$->type_of_node=$1->type_of_node;
         else{
             // karna hai
+            if($1->type_of_node!=$2->type_of_node){
+                if($1->type_of_node=="int" && $2->type_of_node=="float" || $1->type_of_node=="float" && $2->type_of_node=="int"){
+                    //continue
+                }
+                else if($1->type_of_node=="int" && $2->type_of_node=="bool" || $1->type_of_node=="bool" && $2->type_of_node=="int"){
+                    //continue
+                }
+                else{
+                    cout<<"Error --comparison-- invalid type assign at line " <<yylineno <<". "<<$1->type_of_node<<" "<<$2->type_of_node<<"."<<endl;
+                }
+            }
+            $$->type_of_node="int";
+
+            // if($1->type_of_node!=$2->type_of_node 
+            // && (($1->type_of_node!="int" || $1->type_of_node!="bool") && ($2->type_of_node!="int" || $2->type_of_node!="bool"))){
+            //     cout<<"Error --comparison-- invalid type assign at line " <<yylineno <<".";
+            // }
             }
         string reg = newTemp();
         create_ins(3,$2->residual_ins, reg,$1->addr, $2->addr);
         $$->residual_ins = $1->residual_ins;
         $$->addr = reg;
+       
     }
     |expr {
         $$=$1 ;
@@ -1256,11 +1271,25 @@ comp_op_expr_plus: comp_op expr comp_op_expr_plus {
         create_ins(3,$3->residual_ins, reg,$2->addr, $3->addr);
         $$->residual_ins=$1->lexeme;
         $$->addr = reg;
+        if($2->type_of_node!=$3->type_of_node){
+                if($3->type_of_node=="int" && $2->type_of_node=="float" || $3->type_of_node=="float" && $2->type_of_node=="int"){
+                    //continue
+                }
+                else if($3->type_of_node=="int" && $2->type_of_node=="bool" || $3->type_of_node=="bool" && $2->type_of_node=="int"){
+                    //continue
+                }
+                else{
+                    cout<<"Error --comparison-- invalid type assign at line " <<yylineno <<". "<<$2->type_of_node<<" "<<$3->type_of_node<<"."<<endl;
+                }
+            }
+        $$->type_of_node="int";
+        
     }
     | comp_op expr {
         $$=create_node(3,"Expressions",$1,$2);
         $$->residual_ins=$1->lexeme;
         $$->addr=$2->addr;
+        $$->type_of_node=$2->type_of_node;
     }
     ;
 
@@ -1316,11 +1345,13 @@ test: or_test {
         cout<<"Error --test-- invalid type assign at line " <<yylineno <<".";
     }
     $$->type_of_node=$1->type_of_node;
-    cout<<$$->type_of_node<<"hello"<<endl;
+    // cout<<$$->type_of_node<<"hello"<<endl;
 
     };
 
 atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
+        // cout<<"line 1374 "<<endl;
+        
         $$=create_node(4,"Arguments",$1,$2,$3);
         $$->type_of_node = $2->type_of_node;
     }
@@ -1492,36 +1523,13 @@ void print_instructions(){
             else{
                 cout << ins[2] << " = " << ins[1] << " " <<ins[3] << endl;
             }
+        }else if(ins[0]=="0"){
+            cout<<ins[1]<<" "<<ins[2]<<" "<<ins[3]<<" "<<ins[4]<<endl;
         }
     }
 }
 
-vector<int> makelist(int i){
-	// if(parsenum==1) return vector<int>();
-	return vector<int>{i};
-}
 
-vector<int> merge(vector<int> p1, vector<int> p2){
-	// if(parsenum==1) return vector<int>();
-	vector<int> merged;
-    for(auto it:p1){
-        merged.push_back(it);
-    }
-    for(auto it:p2){
-        merged.push_back(it);
-    }
-	return merged;
-}
-
-void backpatch(vector<int>p, int i)
-{
-	// if(parsenum==1) return;
-	for(int j=0;j<p.size();j++){
-		// instructions[abs(p[j])-1].push_back(to_string(i));
-		if(instructions[abs(p[j])-1].size()>0)
-			instructions[abs(p[j])-1].back()=to_string(i);
-	}
-}
 
 
 
