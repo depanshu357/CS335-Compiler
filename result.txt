@@ -1,8 +1,30 @@
+Error: syntax error,line: 17
 t1 = 3 << 3
 t2 = 5 > t1
-z = t2
+m = t2
 t3 = 3 > 2
 t4 = 5 < 3
 t5 = t3 and t4
+if_false t5 goto label2
+t6 = 4 > 3
+if_false t6 goto label4
+c = 5
+goto label3  
+label4:   
+t7 = 5 > 3
+if_false t7 goto label5
+b = 6
+goto label3  
+label5:   
+a = 7
+label3:   
+goto label1  
+label2:   
+t8 = 6 > 3
+if_false t8 goto label6
+p = 8
+goto label1  
+label6:   
 x = 4
+label1:   
 y = 3

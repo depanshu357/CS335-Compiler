@@ -22,10 +22,13 @@
     int is_dot_name=0;
     string after_dot_name = "";
     int tempCount=1;
+    int labelCount = 1;
     int instCount=0;
     string dot_is_spl_type;
     int is_class_arg=0;
     string newTemp();
+    vector<string> label_st;
+    string newLabel();
     void create_ins(int type, string optype, string addr1, string addr2, string addr3);
     vector<vector<string>> instructions;
 
@@ -79,9 +82,23 @@ async_stmt: ASYNC funcdef { $$ = create_node(3,"Async_stmt",$1,$2);}
     | ASYNC for_stmt { $$ = create_node(3,"Async_stmt",$1,$2);}
     ;
 
-if_stmt: IF {
-    } namedexpr_test COLON suite if_stmt_deviation {
-        $$ = create_node(6,"If_stmt",$1,$3,$4,$5,$6);
+if_stmt: IF namedexpr_test {
+        newLabel();
+        string temp=newLabel();
+        create_ins(0,"if_false",$2->addr,"goto",temp);
+    } COLON suite {
+        string prevLabel=label_st.back();
+        label_st.pop_back();
+        if(!label_st.empty())
+            create_ins(0,"goto",label_st.back(),"","");
+        create_ins(0,prevLabel+":","","","");
+    } if_stmt_deviation {
+        $$ = create_node(6,"If_stmt",$1,$2,$4,$5,$7);
+        if(!label_st.empty())
+            create_ins(0,label_st.back()+":","","","");
+        label_st.pop_back();
+        
+        
     };
 
 if_stmt_deviation: elif_namedexpr_test_colon_suite_star ELSE COLON suite { 
@@ -90,8 +107,16 @@ if_stmt_deviation: elif_namedexpr_test_colon_suite_star ELSE COLON suite {
         |elif_namedexpr_test_colon_suite_star {$$ = $1;};
                                                 
 
-elif_namedexpr_test_colon_suite_star: ELIF  namedexpr_test COLON suite
-        elif_namedexpr_test_colon_suite_star {$$ = create_node(6,"Elif_block",$1,$2,$3,$4,$5);}
+elif_namedexpr_test_colon_suite_star: ELIF  namedexpr_test {
+        string temp=newLabel();
+        create_ins(0,"if_false",$2->addr,"goto",temp);
+    } COLON suite {
+        string prevLabel=label_st.back();
+        label_st.pop_back();
+        if(!label_st.empty())
+            create_ins(0,"goto",label_st.back(),"","");
+        create_ins(0,prevLabel+":","","","");
+    } elif_namedexpr_test_colon_suite_star {$$ = create_node(6,"Elif_block",$1,$2,$4,$5,$7);}
     | { $$ = NULL;}
     ;
 
@@ -1501,7 +1526,12 @@ string newTemp(){
     string temp = "t" + to_string(tempCount);
     tempCount++;
     return temp;
-
+}
+string newLabel(){
+    string temp = "label" + to_string(labelCount);
+    label_st.push_back(temp);
+    labelCount++;
+    return temp;
 }
 
 void create_ins(int type, string optype, string addr1,string addr2, string addr3 ){
