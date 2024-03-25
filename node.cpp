@@ -14,6 +14,7 @@ NODE* create_node(int n_args, ...)
     element->addr="undefined";
     element->ins=0;
     element->residual_ins="undefined";
+    element->size = -1;
     NODE*child;
     va_list valist;
     va_start(valist, n_args); 

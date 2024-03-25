@@ -1,30 +1,27 @@
-Error: syntax error,line: 17
-t1 = 3 << 3
-t2 = 5 > t1
-m = t2
-t3 = 3 > 2
-t4 = 5 < 3
-t5 = t3 and t4
-if_false t5 goto label2
-t6 = 4 > 3
-if_false t6 goto label4
-c = 5
-goto label3  
-label4:   
-t7 = 5 > 3
-if_false t7 goto label5
-b = 6
-goto label3  
-label5:   
-a = 7
-label3:   
-goto label1  
+str ompho list[str]
+t1 = "4"
+t2 = "5"
+t3 = "6"
+t4 = declare_array(12) 
+t5 = 0 
+t4[t5] = t1 
+t5 = t5 + 4
+t4[t5] = t2 
+t5 = t5 + 4
+t4[t5] = t3 
+t5 = t5 + 4
+arras = t4
+t6 = -4
 label2:   
-t8 = 6 > 3
-if_false t8 goto label6
-p = 8
-goto label1  
-label6:   
-x = 4
+t6 = t6 + 4
+t7 = t6 < 12
+if_false t7 goto label1
+x = arras[t6] 
+t8 = 4
+y = t8
+goto label2  
 label1:   
-y = 3
+t9 = 324
+k = t9
+t10 = 7
+z = t10

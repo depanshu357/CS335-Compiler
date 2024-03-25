@@ -29,9 +29,11 @@
     string newTemp();
     vector<string> label_st;
     string newLabel();
+    vector<string> arr_elements;
+    int arr_active = 0;
     void create_ins(int type, string optype, string addr1, string addr2, string addr3);
     vector<vector<string>> instructions;
-
+    string prev_var_name="";
 %}
 
 %union {
@@ -124,8 +126,25 @@ elif_namedexpr_test_colon_suite_star: ELIF  namedexpr_test {
     | WHILE namedexpr_test COLON suite {$$ = create_node(5,"While_stmt",$1,$2,$3,$4);}
     ; */
 
-while_stmt: WHILE namedexpr_test COLON suite while_stmt_deviation { 
-        $$ = create_node(6,"While_stmt",$1,$2,$3,$4,$5);
+while_stmt: WHILE {
+        string temp=newLabel();
+        create_ins(0,temp+":","","","");
+    }namedexpr_test {
+        // newLabel();
+        string temp=newLabel();
+        create_ins(0,"if_false",$3->addr,"goto",temp);
+    
+    } COLON suite {
+        string prevLabel=label_st.back();
+        label_st.pop_back();
+        if(!label_st.empty())
+            create_ins(0,"goto",label_st.back(),"","");
+        create_ins(0,prevLabel+":","","","");
+        label_st.pop_back();
+    } while_stmt_deviation { 
+        $$ = create_node(6,"While_stmt",$1,$3,$5,$6,$8);
+        // if(!label_st.empty())
+        //     create_ins(0,label_st.back()+":","","","");
     }
     ;
 
@@ -135,22 +154,67 @@ while_stmt_deviation: ELSE COLON suite {
     | { $$ = NULL;}
     ;
 
-for_stmt: FOR exprlist IN testlist COLON suite else_colon_suite_optional{
-        $$ = create_node(8,"For_stmt",$1,$2,$3,$4,$5,$6,$7);
-     // $$ = create_node(8,"For_stmt",$1,$3,$4,$5,$6,$7,$9);
+for_stmt: FOR exprlist IN testlist COLON {
+        if("list["+string($2->type_of_node)+"]"!=string($4->type_of_node)){
+            if(string($2->type_of_node)=="int" && string($4->type_of_node)=="list[float]"){
+                //continue;
+            }
+            else if(string($2->type_of_node)=="float" && string($4->type_of_node)=="list[int]")
+            {
+                //continue;
+            }
+            else if(string($2->type_of_node)=="int" && string($4->type_of_node)=="list[bool]")
+            {
+                //continue;
+            }
+            else if(string($2->type_of_node)=="bool" && string($4->type_of_node)=="list[int]"){
+                //continue;
+            }
+            else{
+                cout<<"Error type is not iterable at line " <<yylineno <<". \n";   
+            }
+        }
+        if(prev_var_name!="range"){
+            int offset=get_type_size(string($4->type_of_node.substr(5,$4->type_of_node.size()-6)));
+            int max_size=get_size_from_tbl(curr_sym_tbl.top(),$4->addr);
+            string label2=newLabel(); //after FOR label
+            string temp1=newTemp();
+            create_ins(2,"=",temp1,"-"+to_string(offset),"");
+            string label1=newLabel(); //label for FOR
+            create_ins(0,label1+":","","","");
+            string temp2=newTemp();
+            create_ins(3,"+",temp1,temp1,to_string(offset));
+            create_ins(3,"<",temp2,temp1,to_string(max_size));
+            create_ins(0,"if_false",temp2, "goto",label2);
+            create_ins(0,$2->addr,"=",$4->addr+"["+temp1+"]","");
+        }
+    } suite {
+        
+        if(!label_st.empty())
+        {
+            create_ins(0,"goto",label_st.back(),"","");
+            label_st.pop_back();
+        }
+
+        if(!label_st.empty())
+        {
+            create_ins(0,label_st.back()+":","","","");
+            label_st.pop_back();
+        }
+        
+
+    } else_colon_suite_optional{
+        $$ = create_node(8,"For_stmt",$1,$2,$3,$4,$5,$7,$9);
         //check if testlist is a list or range
-        // cout<<$5->val<<endl;
         if(($4->type_of_node.size()<6 || $4->type_of_node.substr(0,4)!="list") ){
             cout<<"Error type is not iterable at line " <<yylineno <<". \n";
-            // cout << $5->type_of_node.size()<<endl;
-            // cout<<$5->type_of_node<<endl;
-
         }
         //check if the exprlist is same type as testlsit list [*]
         if(($4->type_of_node.substr(0,4)=="list") && $2->type_of_node!=$4->type_of_node.substr(5,$4->type_of_node.size()-6)){
             cout<<"Error  type is not same as iterable at line " <<yylineno <<". \n";
         }
-        // cout<<$5->type_of_node<<endl;
+        cout<<$2->type_of_node<<" ompho "<<$4->type_of_node<<endl;
+
     }
     ; 
 
@@ -405,26 +469,31 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
     ;
     
 
-testlist:  test symbol_test_star  {$$ = create_node(3,"Expressions",$1,$2);
+testlist:  test symbol_test_star  {
+    $$ = create_node(3,"Expressions",$1,$2);
     $$->type_of_node = $1->type_of_node;
+    $$->addr=$1->addr;
     }
     
-symbol_test_star: COMMA test symbol_test_star {$$ = create_node(4,"Expressions",$1,$2,$3);}
+symbol_test_star: COMMA test symbol_test_star {
+    $$ = create_node(4,"Expressions",$1,$2,$3);}
     | COMMA {$$ = $1;}
     |{$$=NULL;} 
     ;
 
 expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus {
-    $$ = create_node(4,"Expr_stmt",$1,$2,$3);
-    if($3!=NULL && $3->type_of_node!=$2->type_of_node){
-        cout<<"Error --expr_stmt_option1_plus-- invalid type at line " <<yylineno <<". Expected "<<$2->type_of_node<<endl;
-    }
-    
-    create_ins(2,$3->residual_ins, $2->addr,$3->addr, "");
-    $$->addr=$2->addr;
-    $$->residual_ins=$1->lexeme;
-    
-    $$->type_of_node= $2->type_of_node;
+        $$ = create_node(4,"Expr_stmt",$1,$2,$3);
+        if($3!=NULL && $3->type_of_node!=$2->type_of_node){
+            cout<<"Error --expr_stmt_option1_plus-- invalid type at line " <<yylineno <<". Expected "<<$2->type_of_node<<endl;
+        }
+        create_ins(2,$3->residual_ins, $2->addr,$3->addr, "");
+        $$->addr=$2->addr;
+        $$->residual_ins=$1->lexeme;
+
+        $$->type_of_node= $2->type_of_node;
+
+        // cout<<"from 1"<<endl;
+    // $$->addr=
 
     }
     | EQUAL testlist_star_expr {$$ = create_node(3,"Expr_stmt",$1,$2);
@@ -432,6 +501,9 @@ expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus {
         
         $$->addr=$2->addr;
         $$->residual_ins=$1->lexeme;
+
+    // cout<<"from 2"<<endl;
+
     }
     ;
 
@@ -462,7 +534,6 @@ testlist_star_expr: test testlist_star_expr_option1_star {
             $$->residual_ins= $1->residual_ins;
             $$->type_of_node= $1->type_of_node;
         }
-        
         // cout<<$$->type_of_node<<" in line 4444"<<endl;
     }
     ;
@@ -778,11 +849,11 @@ symbol_term_star: /*empty*/ {$$=NULL;}
             string reg=newTemp();
             create_ins(3,$3->residual_ins, reg,$2->addr, $3->addr);
             $$->addr=reg;
-            $$->residual_ins="+";
+            $$->residual_ins="-";
         }
         else{
             $$->addr=$2->addr;
-            $$->residual_ins="+";
+            $$->residual_ins="-";
         
         }
     }
@@ -999,6 +1070,7 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             $$->residual_ins=$1->residual_ins;
             // cout<<"activated "<<$$->addr<<" "<<$1->addr<<" ";
         }
+        
         // cout<<$$->addr<<" "<<yylineno<<endl;
     }
     ;
@@ -1042,7 +1114,6 @@ trailer: SMALL_OPEN arglist SMALL_CLOSE  {
         $$ = create_node(4,"Identifier",$1,$2,$3);
         $$->type_of_node = $3->lexeme;
         after_dot_name="."+ string($2->lexeme);
-
         // delete_sym_table(curr_sym_tbl.top(),$2->lexeme);
         // create_entry(curr_sym_tbl.top(),  $2->lexeme,$3->lexeme,yylineno,0,NULL );
         // $$->type_of_node = $3->lexeme;
@@ -1167,23 +1238,24 @@ comp_if: IF test_nocond {$$=create_node(3,"IF_stmt",$1,$2);}
 
 test_nocond: or_test {$$=$1;};
 
-or_test: and_test or_and_test_star{$$=create_node(3,"Expressions",$1,$2);
-    if($2==NULL)
-        $$->type_of_node=$1->type_of_node;
-    else{
-        // karna hai
+or_test: and_test or_and_test_star{
+        $$=create_node(3,"Expressions",$1,$2);
+        if($2==NULL)
+            $$->type_of_node=$1->type_of_node;
+        else{
+            // karna hai
+            }
+        
+        if($2==NULL ){
+            $$->addr=$1->addr;
+            $$->residual_ins=$1->residual_ins;
+        }else{
+            string reg = newTemp();
+            create_ins(3,$2->residual_ins,reg,$1->addr,$2->addr);
+            $$->addr = reg;
+            // cout<<$2->residual_ins<<endl;
+            $$->residual_ins = $1->residual_ins;
         }
-    
-    if($2==NULL ){
-        $$->addr=$1->addr;
-        $$->residual_ins=$1->residual_ins;
-    }else{
-        string reg = newTemp();
-        create_ins(3,$2->residual_ins,reg,$1->addr,$2->addr);
-        $$->addr = reg;
-        // cout<<$2->residual_ins<<endl;
-        $$->residual_ins = $1->residual_ins;
-    }
     };
 
 or_and_test_star:OR and_test or_and_test_star {
@@ -1358,7 +1430,11 @@ namedexpr_test_star_expr_option_list: namedexpr_test_star_expr_option COMMA name
 namedexpr_test_star_expr_option: namedexpr_test {$$=$1;}
     ;
 
-namedexpr_test: test {$$=$1;};
+namedexpr_test: test {
+    $$=$1;
+    if(arr_active) 
+        arr_elements.push_back($1->addr);
+    };
 
 test: or_test {
         $$=$1;
@@ -1379,9 +1455,33 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         
         $$=create_node(4,"Arguments",$1,$2,$3);
         $$->type_of_node = $2->type_of_node;
+        $$->addr=$2->addr;
     }
     | SMALL_OPEN SMALL_CLOSE {$$=create_node(3,"Parantheses",$1,$2);}
-    | BOX_OPEN testlist_comp BOX_CLOSE {$$=create_node(4,"Square_bracket",$1,$2,$3);$$->type_of_node="list["+$2->type_of_node+"]";}
+    | BOX_OPEN {
+            arr_active=1;
+        } testlist_comp BOX_CLOSE {$$=create_node(4,"Square_bracket",$1,$3,$4);
+        $$->type_of_node="list["+$3->type_of_node+"]";
+        // cout<<"box "<<$2->type_of_node<<endl;
+        // for(auto t: arr_elements) cout<<t<<" ";
+        arr_active=0;
+        string reg=newTemp();
+        string array_size=to_string(get_type_size($3->type_of_node)*arr_elements.size());
+        create_ins(0,reg, "=","declare_array("+array_size+")","");
+        $$->addr=reg;
+        
+        string temp=newTemp();
+        create_ins(0,temp, "=","0","");
+        for(auto it: arr_elements){
+            create_ins(0,$$->addr+"["+temp+"]","=",it,"");
+            create_ins(3,"+",temp,temp,to_string(get_type_size($3->type_of_node)));
+        }
+
+        // $$->size = get_type_size($3->type_of_node)*arr_elements.size();
+        update_size_entry(curr_sym_tbl.top(),prev_var_name, get_type_size($3->type_of_node)*arr_elements.size());
+        arr_elements.clear();
+
+    }
     | BOX_OPEN BOX_CLOSE {$$=create_node(3,"Square_bracket",$1,$2);}
     | CURLY_OPEN CURLY_CLOSE {$$=create_node(3,"Curly_bracket",$1,$2);}
     | NAME {
@@ -1395,6 +1495,8 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         }
         $$->type_of_node=curr_type;
         // cout<<"line 1276 "<<$$->addr<<endl;
+
+        prev_var_name=string($1->lexeme);
     }
     | NAME TYPE_HINT {
         $$=create_node(3,"Identifier", $1, $2); 
@@ -1415,40 +1517,65 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
             }
             create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,NULL );
         }
+
+        prev_var_name=string($1->lexeme);
+
+
     }
-    | number {$$=$1;}
-    | string_plus {$$=$1;}
+    | number {$$=$1;
+        string reg=newTemp();
+        create_ins(2,"=", reg,$1->lexeme,"");
+        $$->addr=reg;
+    }
+    | string_plus {$$=$1;
+        string reg=newTemp();
+        create_ins(2,"=", reg,$1->addr,"");
+        $$->addr=reg;
+    }
     | TRUE {$$=$1;
         $$->type_of_node="bool";
-        $$->addr="True";
+         string reg=newTemp();
+        create_ins(2,"=", reg,$1->lexeme,"");
+        $$->addr=reg;
+        
     }
     | FALSE {
         $$=$1;
         $$->type_of_node="bool";
-        $$->addr="False";
+        string reg=newTemp();
+        create_ins(2,"=", reg,$1->lexeme,"");
+        $$->addr=reg;
     }
     | NONE {
         $$=$1;
         $$->type_of_node="None";
-        $$->addr="None";
+         string reg=newTemp();
+        create_ins(2,"=", reg,$1->lexeme,"");
+        $$->addr=reg;
     }
     ;
 // dictionary , setliterals are to be ignored
 
 number: INTEGER {$$ = $1;
-        $$->addr=$$->lexeme;
+       $$->addr=$$->lexeme;
+       $$->type_of_node="int";
     }
     | FLOAT {$$ = $1;
         $$->addr=$$->lexeme;
+        $$->type_of_node="float";
     }
     ;
 
 string_plus: STRING string_plus {
     $$=create_node(3,"Strings", $1, $2);
-    $$->addr=$1->lexeme + $2->addr;
+    
+    //ignore the last quote of the first string and the first quote of the second string
+    $$->addr=string($1->lexeme).substr(0,string($1->lexeme).size()-1)+$2->addr.substr(1,$2->addr.size()-1);
+    $$->type_of_node="str";
     }
     | STRING {$$=$1;
         $$->addr=$$->lexeme;
+        $$->type_of_node="str";
     }
     ;
 
@@ -1523,11 +1650,13 @@ void MakeDOTFile(NODE*cell) {
 } 
 
 string newTemp(){
+    // string temp = ".t" + to_string(tempCount);
     string temp = "t" + to_string(tempCount);
     tempCount++;
     return temp;
 }
 string newLabel(){
+    // string temp = ".label" + to_string(labelCount);
     string temp = "label" + to_string(labelCount);
     label_st.push_back(temp);
     labelCount++;
@@ -1666,7 +1795,7 @@ int main(int argc, char* argv[]){
     MakeDOTFile(ast);
 
     /* MakeDOTFile(start_node); */
-    /* print_sym_table(global_sym_table); */
+    // print_sym_table(global_sym_table);
     print_instructions();
 
 

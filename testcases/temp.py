@@ -1,17 +1,23 @@
-m:int = 5 > 3<<3
-if 3>2 and 5<3:
-    if 4>3:
-        c:int=5
-    elif 5>3:
-        b:int=6
-    else:
-        a:int=7
-    
-elif 6>3:
-    p:int=8
-else:
-    x:int=4
-y:int=3
+# m:int = 5 > 3<<3
+# y:int = 5 > 3<<3
+# if (y or 3>2):
+#     while m>4:
+#         print(m)
+#         m = m - 1
+#     else :
+#         m = 345
 
 
+
+
+arras:list[str] = ["4","5","6"]
+x:str
+for x in arras:
+    print(x)
+    # x = "3"
+    y:int=4
+else :
+    k:int = 324
+# x:str = "hello" "world" "boy"
+z:int=7
 # print(z)

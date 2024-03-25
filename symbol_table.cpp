@@ -55,13 +55,17 @@ int  get_type_size(string s){
     
 }
 
-void create_entry(sym_table * curr_sym_tbl,string name, string type, int line_no, int sp_type, sym_table * sub_symbol_table=NULL){
+void create_entry(sym_table * curr_sym_tbl,string name, string type, int line_no, int sp_type, sym_table * sub_symbol_table=NULL,int size=-1){
     st_node new_entry;
     new_entry.name = name;
     new_entry.type = type;
     new_entry.line_no = line_no;
     new_entry.sp_type = sp_type;
-    new_entry.size = get_type_size(type);
+    if(size==-1)
+        new_entry.size = get_type_size(type);
+    else
+        new_entry.size = size;
+    // new_entry.size = get_type_size(type);
     new_entry.offset = curr_sym_tbl->total_offset;
     curr_sym_tbl->total_offset+=new_entry.size;
     new_entry.sub_symbol_table = sub_symbol_table;
@@ -83,7 +87,45 @@ int check_is_in_global(sym_table * symbol_table, string name){
     return 0;
 }
 
-int search_sym_table(sym_table * symbol_table,string name, int sp_type){
+int get_size_from_tbl(sym_table * symbol_table, string name){
+    sym_table * curr = symbol_table;
+    while(curr!=NULL){
+        for(int i=0;i<curr->parameters.size();i++){
+            if(curr->parameters[i].name == name){
+                return curr->parameters[i].size;
+            }
+        }
+        for(int i=0;i<curr->sym_tbl_entry.size();i++){
+            if(curr->sym_tbl_entry[i].name == name){
+                return curr->sym_tbl_entry[i].size;
+            }
+        }
+        curr = curr->prev_sym_table;
+    }
+
+    return -1;
+}
+
+void update_size_entry(sym_table * symbol_table, string name, int size){
+    sym_table * curr = symbol_table;
+    while(curr!=NULL){
+        for(int i=0;i<curr->parameters.size();i++){
+            if(curr->parameters[i].name == name){
+                curr->parameters[i].size = size;
+                return;
+            }
+        }
+        for(int i=0;i<curr->sym_tbl_entry.size();i++){
+            if(curr->sym_tbl_entry[i].name == name){
+                curr->sym_tbl_entry[i].size = size;
+                return;
+            }
+        }
+        curr = curr->prev_sym_table;
+    }
+}
+int    search_sym_table(sym_table *symbol_table, string name, int sp_type)
+{
     sym_table * curr = symbol_table;
     while(curr!=NULL){
         for(int i=0;i<curr->parameters.size();i++){

@@ -15,6 +15,7 @@ typedef struct node{
     int ins;
     string residual_ins;
     string type_of_node;
+    int size;
     vector<struct node*> children;
 }NODE;
 
