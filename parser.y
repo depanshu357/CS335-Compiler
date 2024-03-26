@@ -513,6 +513,7 @@ symbol_test_star: COMMA test symbol_test_star {
 
 expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus {
         $$ = create_node(4,"Expr_stmt",$1,$2,$3);
+        // cout<<"from 1"<<endl;
         if($3!=NULL && $3->type_of_node!=$2->type_of_node){
             cout<<"Error --expr_stmt_option1_plus-- invalid type at line " <<yylineno <<". Expected "<<$2->type_of_node<<endl;
         }
@@ -1036,7 +1037,11 @@ power: atom_expr {$$ = $1;}
 
 atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
     | atom trailer_star{
-        // cout<<"line 1009 for range"<<endl;
+        // if($1->lexeme)
+        // cout<<"line 1009 for range"<<$1->lexeme<<endl;
+       
+        // cout<<$2->type_of_node<<endl;
+        // cout<<$1->lexeme<<" "<<$2->lexeme<<endl;
         if(is_dot_name == __TDOT__){
             string full_name=string($1->lexeme)+after_dot_name;
             delete_sym_table(curr_sym_tbl.top(),full_name);
@@ -1101,7 +1106,23 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             $$->residual_ins=$1->residual_ins;
             // cout<<"activated "<<$$->addr<<" "<<$1->addr<<" ";
         }
-        
+        else{
+            if($2->type_of_node.size()>=3 && $2->type_of_node.substr(0,3)=="Box"){
+                string reg=newTemp();
+                string arr_type=search_type_in_sym_table(curr_sym_tbl.top(),$1->lexeme);
+                int offset=get_type_size(arr_type.substr(5,arr_type.size()-6));
+                create_ins(3,"*",$2->addr,$2->addr,to_string(offset));
+                create_ins(0, reg,"=",string($1->lexeme)+"["+$2->addr+"]","");
+                $2->addr=reg;
+                $$->addr=reg;
+            }
+        }
+         if($1->lexeme && string($1->lexeme)=="print"){ 
+            // cout<<"reaching line 1041"<<endl;
+            create_ins(0,"print(", $2->addr,")","");
+            // prev_var_name="";
+    
+        }
         // cout<<$$->addr<<" "<<yylineno<<endl;
     }
     ;
@@ -1109,6 +1130,7 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
 trailer_star:  trailer trailer_star  {
         $$ = create_node(3,"Stmts",$1,$2);
         $$->type_of_node=$1->type_of_node;
+        $$->addr=$1->addr;
         if($2!=NULL){
             //check if first 3 substring is  Box
             if($1->type_of_node.substr(0,3)=="Box" || ($1->type_of_node.size()>=5 && $1->type_of_node.substr(0,5)=="Small")){
@@ -1131,13 +1153,16 @@ trailer_star:  trailer trailer_star  {
 trailer: SMALL_OPEN arglist SMALL_CLOSE  {
         $$ = create_node(4,"Arguments",$1,$2,$3);
         $$->type_of_node = "Small";
+        $$->addr=$2->addr;
     }
     |SMALL_OPEN SMALL_CLOSE { 
         $$ = create_node(3,"Parantheses",$1,$2);
         $$->type_of_node = "Small";
     }
-    |BOX_OPEN subscriptlist BOX_CLOSE {$$ = create_node(4,"Square_bracket",$1,$2,$3);
+    |BOX_OPEN subscriptlist BOX_CLOSE {
+        $$ = create_node(4,"Square_bracket",$1,$2,$3);
         $$->type_of_node = "Box;"+$2->type_of_node;
+        $$->addr = $2->addr;
         // cout<<"trailer"<<endl;
     }
     |DOT NAME TYPE_HINT {
@@ -1232,18 +1257,19 @@ argument_list: argument_list COMMA argument { $$=create_node(4,"Arguments",$1,$2
 
 subscriptlist: subscript_list COMMA {$$=create_node(3,"Terms",$1,$2);
         $$->type_of_node=$1->type_of_node;
+        $$->addr = $1->addr;
     }
-    | subscript_list { $$=$1;}
+    | subscript_list { $$=$1;$$->addr = $1->addr;}
     ;
 
 subscript_list: subscript_list COMMA subscript { $$=create_node(4,"Terms",$1,$2,$3);
         $$->type_of_node=$3->type_of_node;
     }
-    | subscript { $$=$1; }
+    | subscript { $$=$1;$$->addr = $1->addr; }
     ;
 
 
-subscript: test {$$=$1;}
+subscript: test {$$=$1;$$->addr = $1->addr;}
    // |   optional_test COLON optional_test{ $$=create_node(4,"Terms",$1,$2,$3);}
     ;
 
@@ -1536,6 +1562,7 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         string curr_type = search_type_in_sym_table(curr_sym_tbl.top(),$1->lexeme);
         $1->type_of_node = curr_type; 
         $$=$1;
+        $$->lexeme=$1->lexeme;
         $$->addr=$1->lexeme;
         if((string($1->lexeme)!="print" && string($1->lexeme)!="range"&& string($1->lexeme)!="len"&& string($1->lexeme)!="main") &&  !search_sym_table(curr_sym_tbl.top(),$1->lexeme,0)){
             cout<<"Sym_tbl_error: Variable "<<$1->lexeme<<" not declared at line "<<yylineno<<endl;
@@ -1543,8 +1570,13 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         }
         $$->type_of_node=curr_type;
         // cout<<"line 1276 "<<$$->addr<<endl;
-
-        prev_var_name=string($1->lexeme);
+        // if(prev_var_name=="print"){
+            // cout<<$1->addr<<" sd "<<endl;
+        //     create_ins(0,"print(", $1->addr,")","");
+        //     prev_var_name="";
+        // }
+        if(string($1->lexeme)=="print" || string($1->lexeme)=="range" )
+            prev_var_name=string($1->lexeme);
     }
     | NAME TYPE_HINT {
         $$=create_node(3,"Identifier", $1, $2); 
@@ -1565,8 +1597,8 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
             }
             create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,NULL );
         }
-
-        prev_var_name=string($1->lexeme);
+        if(string($1->lexeme)=="print" || string($1->lexeme)=="range" )
+            prev_var_name=string($1->lexeme);
 
 
     }
@@ -1574,18 +1606,29 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         string reg=newTemp();
         create_ins(2,"=", reg,$1->lexeme,"");
         $$->addr=reg;
+        // if(prev_var_name=="print"){
+        //     create_ins(0,"print(", $1->addr,")","");
+        //     prev_var_name="";
+        // }
     }
     | string_plus {$$=$1;
         string reg=newTemp();
         create_ins(2,"=", reg,$1->addr,"");
         $$->addr=reg;
+        // if(prev_var_name=="print"){
+        //     create_ins(0,"print(", $1->addr,")","");
+        //     prev_var_name="";
+        // }
     }
     | TRUE {$$=$1;
         $$->type_of_node="bool";
          string reg=newTemp();
         create_ins(2,"=", reg,$1->lexeme,"");
         $$->addr=reg;
-        
+        // if(prev_var_name=="print"){
+        //     create_ins(0,"print(", $1->addr,")","");
+        //     prev_var_name="";
+        // }
     }
     | FALSE {
         $$=$1;
@@ -1593,13 +1636,22 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         string reg=newTemp();
         create_ins(2,"=", reg,$1->lexeme,"");
         $$->addr=reg;
+        // if(prev_var_name=="print"){
+        //     create_ins(0,"print(", $1->addr,")","");
+        //     prev_var_name="";
+        // }
     }
     | NONE {
         $$=$1;
         $$->type_of_node="None";
-         string reg=newTemp();
+        string reg=newTemp();
         create_ins(2,"=", reg,$1->lexeme,"");
         $$->addr=reg;
+        
+        // if(prev_var_name=="print"){
+        //     create_ins(0,"print(", $1->addr,")","");
+        //     prev_var_name="";
+        // }
     }
     ;
 // dictionary , setliterals are to be ignored

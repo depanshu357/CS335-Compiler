@@ -1,18 +1,26 @@
-t1 = 5
+Error --expr_stmt4-- invalid type at line 16. Expected int
+int str
+t1 = "helloworld"
 x = t1
-t2 = 5
-t3 = -1
-t4 = t3
-label2:   
-t4 = t4 + 1
-t5 = t4 < t2
-if_false t5 goto label1
-x = t4 
-t6 = 4
-y = t6
-goto label2  
-label1:   
-t7 = 324
-k = t7
-t8 = 7
-z = t8
+t2 = "hlel"
+t3 = declare_array(4) 
+t4 = 0 
+t3[t4] = t2 
+t4 = t4 + 4
+z = t3
+t5 = True
+k = t5
+t6 = None
+fase = t6
+t7 = 9
+t7 = t7 * 4
+t8 = z[t7] 
+pm = t8
+t9 = 0
+t9 = t9 * 4
+t10 = z[t9] 
+print( t10 ) 
+print( x ) 
+print( k ) 
+t11 = "fase"
+print( t11 ) 
