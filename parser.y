@@ -33,6 +33,7 @@
     int arr_active = 0;
     void create_ins(int type, string optype, string addr1, string addr2, string addr3);
     vector<vector<string>> instructions;
+    vector<string>range_arg;
     string prev_var_name="";
 %}
 
@@ -188,6 +189,35 @@ for_stmt: FOR exprlist IN testlist COLON {
             create_ins(0,"if_false",temp2, "goto",label2);
             create_ins(0,$2->addr,"=",$4->addr+"["+temp1+"]","");
         }
+        else{
+            string low,high;
+            if(range_arg.size()>2 || range_arg.size()<1){
+                cout<<"Error invalid range arguments at line " <<yylineno <<". \n";
+            }else if(range_arg.size()==1){
+                string reg = newTemp();
+                create_ins(2,"=",reg,"-1","");
+                low=reg;
+                high=range_arg[0];
+            }
+            else{
+                low=range_arg[0];
+                high=range_arg[1];
+                create_ins(3,"-",low,low,"1");
+            }
+            // cout<<low<<" "<<high<<endl;
+            range_arg.clear();
+            string temp1=newTemp();
+            string label2=newLabel(); //after FOR label
+            create_ins(2,"=",temp1,low,"");
+            string label1=newLabel(); //label for FOR
+            create_ins(0,label1+":","","","");
+            string temp2=newTemp();
+            create_ins(3,"+",temp1,temp1,"1");
+            create_ins(3,"<",temp2,temp1,high);
+            create_ins(0,"if_false",temp2, "goto",label2);
+            create_ins(0,$2->addr,"=",temp1,"");
+
+        }
     } suite {
         
         if(!label_st.empty())
@@ -213,7 +243,7 @@ for_stmt: FOR exprlist IN testlist COLON {
         if(($4->type_of_node.substr(0,4)=="list") && $2->type_of_node!=$4->type_of_node.substr(5,$4->type_of_node.size()-6)){
             cout<<"Error  type is not same as iterable at line " <<yylineno <<". \n";
         }
-        cout<<$2->type_of_node<<" ompho "<<$4->type_of_node<<endl;
+        // cout<<$2->type_of_node<<" ompho "<<$4->type_of_node<<endl;
 
     }
     ; 
@@ -1006,6 +1036,7 @@ power: atom_expr {$$ = $1;}
 
 atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
     | atom trailer_star{
+        // cout<<"line 1009 for range"<<endl;
         if(is_dot_name == __TDOT__){
             string full_name=string($1->lexeme)+after_dot_name;
             delete_sym_table(curr_sym_tbl.top(),full_name);
@@ -1176,9 +1207,26 @@ arglist: argument_list COMMA {
     | argument_list {$$=$1;}
     ;
 
-argument_list: argument_list COMMA argument { $$=create_node(4,"Arguments",$1,$2,$3);}
+argument_list: argument_list COMMA argument { $$=create_node(4,"Arguments",$1,$2,$3);
+        $$->type_of_node=$3->type_of_node;
+
+
+        $$->addr=$3->addr;
+        if(prev_var_name=="range"){
+            if($3->type_of_node!="int"){
+                cout<<"Error --arglist-- invalid type at line " <<yylineno <<". Expected int\n";
+            }
+            range_arg.push_back($3->addr);
+        }    
+    }
     | argument { 
         $$=$1;
+        if(prev_var_name=="range"){
+            if($1->type_of_node!="int"){
+                cout<<"Error --arglist-- invalid type at line " <<yylineno <<". Expected int\n";
+            }
+            range_arg.push_back($1->addr);
+        }
     }
     ;
 

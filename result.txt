@@ -1,27 +1,18 @@
-str ompho list[str]
-t1 = "4"
-t2 = "5"
-t3 = "6"
-t4 = declare_array(12) 
-t5 = 0 
-t4[t5] = t1 
-t5 = t5 + 4
-t4[t5] = t2 
-t5 = t5 + 4
-t4[t5] = t3 
-t5 = t5 + 4
-arras = t4
-t6 = -4
+t1 = 5
+x = t1
+t2 = 5
+t3 = -1
+t4 = t3
 label2:   
-t6 = t6 + 4
-t7 = t6 < 12
-if_false t7 goto label1
-x = arras[t6] 
-t8 = 4
-y = t8
+t4 = t4 + 1
+t5 = t4 < t2
+if_false t5 goto label1
+x = t4 
+t6 = 4
+y = t6
 goto label2  
 label1:   
-t9 = 324
-k = t9
-t10 = 7
-z = t10
+t7 = 324
+k = t7
+t8 = 7
+z = t8

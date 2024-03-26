@@ -10,9 +10,9 @@
 
 
 
-arras:list[str] = ["4","5","6"]
-x:str
-for x in arras:
+# arras:list[str] = ["4","5","6"]
+x:int = 5
+for x in range(5):
     print(x)
     # x = "3"
     y:int=4
