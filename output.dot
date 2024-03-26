@@ -111,7 +111,7 @@ node   [ fontname="Cascadia code" ]
 (pm)" color = red shape = rectangle ];
 	128 -> 127
 	127		[ style = solid label = "TYPE_HINT 
-(:int)" color = red shape = rectangle ];
+(:str)" color = red shape = rectangle ];
 	166 -> 165
 	165		[ style = solid label = "Expr_stmt"  ];
 	165 -> 129
@@ -129,7 +129,7 @@ node   [ fontname="Cascadia code" ]
 ([)" color = red shape = rectangle ];
 	153 -> 142
 	142		[ style = solid label = "INTEGER 
-(9)" color = red shape = rectangle ];
+(0)" color = red shape = rectangle ];
 	153 -> 143
 	143		[ style = solid label = "DELIMITER 
 (])" color = red shape = rectangle ];
@@ -157,7 +157,7 @@ node   [ fontname="Cascadia code" ]
 ([)" color = red shape = rectangle ];
 	183 -> 172
 	172		[ style = solid label = "INTEGER 
-(0)" color = red shape = rectangle ];
+(1)" color = red shape = rectangle ];
 	183 -> 173
 	173		[ style = solid label = "DELIMITER 
 (])" color = red shape = rectangle ];

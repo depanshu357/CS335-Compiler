@@ -13,8 +13,8 @@ x:str = "hello" "world"
 z:list[str] = ["hlel"]
 k:bool = True
 fase:None = None
-pm:int=z[9]
-print(z[0])
+pm:str=z[0]
+print(z[1])
 print(x)
 print(k)
 print("fase")

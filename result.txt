@@ -1,5 +1,4 @@
-Error --expr_stmt4-- invalid type at line 16. Expected int
-int str
+Error --atom_expr-- array index out of bound error 17
 t1 = "helloworld"
 x = t1
 t2 = "hlel"
@@ -12,11 +11,11 @@ t5 = True
 k = t5
 t6 = None
 fase = t6
-t7 = 9
+t7 = 0
 t7 = t7 * 4
 t8 = z[t7] 
 pm = t8
-t9 = 0
+t9 = 1
 t9 = t9 * 4
 t10 = z[t9] 
 print( t10 ) 

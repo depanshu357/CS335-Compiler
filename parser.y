@@ -31,6 +31,8 @@
     string newLabel();
     vector<string> arr_elements;
     int arr_active = 0;
+    int box_active = 0;
+    int box_value = -1;
     void create_ins(int type, string optype, string addr1, string addr2, string addr3);
     vector<vector<string>> instructions;
     vector<string>range_arg;
@@ -1111,6 +1113,11 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                 string reg=newTemp();
                 string arr_type=search_type_in_sym_table(curr_sym_tbl.top(),$1->lexeme);
                 int offset=get_type_size(arr_type.substr(5,arr_type.size()-6));
+                int arr_max_size=get_size_from_tbl(curr_sym_tbl.top(),$1->lexeme);
+                // cout<<arr_max_size<<" "<<offset<<" "<<box_value<<endl;
+                if(box_value*offset>=arr_max_size){
+                    cout<<"Error --atom_expr-- array index out of bound error "<<yylineno<<endl;
+                }
                 create_ins(3,"*",$2->addr,$2->addr,to_string(offset));
                 create_ins(0, reg,"=",string($1->lexeme)+"["+$2->addr+"]","");
                 $2->addr=reg;
@@ -1159,10 +1166,12 @@ trailer: SMALL_OPEN arglist SMALL_CLOSE  {
         $$ = create_node(3,"Parantheses",$1,$2);
         $$->type_of_node = "Small";
     }
-    |BOX_OPEN subscriptlist BOX_CLOSE {
-        $$ = create_node(4,"Square_bracket",$1,$2,$3);
-        $$->type_of_node = "Box;"+$2->type_of_node;
-        $$->addr = $2->addr;
+    |BOX_OPEN {box_active = 1;} subscriptlist BOX_CLOSE {
+        $$ = create_node(4,"Square_bracket",$1,$3,$4);
+        $$->type_of_node = "Box;"+$3->type_of_node;
+        $$->addr = $3->addr;
+        box_active = 0;
+        // cout<<"box_value "<<box_value<<endl;   
         // cout<<"trailer"<<endl;
     }
     |DOT NAME TYPE_HINT {
@@ -1606,6 +1615,7 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         string reg=newTemp();
         create_ins(2,"=", reg,$1->lexeme,"");
         $$->addr=reg;
+        if(box_active) box_value = stoi($1->lexeme);
         // if(prev_var_name=="print"){
         //     create_ins(0,"print(", $1->addr,")","");
         //     prev_var_name="";
