@@ -32,7 +32,8 @@
     vector<string> arr_elements;
     int arr_active = 0;
     int box_active = 0;
-    int box_value = -1;
+    int box_value = -1; 
+    int func_par_offset = 0;
     void create_ins(int type, string optype, string addr1, string addr2, string addr3);
     vector<vector<string>> instructions;
     vector<string>range_arg;
@@ -258,46 +259,57 @@ else_colon_suite_optional : ELSE COLON  suite {
 
 /*using this notation instead of below one*/
 funcdef:  DEF funcdef_title  func_body_suite { 
-    $$ = create_node(4,"Func_def",$1,$2,$3);
-    // cout << $2->lexeme << "TESSSSS"<< endl;
-    if(curr_sym_tbl.size()>1 && string($2->lexeme)!="__init__")
-    {
-            // cout<<"poping "<<curr_sym_tbl.top()->name<<endl; 
-            curr_sym_tbl.pop(); 
-    } 
-}
+        $$ = create_node(4,"Func_def",$1,$2,$3);
+        // cout << $2->lexeme << "TESSSSS"<< endl;
+        if(curr_sym_tbl.size()>1 && string($2->lexeme)!="__init__")
+        {
+                // cout<<"poping "<<curr_sym_tbl.top()->name<<endl; 
+                curr_sym_tbl.pop(); 
+        } 
+        create_ins(0,"move8","rbp","rsp","");
+        create_ins(0,"move8","-8(rbp)","rbp","");
+        create_ins(0,"add", "rsp","$"+to_string(func_par_offset),"");
+        func_par_offset = 0;
+    }
      /* | DEF NAME {parameter_vec.clear(); is_param=1;} parameters  COLON  func_body_suite { $$ = create_node(6,"Func_def",$1,$2,$3,$4,$5);}  */
     ;
 
 
 funcdef_title: NAME {
-    parameter_vec.clear(); is_param=1;} parameters func_type_hint_optional COLON { 
-    $$ = create_node(5,"Func_def",$1,$3,$4,$5);
-    $$->lexeme=$1->lexeme;
-    // cout << $1->lexeme << "TESSSSS"<< endl;
-    if(string($1->lexeme)=="__init__"){
-        //continue;
-        add_parameters(curr_sym_tbl.top(), parameter_vec);
-        is_param=0;
-        // cout<<endl<<"here ginf"<<endl;
-
-    }
-    else{
-        sym_table * new_table = new sym_table();
-        string func_type="func";
-        if($4!=NULL){
-            func_type=$4->lexeme;
-            
+        parameter_vec.clear(); 
+        is_param=1;
+        create_ins(0,string($1->lexeme)+":","","","");
+        create_ins(0,"move8", "rbp","-8(rsp)","");
+        create_ins(2,"=", "rbp","rsp","");
+    } 
+    parameters func_type_hint_optional COLON { 
+        $$ = create_node(5,"Func_def",$1,$3,$4,$5);
+        $$->lexeme=$1->lexeme;
+        // cout << $1->lexeme << "TESSSSS"<< endl;
+   
+        if(string($1->lexeme)=="__init__"){
+            //continue;
+            add_parameters(curr_sym_tbl.top(), parameter_vec);
+            is_param=0;
+            // cout<<endl<<"here ginf"<<endl;
+            // create_ins(0,"."+$1->lexeme+"":","","","");
         }
-        else
-            func_type="None";
-        create_entry(curr_sym_tbl.top(),  $1->lexeme,func_type,yylineno,__FUNC__,new_table );
-        curr_sym_tbl.push(new_table);
-        add_parameters(curr_sym_tbl.top(), parameter_vec);
-        is_param=0;
-        $$->type_of_node= func_type;
-        curr_sym_tbl.top()->return_type= func_type;
-    }
+        else{
+            sym_table * new_table = new sym_table();
+            string func_type="func";
+            if($4!=NULL){
+                func_type=$4->lexeme;
+                
+            }
+            else
+                func_type="None";
+            create_entry(curr_sym_tbl.top(),  $1->lexeme,func_type,yylineno,__FUNC__,new_table );
+            curr_sym_tbl.push(new_table);
+            add_parameters(curr_sym_tbl.top(), parameter_vec);
+            is_param=0;
+            $$->type_of_node= func_type;
+            curr_sym_tbl.top()->return_type= func_type;
+        }
 }
 ;
 
@@ -348,6 +360,9 @@ tfpdef: NAME { $$ = $1;
     | NAME TYPE_HINT { $$ = create_node(3,"Identifier",$1,$2); 
         if(is_param) {
             add_to_vector(parameter_vec, $1->lexeme, $2->lexeme,yylineno);
+            int size_of_var=get_type_size($2->lexeme);
+            create_ins(0,"move"+to_string(size_of_var),to_string(func_par_offset)+"(rbp)",$1->lexeme,"");
+            func_par_offset+=size_of_var;
         }
         else{
         delete_sym_table(curr_sym_tbl.top(),$1->lexeme);

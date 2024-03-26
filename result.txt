@@ -1,25 +1,57 @@
-Error --atom_expr-- array index out of bound error 17
-t1 = "helloworld"
-x = t1
-t2 = "hlel"
-t3 = declare_array(4) 
-t4 = 0 
-t3[t4] = t2 
-t4 = t4 + 4
-z = t3
-t5 = True
-k = t5
-t6 = None
-fase = t6
-t7 = 0
-t7 = t7 * 4
-t8 = z[t7] 
-pm = t8
-t9 = 1
-t9 = t9 * 4
-t10 = z[t9] 
-print( t10 ) 
-print( x ) 
-print( k ) 
-t11 = "fase"
-print( t11 ) 
+Main.class
+func myFunction
+move8 rbp -8(rsp)
+rbp = rsp
+move4 0(rbp) a
+move4 4(rbp) b
+sub rsp, $60
+move48 regs -56(rbp)
+t0 = a +int b
+sum = t0
+RRE = sum
+nop
+move48 -56(rbp) regs
+move8 rbp rsp
+move8 -8(rbp) rbp
+move8 RRE -8(rsp)
+sub rsp, $8
+ret
+endfunc
+func main
+move8 rbp -8(rsp)
+rbp = rsp
+sub rsp, $60
+move48 regs -56(rbp)
+t1 = 10
+t2 = 20
+sub rsp, $8
+move8 ra (rsp)
+sub rsp, $16
+move8 t1 -84(rbp)
+move8 t2 -76(rbp)
+call myFunction
+reclaim return value
+add rsp, $16
+move8 (rsp) ra
+add rsp, $8
+result = RRE
+t3 = The sum is: 
+t4 = t3 + result
+sub rsp, $8
+move8 ra (rsp)
+sub rsp, $8
+move8 t4 -72(rbp)
+call System.out.println
+reclaim return value
+add rsp, $8
+move8 (rsp) ra
+add rsp, $8
+nop
+move48 -56(rbp) regs
+move8 rbp rsp
+move8 -8(rbp) rbp
+move8 RRE -8(rsp)
+sub rsp, $8
+ret
+endfunc
+endclass
