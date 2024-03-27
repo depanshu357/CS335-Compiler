@@ -1,38 +1,46 @@
-Error --trailer-- invalid number of arguments at line 11. Expected 3 arguments
+entry_no,name,type,line_no,sp_type,size,offset
+symbol table name: 
+parameters start-------
+parameters end-------
+0,print,print,0,1,4,0
+1,range,list[int],0,1,4,4
+2,len,int,0,1,4,8
+3,self,self,0,1,4,12
+4,__name__,__name__,0,1,4,16
+5,funcs,funcs,2,2,4,20
+-----------sub table with name start-----------
+entry_no,name,type,line_no,sp_type,size,offset
+symbol table name: funcs
+parameters start-------
+parameters end-------
+0,self.a,int,4,0,4,0
+1,self.b,int,5,0,4,4
+2,sub,int,7,1,4,8
+-----------sub table with name start-----------
+entry_no,name,type,line_no,sp_type,size,offset
+symbol table name: sub
+parameters start-------
+parameters end-------
+-----------sub table end-----------
+-----------sub table end-----------
+6,y,funcs,11,0,4,24
+__init__:   
+move8 rbp -8(rsp) 
+rbp = rsp
+t1 = self + 0
+t2 = 0
+move t2 t1 
+t3 = self + 4
+t4 = 0
+move t4 t3 
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $0 
 sub:   
 move8 rbp -8(rsp) 
 rbp = rsp
-move4 0(rbp) a 
-move4 4(rbp) b 
-move4 8(rbp) c 
+move undefined rax 
 move8 rbp rsp 
 move8 -8(rbp) rbp 
-add rsp $12 
-add:   
-move8 rbp -8(rsp) 
-rbp = rsp
-move4 0(rbp) a 
-move4 4(rbp) b 
-move4 8(rbp) c 
-t1 = a + b
-move t1 rax 
-move8 rbp rsp 
-move8 -8(rbp) rbp 
-add rsp $12 
-t2 = 1
-y = t2
-t3 = 3
-t4 = 2
-t5 = 3
-push t5  
-push t4  
-push t3  
-move rax y 
-t6 = 2
-t7 = 3
-t8 = 2
-t9 = 3
-push t9  
-push t8  
-push t7  
+add rsp $0 
 move rax y 

@@ -40,6 +40,7 @@
     vector<vector<string>> instructions;
     vector<string>range_arg;
     string prev_var_name="";
+    int class_par_offset = 0,prev_self = 0;
 %}
 
 %union {
@@ -294,6 +295,7 @@ funcdef_title: NAME {
             add_parameters(curr_sym_tbl.top(), parameter_vec);
             is_param=0;
             // cout<<endl<<"here ginf"<<endl;
+
             // create_ins(0,"."+$1->lexeme+"":","","","");
         }
         else{
@@ -519,14 +521,19 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
         }
         $$->type_of_node= $1->type_of_node;
         if(func_call_active==-1){
-        
-        create_ins(0,"move","rax",$1->addr,"");
-        func_call_active = 0;   
+            create_ins(0,"move","rax",$1->addr,"");
+            func_call_active = 0;   
+        }
+        else if(prev_self){
+            create_ins(0,"move",$2->addr,$1->addr,"");
+            prev_self=0;
         }
         else{
-        create_ins(2,$2->residual_ins, $1->addr,$2->addr, "");
+            create_ins(2,$2->residual_ins, $1->addr,$2->addr, "");
 
         }
+        // cout<<$2->addr<<" "<<$1->addr<<" line 536 "<<endl;
+
     }
     ;
     
@@ -597,7 +604,6 @@ testlist_star_expr: test testlist_star_expr_option1_star {
             $$->residual_ins= $1->residual_ins;
             $$->type_of_node= $1->type_of_node;
         }
-        // cout<<$$->type_of_node<<" in line 4444"<<endl;
     }
     ;
 
@@ -1075,10 +1081,19 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
         // cout<<$2->type_of_node<<endl;
         // cout<<$1->lexeme<<" "<<$2->lexeme<<endl;
         // cout<<"line 1012 "<<$1->type_of_node<<" "<<yylineno<<endl;
+        $$=create_node(3,"Terms", $1,$2);
         if(is_dot_name == __TDOT__){
             string full_name=string($1->lexeme)+after_dot_name;
             delete_sym_table(curr_sym_tbl.top(),full_name);
             create_entry(curr_sym_tbl.top(),full_name,$2->type_of_node,yylineno,0,NULL );
+            
+            
+            string reg=newTemp();
+            create_ins(3,"+",reg,"self",to_string(class_par_offset));
+            class_par_offset+=get_type_size($2->type_of_node);
+            $$->addr=reg;
+            prev_self=1;
+
             // $$->type_of_node = $3->lexeme;
             is_dot_name=0;
         }
@@ -1102,13 +1117,9 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                 }
             }
         }
-
-        $$=create_node(3,"Terms", $1,$2);
         if($2 && $2->type_of_node.substr(0,3)=="Box" && $2->type_of_node!="Box;int"){
             cout<<"Error --atom_expr--- invalid type at line " <<yylineno <<". Expected int\n";
         }
-        // if($2)
-        //     cout<<$2->type_of_node<<" Thissss"<<endl;
         if($2==NULL ){
             string temp_type = $1->type_of_node;
             $$->type_of_node= $1->type_of_node;
@@ -1155,13 +1166,14 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                 $$->addr=reg;
             }
         }
+
          if($1->lexeme && string($1->lexeme)=="print"){ 
             // cout<<"reaching line 1041"<<endl;
             create_ins(0,"print(", $2->addr,")","");
             // prev_var_name="";
     
         }
-        // cout<<$$->addr<<" "<<yylineno<<endl;
+
     }
     ;
 
@@ -1596,6 +1608,7 @@ test: or_test {
         $$=$1;
         $$->addr=$1->addr;
         $$->residual_ins=$1->residual_ins;
+        // cout<<$$->addr<<" 1613 "<<yylineno<<endl;
     }
     |or_test IF or_test ELSE test {$$=create_node(6,"Expressions",$1,$2,$3,$4,$5);
     if($1->type_of_node!=$5->type_of_node){
@@ -1982,7 +1995,7 @@ int main(int argc, char* argv[]){
     MakeDOTFile(ast);
 
     /* MakeDOTFile(start_node); */
-    // print_sym_table(global_sym_table);
+    print_sym_table(global_sym_table);
     print_instructions();
 
 
