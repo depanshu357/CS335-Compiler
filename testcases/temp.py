@@ -1,8 +1,12 @@
-def add(a:int, b:int, c:float) -> int:
-    return a + b + c
-
-def sub(a:int, b:int,c:int) -> int:
-    return a + b
 
 
-x:int = sub(1, 2, 3)
+def sub(a:int, b:int,c:int) -> None:
+    return 
+
+def add(a:int, b:int,c:int) -> int:
+    return a+b 
+
+y:int=1
+y=add(3,2,3)
+sub(y,3, 2)
+y=add(3,2,3)

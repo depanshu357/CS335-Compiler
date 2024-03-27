@@ -34,6 +34,8 @@
     int box_active = 0;
     int box_value = -1; 
     int func_par_offset = 0;
+    int func_call_active = 0;
+    vector<vector<string>> func_arguments;
     void create_ins(int type, string optype, string addr1, string addr2, string addr3);
     vector<vector<string>> instructions;
     vector<string>range_arg;
@@ -318,7 +320,10 @@ func_type_hint_optional: FUNC_TYPE_HINT {$$ = $1; $$->type_of_node= $1->val;}
     ;
 
 // Written only to run START ye dono document se dekhna hai
-parameters: SMALL_OPEN typedarglist SMALL_CLOSE {$$ = create_node(4,"Arguments",$1,$2,$3);}
+parameters: SMALL_OPEN typedarglist SMALL_CLOSE {
+        $$ = create_node(4,"Arguments",$1,$2,$3);
+        // cout<<"parameters"<<endl;
+    }
     |SMALL_OPEN SMALL_CLOSE {$$ = create_node(3,"Parantheses",$1,$2);}
     ;
 
@@ -445,6 +450,8 @@ return_stmt: RETURN testlist_star_expr {
             cout<<$2->type_of_node<<" "<<curr_sym_tbl.top()->name<<" hehe"<<endl;
             cout<<"Error --return_stmt-- invalid return type at line " <<yylineno <<". Expected "<<curr_sym_tbl.top()->return_type<<endl;
         }
+
+        create_ins(0,"move",$2->addr,"rax","");
         
     }
     | RETURN {
@@ -511,7 +518,15 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
             
         }
         $$->type_of_node= $1->type_of_node;
+        if(func_call_active==-1){
+        
+        create_ins(0,"move","rax",$1->addr,"");
+        func_call_active = 0;   
+        }
+        else{
         create_ins(2,$2->residual_ins, $1->addr,$2->addr, "");
+
+        }
     }
     ;
     
@@ -550,8 +565,8 @@ expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus {
         $$->addr=$2->addr;
         $$->residual_ins=$1->lexeme;
 
-    // cout<<"from 2"<<endl;
-
+    // cout<<"from 2"<<yylineno<<endl;
+  
     }
     ;
 
@@ -1059,6 +1074,7 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
        
         // cout<<$2->type_of_node<<endl;
         // cout<<$1->lexeme<<" "<<$2->lexeme<<endl;
+        // cout<<"line 1012 "<<$1->type_of_node<<" "<<yylineno<<endl;
         if(is_dot_name == __TDOT__){
             string full_name=string($1->lexeme)+after_dot_name;
             delete_sym_table(curr_sym_tbl.top(),full_name);
@@ -1176,10 +1192,38 @@ trailer: SMALL_OPEN arglist SMALL_CLOSE  {
         $$ = create_node(4,"Arguments",$1,$2,$3);
         $$->type_of_node = "Small";
         $$->addr=$2->addr;
+        // cout<<"line 1187 "<<yylineno<<endl;
+        
+        // if(func_call_active){
+        //     for(auto t:func_arguments){
+        //         for(auto t2:t) cout<<t2<<" ";
+        //         cout<<endl;
+        //     }   
+        // }
+
+        if(func_call_active==1){
+            vector<st_node>sym_tbl_func_param=get_parameters(curr_sym_tbl.top(),func_arguments[0][0]);
+            if(sym_tbl_func_param.size()+1!=func_arguments.size()){
+                cout<<"Error --trailer-- invalid number of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param.size()<<" arguments\n";
+            }else 
+                for(int i=sym_tbl_func_param.size()-1;i>=0;i--){
+                    if(sym_tbl_func_param[i].type!=func_arguments[i+1][1]){
+                        cout<<"Error --trailer-- invalid type of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param[i].type<<" type\n";
+                    }
+                    create_ins(0,"push",func_arguments[i+1][0],"","");
+                }
+        
+        }
+
+        func_call_active=-1;
+        func_arguments.clear();
+        
     }
     |SMALL_OPEN SMALL_CLOSE { 
         $$ = create_node(3,"Parantheses",$1,$2);
         $$->type_of_node = "Small";
+        func_call_active=-1;
+        func_arguments.clear();
     }
     |BOX_OPEN {box_active = 1;} subscriptlist BOX_CLOSE {
         $$ = create_node(4,"Square_bracket",$1,$3,$4);
@@ -1244,14 +1288,17 @@ classdef: CLASS NAME {
 }; */
 
 bracket_arglist_optional: SMALL_OPEN SMALL_CLOSE {$$=create_node(3,"Parantheses",$1,$2);}
-    | SMALL_OPEN arglist SMALL_CLOSE {$$=create_node(4,"Arguments",$1,$2,$3);
+    | SMALL_OPEN arglist SMALL_CLOSE {
+        $$=create_node(4,"Arguments",$1,$2,$3);
         $$->type_of_node=$2->type_of_node;
+        // cout<<"line 1252 "<<yylineno<<endl;
     }
     | {$$=NULL;}
     ;
 
 arglist: argument_list COMMA {
         $$=create_node(3,"Arguments",$1,$2);
+        
     }
     | argument_list {$$=$1;}
     ;
@@ -1267,6 +1314,12 @@ argument_list: argument_list COMMA argument { $$=create_node(4,"Arguments",$1,$2
             }
             range_arg.push_back($3->addr);
         }    
+        // cout<<"line 1289 "<<$3->addr<<yylineno<<endl;
+
+        if(func_call_active==1){
+            func_arguments.push_back({$3->addr, $3->type_of_node});
+        }
+
     }
     | argument { 
         $$=$1;
@@ -1275,6 +1328,11 @@ argument_list: argument_list COMMA argument { $$=create_node(4,"Arguments",$1,$2
                 cout<<"Error --arglist-- invalid type at line " <<yylineno <<". Expected int\n";
             }
             range_arg.push_back($1->addr);
+        }
+        // cout<<"line 1289 "<<$$->addr<<yylineno<<endl;
+
+        if(func_call_active==1){
+            func_arguments.push_back({$1->addr, $1->type_of_node});
         }
     }
     ;
@@ -1549,7 +1607,6 @@ test: or_test {
     };
 
 atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
-        // cout<<"line 1374 "<<endl;
         
         $$=create_node(4,"Arguments",$1,$2,$3);
         $$->type_of_node = $2->type_of_node;
@@ -1601,6 +1658,11 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         // }
         if(string($1->lexeme)=="print" || string($1->lexeme)=="range" )
             prev_var_name=string($1->lexeme);
+
+        if(search_for_func(global_sym_table,$1->lexeme)){
+            func_call_active=1;
+            func_arguments.push_back({$1->addr, $1->type_of_node});
+        }
     }
     | NAME TYPE_HINT {
         $$=create_node(3,"Identifier", $1, $2); 

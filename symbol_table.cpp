@@ -144,6 +144,22 @@ int    search_sym_table(sym_table *symbol_table, string name, int sp_type)
     return 0;
 }
 
+int search_for_func(sym_table * symbol_table, string name){
+    sym_table * curr = symbol_table;
+    while(curr!=NULL){
+        for(int i=0;i<curr->sym_tbl_entry.size();i++){
+            if(curr->sym_tbl_entry[i].name == name && curr->sym_tbl_entry[i].sp_type == 1){
+                return 1;
+            }
+        }
+        curr = curr->prev_sym_table;
+    }
+
+    return 0;
+}
+
+
+
 int search_in_curr_scope(sym_table * symbol_table,string name, int sp_type){
     for(int i=0;i<symbol_table->parameters.size();i++){
         if(symbol_table->parameters[i].name == name){
@@ -177,7 +193,20 @@ int search_class_func(sym_table * symbol_table,string class_name, string func_na
     return 0;
 }
 
-void add_parent_class(sym_table*global, sym_table * derived_class, string parent_class){
+vector<st_node> get_parameters(sym_table * symbol_table, string name){
+    sym_table * curr = symbol_table;
+    while(curr!=NULL){
+        for(int i=0;i<curr->sym_tbl_entry.size();i++){
+            if(curr->sym_tbl_entry[i].name == name && curr->sym_tbl_entry[i].sp_type == 1){
+                return curr->sym_tbl_entry[i].sub_symbol_table->parameters;
+            }
+        }
+        curr = curr->prev_sym_table;
+    }
+    return {};
+}
+    void add_parent_class(sym_table *global, sym_table *derived_class, string parent_class)
+{
     sym_table * curr = global;
     for(int i=0;i<curr->sym_tbl_entry.size();i++){
         if(curr->sym_tbl_entry[i].name == parent_class && curr->sym_tbl_entry[i].type == parent_class){

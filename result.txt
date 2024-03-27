@@ -1,57 +1,38 @@
-Main.class
-func myFunction
-move8 rbp -8(rsp)
+Error --trailer-- invalid number of arguments at line 11. Expected 3 arguments
+sub:   
+move8 rbp -8(rsp) 
 rbp = rsp
-move4 0(rbp) a
-move4 4(rbp) b
-sub rsp, $60
-move48 regs -56(rbp)
-t0 = a +int b
-sum = t0
-RRE = sum
-nop
-move48 -56(rbp) regs
-move8 rbp rsp
-move8 -8(rbp) rbp
-move8 RRE -8(rsp)
-sub rsp, $8
-ret
-endfunc
-func main
-move8 rbp -8(rsp)
+move4 0(rbp) a 
+move4 4(rbp) b 
+move4 8(rbp) c 
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $12 
+add:   
+move8 rbp -8(rsp) 
 rbp = rsp
-sub rsp, $60
-move48 regs -56(rbp)
-t1 = 10
-t2 = 20
-sub rsp, $8
-move8 ra (rsp)
-sub rsp, $16
-move8 t1 -84(rbp)
-move8 t2 -76(rbp)
-call myFunction
-reclaim return value
-add rsp, $16
-move8 (rsp) ra
-add rsp, $8
-result = RRE
-t3 = The sum is: 
-t4 = t3 + result
-sub rsp, $8
-move8 ra (rsp)
-sub rsp, $8
-move8 t4 -72(rbp)
-call System.out.println
-reclaim return value
-add rsp, $8
-move8 (rsp) ra
-add rsp, $8
-nop
-move48 -56(rbp) regs
-move8 rbp rsp
-move8 -8(rbp) rbp
-move8 RRE -8(rsp)
-sub rsp, $8
-ret
-endfunc
-endclass
+move4 0(rbp) a 
+move4 4(rbp) b 
+move4 8(rbp) c 
+t1 = a + b
+move t1 rax 
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $12 
+t2 = 1
+y = t2
+t3 = 3
+t4 = 2
+t5 = 3
+push t5  
+push t4  
+push t3  
+move rax y 
+t6 = 2
+t7 = 3
+t8 = 2
+t9 = 3
+push t9  
+push t8  
+push t7  
+move rax y 
