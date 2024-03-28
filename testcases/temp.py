@@ -1,15 +1,18 @@
 
 class funcs:
-    def __init__(self):
+    def __init__(self,x:int,y:int):
         self.a:int=0
         self.b:int=0
-    
-    def sub() -> int:
-        return self.a
+        
 
+    def sub(self,x:int) -> int:
+        y:int=self.b
+        return 6
 
-y:funcs=funcs()
-# y.add(2,3,4)
-# y=add(3,2,3)
-# sub(y,3, 2)
-# y=add(3,2,3)
+def add(x:int) -> int:
+        return 6
+
+y:funcs=funcs(1,2)
+# z:int=5
+# m:int=add(2)
+# asas:int = y.sub(3)

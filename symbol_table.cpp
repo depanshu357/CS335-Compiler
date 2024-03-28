@@ -158,7 +158,66 @@ int search_for_func(sym_table * symbol_table, string name){
     return 0;
 }
 
+int search_for_class(sym_table *symbol_table, string name)
+{
+    sym_table *curr = symbol_table;
+    while (curr != NULL)
+    {
+        for (int i = 0; i < curr->sym_tbl_entry.size(); i++)
+        {
+            if (curr->sym_tbl_entry[i].name == name && curr->sym_tbl_entry[i].sp_type == 2)
+            {
+                return 1;
+            }
+        }
+        curr = curr->prev_sym_table;
+    }
 
+    return 0;
+}
+
+vector<st_node> get_self_param(sym_table * symbol_table, string class_name){
+    sym_table * curr = symbol_table;
+    while(curr!=NULL){
+        for(int i=0;i<curr->sym_tbl_entry.size();i++){
+            if(curr->sym_tbl_entry[i].name == class_name && curr->sym_tbl_entry[i].sp_type == 2){
+                return curr->sym_tbl_entry[i].sub_symbol_table->parameters;
+            }
+        }
+        curr = curr->prev_sym_table;
+    }
+    return {};
+}
+
+    int
+    get_offset_from_tbl(sym_table *symbol_table, string var_name)
+{
+    // for(int i=0;i<symbol_table->sym_tbl_entry.size();i++){
+    //     if(symbol_table->sym_tbl_entry[i].name == class_name && symbol_table->sym_tbl_entry[i].sp_type == 2){
+    // sym_table * curr = symbol_table->sym_tbl_entry[i].sub_symbol_table;
+    sym_table * curr = symbol_table;
+    while (curr != NULL)
+    {
+        for (int i = 0; i < curr->parameters.size(); i++)
+        {
+            if (curr->parameters[i].name == var_name)
+            {
+                return curr->parameters[i].offset;
+            }
+        }
+        for (int i = 0; i < curr->sym_tbl_entry.size(); i++)
+        {
+            if (curr->sym_tbl_entry[i].name == var_name)
+            {
+                return curr->sym_tbl_entry[i].offset;
+            }
+        }
+        curr = curr->prev_sym_table;
+    }
+    return -1;
+    //     }
+    // }
+}
 
 int search_in_curr_scope(sym_table * symbol_table,string name, int sp_type){
     for(int i=0;i<symbol_table->parameters.size();i++){
@@ -191,6 +250,30 @@ int search_class_func(sym_table * symbol_table,string class_name, string func_na
     }
 
     return 0;
+}
+
+vector<st_node> get_class_func_parameters(sym_table *symbol_table,string class_name, string func_name)
+{
+    sym_table *curr=NULL;
+    for (int i = 0; i < symbol_table->sym_tbl_entry.size(); i++)
+    {
+        if(symbol_table->sym_tbl_entry[i].name == class_name && symbol_table->sym_tbl_entry[i].sp_type == 2){
+            curr= symbol_table->sym_tbl_entry[i].sub_symbol_table;
+        }
+    }
+    while (curr != NULL)
+    {
+        cout<<"in loop "<<func_name<<endl;
+        for (int i = 0; i < curr->sym_tbl_entry.size(); i++)
+        {
+            if (curr->sym_tbl_entry[i].name == func_name && curr->sym_tbl_entry[i].sp_type == 1)
+            {
+                return curr->sym_tbl_entry[i].sub_symbol_table->parameters;
+            }
+        }
+        curr = curr->prev_sym_table;
+    }
+    return {};
 }
 
 vector<st_node> get_parameters(sym_table * symbol_table, string name){

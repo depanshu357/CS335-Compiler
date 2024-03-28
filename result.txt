@@ -1,5 +1,14 @@
+t2 line 538 t1 5
+t4 line 538 t3 8
+reching 1157
+reaching part 2 1157
+exiting part2 1157
+line 541 10
+line 1792
+reaching 1289funcs3
+reachng 542undefined
 entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: 
+symbol table name: global
 parameters start-------
 parameters end-------
 0,print,print,0,1,4,0
@@ -12,21 +21,39 @@ parameters end-------
 entry_no,name,type,line_no,sp_type,size,offset
 symbol table name: funcs
 parameters start-------
+0,self,self,3,0,4,0
+1,x,int,3,0,4,4
+2,y,int,3,0,4,8
 parameters end-------
-0,self.a,int,4,0,4,0
-1,self.b,int,5,0,4,4
-2,sub,int,7,1,4,8
+0,self.a,int,4,0,4,12
+1,self.b,int,5,0,4,16
+2,sub,int,8,1,4,20
 -----------sub table with name start-----------
 entry_no,name,type,line_no,sp_type,size,offset
 symbol table name: sub
 parameters start-------
+0,self,self,8,0,4,0
+1,x,int,8,0,4,4
+parameters end-------
+0,y,int,9,0,4,8
+-----------sub table end-----------
+-----------sub table end-----------
+6,add,int,12,1,4,24
+-----------sub table with name start-----------
+entry_no,name,type,line_no,sp_type,size,offset
+symbol table name: add
+parameters start-------
+0,x,int,12,0,4,0
 parameters end-------
 -----------sub table end-----------
------------sub table end-----------
-6,y,funcs,11,0,4,24
-__init__:   
+7,y,funcs,15,0,4,28
+8,m,int,17,0,4,32
+funcs@__init__:   
 move8 rbp -8(rsp) 
 rbp = rsp
+move8 0(rbp) self 
+move4 8(rbp) x 
+move4 12(rbp) y 
 t1 = self + 0
 t2 = 0
 move t2 t1 
@@ -35,12 +62,37 @@ t4 = 0
 move t4 t3 
 move8 rbp rsp 
 move8 -8(rbp) rbp 
-add rsp $0 
-sub:   
+add rsp $16 
+funcs@sub:   
 move8 rbp -8(rsp) 
 rbp = rsp
-move undefined rax 
+move8 0(rbp) self 
+move4 8(rbp) x 
+t5 = self + 16
+move t5 y 
+t6 = 6
+move t6 rax 
 move8 rbp rsp 
 move8 -8(rbp) rbp 
-add rsp $0 
-move rax y 
+add rsp $12 
+add:   
+move8 rbp -8(rsp) 
+rbp = rsp
+move4 0(rbp) x 
+t7 = 6
+move t7 rax 
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $4 
+t9 = 1
+t10 = 2
+push t10  
+push t9  
+t8 = alloc_mem(8)
+push t8  
+goto funcs@__init__  
+y = t8
+t11 = 2
+push t11  
+goto add  
+move rax m 
