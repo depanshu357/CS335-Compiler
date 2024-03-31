@@ -1,79 +1,42 @@
-def merge(left: list[int], right: list[int]) -> list[int]:
-    merged: list[int] = [1]
-    left_index:int = 0
-    right_index:int = 0
-    while left_index < len(left) and right_index < len(right):
-        if left[left_index] <= right[right_index]:
-            # merged.append(left[left_index])
-            left_index += 1
-        else:
-            # merged.append(right[right_index])
-            right_index += 1
-    # merged.extend(left[left_index:])
-    # merged.extend(right[right_index:])
-    return merged
+number_of_students: int = 30
+average_score: float = 85.5
+top_student_name: str = "John Doe"
+student_ids: list[int] = [1001, 1002, 1003, 1004, 1005]
 
-def merge_sort(lst: list[int]) -> list[int]:
-    if len(lst) <= 1:
-        return lst
-    mid:int = len(lst) // 2
-    left:list[int] = merge_sort(lst)
-    right:list[int] = merge_sort(lst)
-    return merge(left, right)
 
-def quick_sort(lst: list[int]) -> list[int]:
-    if len(lst) <= 1:
-        return lst
-    pivot = lst[len(lst) // 2]
-    left = []
-    middle = []
-    right = []
-    for x in lst:
-        if x < pivot:
-            left.append(x)
-        elif x == pivot:
-            middle.append(x)
-        else:
-            right.append(x)
-    return quick_sort(left) + middle + quick_sort(right)
+def sum_of_squares(n: int) -> int:
+    total: int = 0
+    i:int = 0
+    for i in range(1, n + 1):
+        total += i ** 2
+    return total
 
-# Test cases
-def test_sorting_algorithms():
-    # Test sorting an empty list
-    if(merge_sort([]) == []):
-        print("merge_sort([]) == []")
-    if(quick_sort([]) == []):
-        print("quick_sort([]) == []")
+def is_prime(num: int) -> bool:
+    if num <= 1:
+        return False
+    i:int = 0
+    for i in range(2, num):
+        if num % i == 0:
+            return False
+    return True
 
-    # Test sorting a list with one element
-    if(merge_sort([1]) == [1]):
-        print("merge_sort([1]) == [1]")
-    if(quick_sort([1]) == [1]):
-        print("quick_sort([1]) == [1]")
+def count_primes_up_to_n(n: int) -> int:
+    count: int = 0
+    i:int = 0
+    for i in range(2, n + 1):
+        if is_prime(i):
+            count += 1
+    return count
 
-    # Test sorting a list with multiple elements
-    #to show implicit line joining
-    if(merge_sort([3, 1, 4,
-                        1, 5, 9, 
-                        2, 6, 5, 
-                        3, 5]) == [1, 1, 2, 3, 
-                                   3, 4, 5, 5, 
-                                   5, 6, 9]) :
-        print("merge_sort([3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]) == [1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9]")
-    
-    if(quick_sort([3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]) == [1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9]):
-        print("quick_sort([3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]) == [1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9]")
+sum_of_squares_result: int = sum_of_squares(5)
+count_primes_result: int = count_primes_up_to_n(10)
 
-    # Test sorting a list with negative elements
-    #to show explicit line joining
-    if(merge_sort([3, -1, 4,\
-                        1, -5, 9,\
-                        2, -6, 5,\
-                        3, 5]) == [-6, -5, -1, 1, 2, 3, 3, 4, 5, 5, 9]):
-        print("merge_sort([3, -1, 4, 1, -5, 9, 2, -6, 5, 3, 5]) == [-6, -5, -1, 1, 2, 3, 3, 4, 5, 5, 9]")
-    
-    if(quick_sort([3, -1, 4, 1, -5, 9, 2, -6, 5, 3, 5]) == [-6, -5, -1, 1, 2, 3, 3, 4, 5, 5, 9]):
-        print("quick_sort([3, -1, 4, 1, -5, 9, 2, -6, 5, 3, 5]) == [-6, -5, -1, 1, 2, 3, 3, 4, 5, 5, 9]")
+if sum_of_squares_result == 55:
+    print("Sum of squares test passed!")
+else:
+    print("Sum of squares test failed!")
 
-if __name__ == "__main__":
-  test_sorting_algorithms()
+if count_primes_result == 4:
+    print("Count primes test passed!")
+else:
+    print("Count primes test failed!")

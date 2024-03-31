@@ -1,0 +1,161 @@
+Polygon@__init__:   
+move8 rbp -8(rsp) 
+rbp = rsp
+move8 0(rbp) self 
+t1 = self + 0
+t2 = 0
+move t2 t1 
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $8 
+Polygon@getPolygonArea:   
+move8 rbp -8(rsp) 
+rbp = rsp
+move8 0(rbp) self 
+move4 8(rbp) length 
+move4 12(rbp) breadth 
+t3 = length * breadth
+move t3 rax 
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $16 
+Rectangle@__init__:   
+move8 rbp -8(rsp) 
+rbp = rsp
+move8 0(rbp) self 
+t5 = self + 4
+t6 = 3
+t5 = t4
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $8 
+Rectangle@getRectangleArea:   
+move8 rbp -8(rsp) 
+rbp = rsp
+move8 0(rbp) self 
+move4 8(rbp) length 
+move4 12(rbp) breadth 
+t7 = "The area of the rectangle is "
+print, t7  
+t8 = length * breadth
+print, t8  
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $16 
+Circle@__init__:   
+move8 rbp -8(rsp) 
+rbp = rsp
+move8 0(rbp) self 
+t10 = self + 8
+t11 = 2
+t10 = t9
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $8 
+Circle@getCircleArea:   
+move8 rbp -8(rsp) 
+rbp = rsp
+move8 0(rbp) self 
+move4 8(rbp) radius 
+t12 = 3.14
+t13 = radius * radius
+t14 = t12 * t13
+area = t14
+t15 = "The area of the circle is "
+print, t15  
+t16 = 3.14
+t17 = radius * radius
+t18 = t16 * t17
+print, t18  
+move area rax 
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $12 
+Circle@getCircumference:   
+move8 rbp -8(rsp) 
+rbp = rsp
+move8 0(rbp) self 
+move4 8(rbp) radius 
+t19 = 3.14
+t20 = 2
+t21 = radius * t20
+t22 = t19 * t21
+circ = t22
+t23 = "The circumference of the circle is "
+print, t23  
+t24 = 2
+t25 = 3.14
+t26 = t25 * radius
+t27 = t24 * t26
+print, t27  
+move circ rax 
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $12 
+test:   
+move8 rbp -8(rsp) 
+rbp = rsp
+t28 = alloc_mem(4)
+push t28  
+call, Rectangle@__init__  
+r1 = t28
+t29 = 5
+t30 = 6
+push t30  
+push t29  
+push r1  
+call, Rectangle@getRectangleArea  
+t32 = alloc_mem(4)
+push t32  
+call, Circle@__init__  
+c1 = t32
+t33 = 7
+push t33  
+push c1  
+call, Circle@getCircleArea  
+t35 = 7
+push t35  
+push c1  
+call, Circle@getCircumference  
+t37 = "Done"
+print, t37  
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $0 
+main:   
+move8 rbp -8(rsp) 
+rbp = rsp
+t38 = alloc_mem(4)
+push t38  
+call, Rectangle@__init__  
+r1 = t38
+t39 = 5
+t40 = 6
+push t40  
+push t39  
+push r1  
+call, Rectangle@getRectangleArea  
+t42 = "Done"
+print, t42  
+t43 = alloc_mem(4)
+push t43  
+call, Circle@__init__  
+c1 = t43
+t44 = 7
+push t44  
+push c1  
+call, Circle@getCircleArea  
+t46 = 7
+push t46  
+push c1  
+call, Circle@getCircumference  
+call, test  
+move rax t48 
+t49 = "Done"
+print, t49  
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $0 
+programStart:   
+call, main  
+move rax t50 

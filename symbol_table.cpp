@@ -374,9 +374,11 @@ void add_parameters(sym_table * symbol_table, vector<st_node>&v){
     symbol_table->parameter_count = v.size();
 }
 
+
+
 void print_sym_table(sym_table * symbol_table){
     
-     cout << "entry_no,name,type,line_no,sp_type,size,offset" << endl;
+    cout << "entry_no,name,type,line_no,sp_type,size,offset" << endl;
     //print all parameters
     cout<<"symbol table name: "<<symbol_table->name<<endl;
     cout<<"parameters start-------"<<endl;
@@ -405,6 +407,42 @@ void print_sym_table(sym_table * symbol_table){
             cout << "-----------sub table end-----------" << endl;
         }
     }
+}
+
+void printToCSV(sym_table * symbol_table, int sp_type, string func_name){
+	ofstream fout;
+    
+    string filePath = "./output/" + func_name + ".csv";
+    fout.open(filePath);
+    fout << "entry_no,name,type,line_no,sp_type,size,offset" << endl;
+    for (int i = 0; i < symbol_table->parameters.size(); i++) {
+        fout << i << ",";
+        fout << symbol_table->parameters[i].name << ",";
+        fout << symbol_table->parameters[i].type << ",";
+        fout << symbol_table->parameters[i].line_no << ",";
+        fout << symbol_table->parameters[i].sp_type << ",";
+        fout << symbol_table->parameters[i].size << ",";
+        fout << symbol_table->parameters[i].offset << endl;
+    }
+    for (int i = 0; i < symbol_table->sym_tbl_entry.size(); i++) {
+        fout << i << ",";
+        fout << symbol_table->sym_tbl_entry[i].name << ",";
+        fout << symbol_table->sym_tbl_entry[i].type << ",";
+        fout << symbol_table->sym_tbl_entry[i].line_no << ",";
+        fout << symbol_table->sym_tbl_entry[i].sp_type << ",";
+        fout << symbol_table->sym_tbl_entry[i].size << ",";
+        fout << symbol_table->sym_tbl_entry[i].offset <<endl;
+        // fout.close();
+        if(symbol_table->sym_tbl_entry[i].sub_symbol_table!=NULL){
+            if(sp_type==2){
+                printToCSV(symbol_table->sym_tbl_entry[i].sub_symbol_table, symbol_table->sym_tbl_entry[i].sp_type, symbol_table->name + "@" + symbol_table->sym_tbl_entry[i].name);
+            }
+            else {
+                printToCSV(symbol_table->sym_tbl_entry[i].sub_symbol_table, symbol_table->sym_tbl_entry[i].sp_type, symbol_table->sym_tbl_entry[i].name);
+            }
+        }
+    }
+    fout.close();
 }
 
 void delete_sym_table(sym_table * symbol_table, string name){

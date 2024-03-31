@@ -1,45 +1,28 @@
-# Test Case: Explicit Type Casting
+data : list[int] = [5, 3, 8, 2, 1, 9, 4, 6, 7]
 
-# Function to calculate the area of a rectangle
-def calculate_rectangle_area(length: float, width: float) -> float:
-    # Explicitly casting length and width to float
-    area: float = length * width
-    return area
+def bubble_sort(arr:list[int]) -> list[int]:
+    n:int = len(arr)
+    i:int = 0
+    j:int = 0
+    for i in range(n - 1):
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+    return arr
 
-# Test the function with sample inputs
-if __name__ == "__main__":
-    # Test 1: Positive integer values
-    length1: float = 5
-    width1: float = 4.5
-    area1: float = calculate_rectangle_area(length1, width1)
-    print(f"Test 1: The area of rectangle with length {length1} and width {width1} is {area1}")
+sorted_data:list[int] = bubble_sort(data)
 
-    # Test 2: Float values
-    length2: float = 10.5
-    width2: float = 3.2
-    area2: float = calculate_rectangle_area(length2, width2)
-    print(f"Test 2: The area of rectangle with length {length2} and width {width2} is {area2}")
+if(sorted_data == [1, 2, 3, 4, 5, 6, 7, 8, 9]):
+    print("Test passed!")
 
-    # Test 3: Negative integer values
-    length3: float = -8
-    width3: float = 6.3
-    area3: float = calculate_rectangle_area(length3, width3)
-    print(f"Test 3: The area of rectangle with length {length3} and width {width3} is {area3}")
 
-    # Test 4: Zero values
-    length4: float = 0
-    width4: float = 0
-    area4: float = calculate_rectangle_area(length4, width4)
-    print(f"Test 4: The area of rectangle with length {length4} and width {width4} is {area4}")
 
-    # Test 5: Large integer values
-    length5: float = 1000000
-    width5: float = 0.0001
-    area5: float = calculate_rectangle_area(length5, width5)
-    print(f"Test 5: The area of rectangle with length {length5} and width {width5} is {area5}")
+data2:list[int] = [9, 8, 7, 6, 5, 4, 3, 2, 1]
+sorted_data2:list[int] = bubble_sort(data2)
+if sorted_data2 == [1, 2, 3, 4, 5, 6, 7, 8, 9] :
+    print("Additional test passed!")
 
-    # Test 6: Large float values
-    length6: float = 999999.999
-    width6: float = 0.000000001
-    area6: float = calculate_rectangle_area(length6, width6)
-    print(f"Test 6: The area of rectangle with length {length6} and width {width6} is {area6}")
+data3:list[int] = [5, 5, 3, 8, 2, 2, 1, 1, 9, 4, 6, 6, 7]
+sorted_data3:list[int] = bubble_sort(data3)
+if sorted_data3 == [1, 1, 2, 2, 3, 4, 5, 5, 6, 6, 7, 8, 9] :
+    print("Test with duplicate elements passed!")

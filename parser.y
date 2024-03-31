@@ -48,7 +48,9 @@
     int is_constructor=0;
     int len_func_call_active=0;
     int len_arg_pushed=0;
+    int print_func_call_active=0;
     vector<vector<string>> len_func_arguments;
+    vector<vector<string>> print_func_arguments;
     int class_par_offset = 0,prev_self = 0;
     int p_prev_range=0;
 %}
@@ -190,6 +192,7 @@ for_stmt: FOR exprlist IN testlist COLON {
             }
             else{
                 cout<<"Error type is not iterable at line " <<yylineno <<". \n";   
+                return 0;
             }
         }
         if(prev_var_name!="range"){
@@ -210,6 +213,7 @@ for_stmt: FOR exprlist IN testlist COLON {
             string low,high;
             if(range_arg.size()>2 || range_arg.size()<1){
                 cout<<"Error invalid range arguments at line " <<yylineno <<". \n";
+                return 0;
             }else if(range_arg.size()==1){
                 string reg = newTemp();
                 create_ins(2,"=",reg,"-1","");
@@ -258,10 +262,12 @@ for_stmt: FOR exprlist IN testlist COLON {
         //check if testlist is a list or range
         if(($4->type_of_node.size()<6 || $4->type_of_node.substr(0,4)!="list") ){
             cout<<"Error type is not iterable at line " <<yylineno <<". \n";
+            return 0;
         }
         //check if the exprlist is same type as testlsit list [*]
         if(($4->type_of_node.substr(0,4)=="list") && $2->type_of_node!=$4->type_of_node.substr(5,$4->type_of_node.size()-6)){
             cout<<"Error  type is not same as iterable at line " <<yylineno <<". \n";
+            return 0;
         }
         // cout<<$2->type_of_node<<" ompho "<<$4->type_of_node<<endl;
 
@@ -362,7 +368,8 @@ typedlist_argument: tfpdef  { $$ = $1;}
             (($1->type_of_node!="int" && $1->type_of_node!="float") || ( $3->type_of_node!="int" && $3->type_of_node!="float")) &&
             (($1->type_of_node!="int" && $1->type_of_node!="bool") || ( $3->type_of_node!="int" && $3->type_of_node!="bool"))
         ){
-            cout<<"Error --typedlist_argument-- invalid type at line " <<yylineno <<endl;
+            cout<<"Error invalid operand type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node= $1->type_of_node;
     }
@@ -376,7 +383,8 @@ comma_option_argument_star: comma_option_argument_star COMMA typedlist_argument 
 tfpdef: NAME { $$ = $1; 
         // cout<<"this is running";
         if((string($1->lexeme)!="print" && string($1->lexeme)!="range"&& string($1->lexeme)!="len") &&  !search_sym_table(curr_sym_tbl.top(),$1->lexeme,0)){
-            cout<<"Sym_tbl_error: Variable "<<$1->lexeme<<" not declared at line "<<yylineno<<endl;
+            cout<<"Variable "<<$1->lexeme<<" not declared at line "<<yylineno<<endl;
+            return 0;
             // cout<<"this is running in if"<<endl;
             // give error as type hint not found
         }
@@ -476,7 +484,8 @@ return_stmt: RETURN testlist_star_expr {
         }
         else if($2->type_of_node!=curr_sym_tbl.top()->return_type){
             // cout<<$2->type_of_node<<" "<<curr_sym_tbl.top()->name<<" hehe"<<endl;
-            cout<<"Error --return_stmt-- invalid return type at line " <<yylineno <<". Expected "<<curr_sym_tbl.top()->return_type<<endl;
+            cout<<"Error  invalid return type at line " <<yylineno <<endl;
+            return 0;
         }
 
         create_ins(0,"move",$2->addr,"rax","");
@@ -485,7 +494,8 @@ return_stmt: RETURN testlist_star_expr {
     | RETURN {
         $$ = $1;
         if(curr_sym_tbl.top()->return_type!="None"){
-            cout<<"Error --return_stmt-- invalid return type at line " <<yylineno <<". Expected "<<curr_sym_tbl.top()->return_type<<endl;
+            cout<<"Error invalid return type at line " <<yylineno <<endl;
+            return 0;
         }
     }
     ;
@@ -499,6 +509,7 @@ global_stmt: GLOBAL NAME comma_name_star {
     $$ = create_node(4,"Global_stmt",$1,$2,$3);
     if(!search_sym_table(global_sym_table,$2->lexeme,0)){
         cout<<"Variable is not already global at line "<<yylineno<<endl;
+            return 0;
     }
     curr_sym_tbl.top()->global_vars.push_back($2->lexeme);
 };
@@ -509,6 +520,7 @@ comma_name_star: COMMA NAME comma_name_star {
     $$ = create_node(4,"Identifiers",$1,$2,$3);
      if(!search_sym_table(global_sym_table,$2->lexeme,0)){
         cout<<"Variable is not already global at line "<<yylineno<<endl;
+            return 0;
     }
     curr_sym_tbl.top()->global_vars.push_back($2->lexeme);
     }
@@ -526,13 +538,15 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
     $$ = create_node(4,"Expr_stmt",$1,$2,$3);
     if(string($2->lexeme)=="&=" || string($2->lexeme)=="|=" || string($2->lexeme)=="^=" || string($2->lexeme)=="<<=" || string($2->lexeme)==">>="){
         if($1->type_of_node!="int" || $3->type_of_node!="int"){
-            cout<<"Error --expr_stmt2-- invalid type at line " <<yylineno <<". Expected int\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         
     }
     else if(($1->type_of_node!="int" && $1->type_of_node!="float") || ($3->type_of_node!="int" && $3->type_of_node!="float")){
         // cout<<"line 323 "<<$1->type_of_node<<" "<<$3->type_of_node<<endl;
-        cout<<"-Error --expr_stmt3-- invalid type at line " <<yylineno <<". Expected int or float\n";
+        cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
     }
     $$->type_of_node= $1->type_of_node;
 
@@ -541,7 +555,8 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
     |testlist_star_expr expr_stmt_option1_plus  {
         $$ = create_node(3,"Expr_stmt",$1,$2);
         if($1->type_of_node!=$2->type_of_node && (($1->type_of_node!="int" && $1->type_of_node!="float") || ( $2->type_of_node!="int" && $2->type_of_node!="float"))){
-            cout<<"Error --expr_stmt4-- invalid type at line " <<yylineno <<". Expected "<<$1->type_of_node<<endl;
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
             // cout<<$1->type_of_node<<" "<<$2->type_of_node<<endl;
             
         }
@@ -590,7 +605,8 @@ symbol_test_star: COMMA test symbol_test_star {
 expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus {
         $$ = create_node(4,"Expr_stmt",$1,$2,$3);
         if($3!=NULL && $3->type_of_node!=$2->type_of_node){
-            cout<<"Error --expr_stmt_option1_plus-- invalid type at line " <<yylineno <<". Expected "<<$2->type_of_node<<endl;
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         create_ins(2,$3->residual_ins, $2->addr,$3->addr, "");
         $$->addr=$2->addr;
@@ -679,7 +695,8 @@ expr: xor_expr symbol_xor_expr_star {
         $$->type_of_node= $1->type_of_node;
     }else{
         if($2->type_of_node!="int" || $1->type_of_node!="int"){
-            cout<<"Error --expr-- invalid type at line " <<yylineno <<". Expected int\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node= $1->type_of_node;
     }
@@ -707,7 +724,8 @@ expr: xor_expr symbol_xor_expr_star {
 symbol_xor_expr_star: BITWISE_OR xor_expr symbol_xor_expr_star {
         $$ = create_node(4,"Or_exprs",$1,$2,$3);
         if($2->type_of_node!="int" ){
-            cout<<"Error --symbol_xor_expr_star-- invalid type at line " <<yylineno <<". Expected int\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node= $2->type_of_node;
             // cout<<"hua kya"<<endl;
@@ -731,7 +749,8 @@ xor_expr: and_expr symbol_and_expr_star {
         $$->type_of_node= $1->type_of_node;
     }else{
         if($2->type_of_node!="int" || $1->type_of_node!="int"){
-            cout<<"Error --xor_expr-- invalid type at line " <<yylineno <<". Expected int\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node= $2->type_of_node;
     }
@@ -751,7 +770,8 @@ xor_expr: and_expr symbol_and_expr_star {
 symbol_and_expr_star: BITWISE_XOR and_expr symbol_and_expr_star {
         $$ = create_node(4,"Xor_exprs",$1,$2,$3);
         if($2->type_of_node!="int" ){
-            cout<<"Error --symbol_and_expr_star-- invalid type at line " <<yylineno <<". Expected int\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node = $2->type_of_node;
         if($3==NULL){
@@ -773,7 +793,8 @@ and_expr: shift_expr symbol_shift_expr_star {
         $$->type_of_node= $1->type_of_node;
     }else{
         if($2->type_of_node!="int"|| $1->type_of_node!="int" ){
-            cout<<"Error --and_expr-- invalid type at line " <<yylineno <<". Expected int\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node= $2->type_of_node;
     }
@@ -794,7 +815,8 @@ and_expr: shift_expr symbol_shift_expr_star {
 symbol_shift_expr_star: BITWISE_AND shift_expr symbol_shift_expr_star {
         $$ = create_node(4,"And_exprs",$1,$2,$3);
         if($2->type_of_node!="int" ){
-            cout<<"Error --symbol_shift_expr_star-- invalid type at line " <<yylineno <<". Expected int\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node = $2->type_of_node;
         if($3==NULL){
@@ -817,7 +839,8 @@ shift_expr: arith_expr shift_arith_expr_star {
         $$->type_of_node= $1->type_of_node;
     }else{
         if(($2->type_of_node!="int" && $2->type_of_node!="bool") || ($1->type_of_node!="int" && $1->type_of_node!="bool")){
-            cout<<"Error --shift_expr-- invalid type at line " <<yylineno <<". Expected int\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node= "int";
     }
@@ -840,7 +863,8 @@ shift_arith_expr_star: /*empty*/ {$$=NULL;}
     | SHIFT_LEFT arith_expr shift_arith_expr_star {
         $$ = create_node(4,"Shift_left_expr",$1,$2,$3);
         if($2->type_of_node!="int" && $2->type_of_node!="bool"){
-            cout<<"Error --shift_arith_expr_star-- invalid type at line " <<yylineno <<". Expected int\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node = $2->type_of_node;
         if($3!=NULL){
@@ -859,7 +883,8 @@ shift_arith_expr_star: /*empty*/ {$$=NULL;}
     | SHIFT_RIGHT arith_expr shift_arith_expr_star {
         $$ = create_node(4,"Shift_right_expr",$1,$2,$3);
         if($2->type_of_node!="int" && $2->type_of_node!="bool"){
-            cout<<"Error --shift_arith_expr_star-- invalid type at line " <<yylineno <<". Expected int\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node = $2->type_of_node;
         if($3!=NULL){
@@ -880,7 +905,8 @@ arith_expr: term symbol_term_star  {
     if($2==NULL || $2->type_of_node=="undefined"){
         $$->type_of_node= $1->type_of_node;
     }else if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
-        cout<<"Error --arith_expr-- invalid type at line " <<yylineno <<". Expected int or float\n";
+        cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
     }else if($1->type_of_node=="float" || $2->type_of_node=="float"){
         $$->type_of_node= "float";
     }else{
@@ -904,12 +930,14 @@ symbol_term_star: /*empty*/ {$$=NULL;}
     | ADD term symbol_term_star {
         $$ = create_node(4,"Operator_expr",$1,$2,$3);
         if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
-            cout<<"Error --symbol_term_star-- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         if($3==NULL || $3->type_of_node=="undefined"){
             $$->type_of_node= $2->type_of_node;
         }else if($3->type_of_node!="int" && $3->type_of_node!="float" && $3->type_of_node!="bool"){
-            cout<<"Error --symbol_term_star-- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }else if($2->type_of_node=="float" || $3->type_of_node=="float"){
             $$->type_of_node= "float";
         }else{
@@ -932,12 +960,14 @@ symbol_term_star: /*empty*/ {$$=NULL;}
     | SUB term symbol_term_star {
         $$ = create_node(4,"Operator_expr",$1,$2,$3);
         if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
-            cout<<"Error --symbol_term_star-- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         if($3==NULL || $3->type_of_node=="undefined"){
             $$->type_of_node= $2->type_of_node;
         }else if($3->type_of_node!="int" && $3->type_of_node!="float" && $3->type_of_node!="bool"){
-            cout<<"Error -- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }else if($2->type_of_node=="float" || $3->type_of_node=="float"){
             $$->type_of_node= "float";
         }else{
@@ -964,10 +994,12 @@ term: factor symbol_factor_star {
         $$->type_of_node= $1->type_of_node;
     }else if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
         // cout<<"line 495 ";
-        cout<<"Error --term-- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
+        cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         
     }else if($1->type_of_node!="float" && $1->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="int"){
-        cout<<"Error --term-- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
+        cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
     }
     else {
         if($1->type_of_node=="float" || $2->type_of_node=="float")
@@ -990,10 +1022,12 @@ term: factor symbol_factor_star {
 symbol_factor_star: /*empty*/ {$$=NULL;}
     | symbol_factor symbol_factor_star {$$ = create_node(3,"Terms",$1,$2);
     if($1->type_of_node!="int" && $1->type_of_node!="float" && $1->type_of_node!="bool"){
-        cout<<"Error --symbol_factor_star-- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
+        cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
     }
     if($2!=NULL && $2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
-        cout<<"Error --symbol_factor_star-- invalid type at line " <<yylineno <<". Expected int or float or bool\n";
+        cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
     }
 
     if($1->type_of_node=="float" || ($2!=NULL && $2->type_of_node=="float"))
@@ -1016,7 +1050,8 @@ symbol_factor_star: /*empty*/ {$$=NULL;}
 symbol_factor: MUL factor {
         $$ = create_node(3,"Mul_term",$1,$2);
         if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
-            cout<<"Error --symbol_factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node = $2->type_of_node;
         $$->addr=$2->addr;
@@ -1026,7 +1061,8 @@ symbol_factor: MUL factor {
     | DIV factor {
         $$ = create_node(3,"Div_term",$1,$2);
         if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
-            cout<<"Error --symbol_factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node = "float";
         // $$->type_of_node = $2->type_of_node;
@@ -1036,7 +1072,8 @@ symbol_factor: MUL factor {
     | FLOOR_DIV factor {
         $$ = create_node(3,"Div_term",$1,$2);
         if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
-            cout<<"Error --symbol_factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node = $2->type_of_node;
         $$->addr=$2->addr;
@@ -1045,7 +1082,8 @@ symbol_factor: MUL factor {
     | MOD factor {
         $$ = create_node(3,"Mod_term",$1,$2);
         if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
-            cout<<"Error --symbol_factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node = $2->type_of_node;
         $$->addr=$2->addr;
@@ -1056,7 +1094,8 @@ symbol_factor: MUL factor {
 factor: ADD factor {
         $$ = create_node(3,"Add_term",$1,$2);
         if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
-            cout<<"Error --factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node = $2->type_of_node;
         $$->addr=$2->addr;
@@ -1064,7 +1103,8 @@ factor: ADD factor {
     | SUB factor {
         $$ = create_node(3,"Sub_term",$1,$2);
         if($2->type_of_node!="int" && $2->type_of_node!="float" &&  $2->type_of_node!="bool"){
-            cout<<"Error --factor-- invalid type at line " <<yylineno <<". Expected int or float\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node = $2->type_of_node;
         string reg=newTemp();
@@ -1074,7 +1114,8 @@ factor: ADD factor {
     | TILDE factor {
         $$ = create_node(3,"Tilde_term",$1,$2);
         if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
-            cout<<"Error --factor-tilde-- invalid type at line " <<yylineno <<". Expected int or float\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }
         $$->type_of_node = $2->type_of_node;
         string reg=newTemp();
@@ -1087,9 +1128,11 @@ factor: ADD factor {
 power: atom_expr {$$ = $1;}
     | atom_expr POW factor {$$ = create_node(4,"Power_term",$1,$2,$3);
         if(!($3->type_of_node=="int" || $3->type_of_node=="float" || $3->type_of_node=="bool")){
-            cout<<"Error --power-- invalid power type at line " <<yylineno <<". Expected int or float or bool.\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }else if(!($1->type_of_node=="int" || $1->type_of_node=="float" || $1->type_of_node=="bool")){
-            cout<<"Error --power2-- invalid power type at line " <<yylineno <<". Expected int or float or bool\n";
+            cout<<"Error  invalid operand  type at line " <<yylineno <<endl;
+            return 0;
         }else{
             if($1->type_of_node=="float" || $3->type_of_node=="float")
                 $$->type_of_node= "float";
@@ -1127,14 +1170,16 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             if(dot_is_spl_type.size()>0){
                 if(dot_is_spl_type.substr(0,3)=="Box"){
                     if(search_type_in_sym_table(curr_sym_tbl.top(),full_name).substr(0,4) !="list"){
-                        cout<<"Error --atom_expr-- invalid dereferencing of a type at line no "<<yylineno<<endl;
+                        cout<<"Error  invalid dereferencing of a type at line no "<<yylineno<<endl;
+                        return 0;
                     }
                 }
                 else if(dot_is_spl_type.size()>=5 && dot_is_spl_type.substr(0,5)=="Small"){
                     int func_exist=search_class_func(global_sym_table,search_type_in_sym_table(curr_sym_tbl.top(),$1->lexeme),after_dot_name.substr(1,after_dot_name.size()-1));
                     if(!func_exist){
                         // cout<<$1->lexeme<<" "<<after_dot_name<<" this is full name"<<endl;
-                        cout<<"Error --atom_expr-- invalid func call at line no "<<yylineno<<endl;
+                        cout<<"Error  invalid function call at line no "<<yylineno<<endl;
+                        return 0;
                     }
                 }
             }
@@ -1144,7 +1189,8 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             int curr_offset=get_offset_from_tbl(curr_sym_tbl.top(),full_name);
             if(!brack_open){
                 if(curr_offset==-1 && dot_is_spl_type.size()==0){
-                    cout<<$1->lexeme<<dot_is_spl_type<<($2==NULL)<<" Error --atom_expr-- invalid variable at line no "<<yylineno<<endl;
+                    cout<<"Error invalid variable at line no "<<yylineno<<endl;
+                    return 0;
                 }
                 string reg=newTemp();
                 if(class_active==0 && dot_is_spl_type.size()==0)
@@ -1161,11 +1207,13 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                 vector<st_node>sym_tbl_func_param=get_class_func_parameters(global_sym_table,$1->type_of_node,func_arguments[0][0]);
                 // cout<<sym_tbl_func_param.size()<<" "<<func_arguments.size()<<endl;
                 if(sym_tbl_func_param.size()!=func_arguments.size()){
-                    cout<<"Error --atom_expr-- invalid number of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param.size()<<" arguments\n";
+                    cout<<"Error  invalid number of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param.size()<<" arguments\n";
+                    return 0;
                 }else {
                     for(int i=sym_tbl_func_param.size()-1;i>=1;i--){
                         if(sym_tbl_func_param[i].type!=func_arguments[i][1]){
-                            cout<<"Error --atom_expr-- invalid type of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param[i].type<<" type\n";
+                            cout<<"Error type of arguments not matching at line " <<yylineno <<endl;
+                            return 0;
                         }
                         create_ins(0,"push",func_arguments[i][0],"","");
                     }
@@ -1181,7 +1229,8 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
 
 
         if($2 && $2->type_of_node.substr(0,3)=="Box" && $2->type_of_node!="Box;int"){
-            cout<<"Error --atom_expr--- invalid type at line " <<yylineno <<". Expected int\n";
+            cout<<"Error invalid dereferencing type at line " <<yylineno <<". Expected int\n";
+            return 0;
         }
         if($2==NULL ){
             string temp_type = $1->type_of_node;
@@ -1189,7 +1238,8 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
         }else{
             if($2->type_of_node.substr(0,3)=="Box" ){
                 if($1->type_of_node.size()<6 || $1->type_of_node.substr(0,4)!="list"){
-                    cout<<"Error --atom_expr-- invalid dereferencing of a type at line no "<<yylineno<<endl;
+                    cout<<"Error invalid dereferencing of a type at line no "<<yylineno<<endl;
+                    return 0;
                 }
                 if($1->type_of_node.size()>=6){
                     string temp_type = $1->type_of_node.substr(5,$1->type_of_node.size()-6);
@@ -1238,11 +1288,23 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             }
             
         }
-         if($1->lexeme && string($1->lexeme)=="print"){ 
-            create_ins(0,"print,", $2->addr,"","");
-            cout<<func_call_active<<" 1242"<<endl;
+        //  if($1->lexeme && string($1->lexeme)=="print"){ 
+        //     create_ins(0,"print,", $2->addr,"","");
+        //     // cout<<func_call_active<<" 1242"<<endl;
+        //     // prev_var_name="";
+        // }
+ if($1->lexeme && string($1->lexeme)=="print"){ 
+            $$->addr=$2->addr;
+             if(p_prev_range==1){
+                p_prev_range=0;
+                prev_var_name="range";
+            }else{
+                prev_var_name="aryan";
+            }
             // prev_var_name="";
         }
+
+
 
         if($1->lexeme && string($1->lexeme)=="len"){ 
             $$->addr=$2->addr;
@@ -1295,7 +1357,8 @@ trailer_star:  trailer trailer_star  {
         if($2!=NULL){
             //check if first 3 substring is  Box
             if($1->type_of_node.substr(0,3)=="Box" || ($1->type_of_node.size()>=5 && $1->type_of_node.substr(0,5)=="Small")){
-                    cout<<"Error --trailer_star-- invalid sequence of dereferencing at line no "<<yylineno<<endl;
+                    cout<<"Error invalid sequence of dereferencing at line no "<<yylineno<<endl;
+                    return 0;
             }
             if($2->type_of_node.size()>=5 && ($2->type_of_node.substr(0,3)=="Box" ||  $2->type_of_node.substr(0,5)=="Small")){
                     dot_is_spl_type=$2->type_of_node;
@@ -1325,20 +1388,22 @@ trailer: SMALL_OPEN {
         //         cout<<endl;
         //     }   
         // }
-        if(func_call_active==1 && len_func_call_active==0){
+        if(func_call_active==1 && len_func_call_active==0 && print_func_call_active==0){
 
             if(is_constructor){
                 vector<st_node>sym_tbl_func_param=get_self_param(global_sym_table,func_arguments[0][0]);
                 // cout<<"reaching 1289"<<func_arguments[0][0]<<sym_tbl_func_param.size()<<endl;
                 if(sym_tbl_func_param.size()!=func_arguments.size()){
-                    cout<<"Error --trailer-- invalid number of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param.size()<<" arguments\n";
+                    cout<<"Error invalid number of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param.size()<<" arguments\n";
+                    return 0;
                 }
                 else{
                     int total_size=0;
                     for(int i=sym_tbl_func_param.size()-1;i>=1;i--){
                         total_size+=sym_tbl_func_param[i].size;
                         if(sym_tbl_func_param[i].type!=func_arguments[i][1]){
-                            cout<<"Error --trailer-- invalid type of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param[i].type<<" type\n";
+                            cout<<"Error type of arguments not matching at line " <<yylineno <<endl;
+                            return 0;
                         }
                         create_ins(0,"push",func_arguments[i][0],"","");
                     }
@@ -1351,20 +1416,24 @@ trailer: SMALL_OPEN {
                 }
                 // is_constructor=0;
                 func_call_active=0;
-                cout<<" line 1341 "<<endl;
+                // cout<<" line 1341 "<<endl;
             }
             else{
                 vector<st_node>sym_tbl_func_param=get_parameters(curr_sym_tbl.top(),func_arguments[0][0]);
                 if(sym_tbl_func_param.size()+1!=func_arguments.size()){
-                    cout<<"Error --trailer-- invalid number of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param.size()<<" arguments\n";
+                    cout<<"Error invalid number of arguments at line " <<yylineno <<endl;
+                    return 0;
+
                 }else {
                     for(int i=sym_tbl_func_param.size()-1;i>=0;i--){
                         if(sym_tbl_func_param[i].type!=func_arguments[i+1][1]){
-                            cout<<"Error --trailer-- invalid type of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param[i].type<<" type\n";
+                            cout<<"Error type of arguments not matching at line " <<yylineno <<endl;
+                            return 0;
                         }
                         create_ins(0,"push",func_arguments[i+1][0],"","");
                     }
                     create_ins(0,"call,",func_arguments[0][0],"","");
+                    // func_call_active=0;
                     // if(prev_var_name!="range" && prev_var_name!="len" && prev_var_name!="print")
                     // {
                     //     string reg=newTemp();
@@ -1409,6 +1478,14 @@ trailer: SMALL_OPEN {
             // }
 
         }
+         else if(print_func_call_active==1){
+            print_func_call_active=0;
+            create_ins(0,"print,",print_func_arguments[0][0],"","");
+            print_func_arguments.clear();
+            // len_func=-1;
+            $$->addr=$3->addr;
+            $$->type_of_node=$3->type_of_node;
+        }
         class_active = 0;
     }
     |SMALL_OPEN SMALL_CLOSE { 
@@ -1420,14 +1497,16 @@ trailer: SMALL_OPEN {
                 // cout<<"is_contructor"<<" "<<yylineno<<endl;
                 vector<st_node>sym_tbl_func_param=get_self_param(global_sym_table,func_arguments[0][0]);
                 if(sym_tbl_func_param.size()!=func_arguments.size()){
-                    cout<<"Error --trailer-- invalid number of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param.size()<<" arguments\n";
+                    cout<<"Error invalid number of arguments at line " <<yylineno <<endl;
+                    return 0;
                 }
                 else{
                     int total_size=0;
                     for(int i=sym_tbl_func_param.size()-1;i>=1;i--){
                         total_size+=sym_tbl_func_param[i].size;
                         if(sym_tbl_func_param[i].type!=func_arguments[i-1][1]){
-                            cout<<"Error --trailer-- invalid type of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param[i].type<<" type\n";
+                            cout<<"Error type of arguments not matching at line " <<yylineno <<endl;
+                            return 0;
                         }
                         create_ins(0,"push",func_arguments[i][0],"","");
                     }
@@ -1439,21 +1518,24 @@ trailer: SMALL_OPEN {
                     $$->addr=reg;
                 }
                 // is_constructor=0;
-                func_call_active=0;
+                func_call_active=-1;
             }
             else{
                 vector<st_node>sym_tbl_func_param=get_parameters(curr_sym_tbl.top(),func_arguments[0][0]);
                 if(sym_tbl_func_param.size()+1!=func_arguments.size()){
-                    cout<<"Error --trailer-- invalid number of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param.size()<<" arguments\n";
+                     cout<<"Error invalid number of arguments at line " <<yylineno <<endl;
+                    return 0;
                 }else 
                     for(int i=sym_tbl_func_param.size()-1;i>=0;i--){
                         if(sym_tbl_func_param[i].type!=func_arguments[i+1][1]){
-                            cout<<"Error --trailer-- invalid type of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param[i].type<<" type\n";
+                            cout<<"Error type of arguments not matching at line " <<yylineno <<endl;
+                            return 0;
                         }
                         create_ins(0,"push",func_arguments[i+1][0],"","");
                     }
                 create_ins(0,"call,",func_arguments[0][0],"","");
-                func_call_active=-1;
+                // func_call_active=-1;
+                // cout<<"hello"<<endl;
             }
             // func_arguments.clear();      
 
@@ -1542,11 +1624,12 @@ argument_list: argument_list COMMA argument { $$=create_node(4,"Arguments",$1,$2
         $$->addr=$3->addr;
         if(prev_var_name=="range"){
             if($3->type_of_node!="int"){
-                cout<<"Error --arglist-- invalid type at line " <<yylineno <<". Expected int\n";
+                cout<<"Error invalid argument type at line " <<yylineno <<endl;
+                return 0;
             }
             range_arg.push_back($3->addr);
         }    
-        if(func_call_active==1 && len_func_call_active==0 ){
+        if(func_call_active==1 && len_func_call_active==0 && print_func_call_active==0){
             if(len_arg_pushed==1){
                 len_arg_pushed=0;
             }
@@ -1560,17 +1643,20 @@ argument_list: argument_list COMMA argument { $$=create_node(4,"Arguments",$1,$2
         if(len_func_call_active==1){
             len_func_arguments.push_back({$3->addr, $3->type_of_node});
         }
-
+        if(print_func_call_active==1){
+            print_func_arguments.push_back({$3->addr, $3->type_of_node});
+        }
     }
     | argument { 
         $$=$1;
         if(prev_var_name=="range"){
             if($1->type_of_node!="int"){
-                cout<<"Error --arglist-- invalid type at line " <<yylineno <<". Expected int\n";
+                cout<<"Error invalid argument type at line " <<yylineno <<endl;
+                return 0;
             }
             range_arg.push_back($1->addr);
         }
-        if(func_call_active==1 && len_func_call_active==0){
+        if(func_call_active==1 && len_func_call_active==0 && print_func_call_active==0){
              if(len_arg_pushed==1){
                 len_arg_pushed=0;
             }
@@ -1584,6 +1670,9 @@ argument_list: argument_list COMMA argument { $$=create_node(4,"Arguments",$1,$2
         }
         if(len_func_call_active==1){
             len_func_arguments.push_back({$1->addr, $1->type_of_node});
+        }
+        if(print_func_call_active==1){
+            print_func_arguments.push_back({$1->addr, $1->type_of_node});
         }
     }
     ;
@@ -1615,7 +1704,8 @@ argument: test { $$ = $1;}
             (($1->type_of_node!="int" && $1->type_of_node!="float") || ( $3->type_of_node!="int" && $3->type_of_node!="float")) && 
             (($1->type_of_node!="bool" && $1->type_of_node!="int") || ($3->type_of_node!="bool" && $3->type_of_node!="int"))
         ){
-            cout<<"Error --argument-- invalid type assign at line " <<yylineno <<".";
+            cout<<"Error invalid type assign at line " <<yylineno <<endl;
+            return 0;
         }
     }
     | POW test {$$=create_node(3,"Power_term",$1,$2);}
@@ -1747,7 +1837,8 @@ comparison: expr comp_op_expr_plus {
                     //continue
                 }
                 else{
-                    cout<<"Error --comparison-- invalid type assign at line " <<yylineno <<". "<<$1->type_of_node<<" "<<$2->type_of_node<<"."<<endl;
+                    cout<<"Error invalid operand type at line " <<yylineno <<endl;
+                    return 0;
                 }
             }
             $$->type_of_node="int";
@@ -1781,7 +1872,8 @@ comp_op_expr_plus: comp_op expr comp_op_expr_plus {
                     //continue
                 }
                 else{
-                    cout<<"Error --comparison-- invalid type assign at line " <<yylineno <<". "<<$2->type_of_node<<" "<<$3->type_of_node<<"."<<endl;
+                    cout<<"Error invalid operand type at line " <<yylineno <<endl;
+                    return 0;
                 }
             }
         $$->type_of_node="int";
@@ -1849,7 +1941,8 @@ test: or_test {
     }
     |or_test IF or_test ELSE test {$$=create_node(6,"Expressions",$1,$2,$3,$4,$5);
     if($1->type_of_node!=$5->type_of_node){
-        cout<<"Error --test-- invalid type assign at line " <<yylineno <<".";
+        cout<<"Error invalid type  at line " <<yylineno <<".";
+        return 0;
     }
     $$->type_of_node=$1->type_of_node;
     // cout<<$$->type_of_node<<"hello"<<endl;
@@ -1903,13 +1996,22 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         $$->lexeme=$1->lexeme;
         $$->addr=$1->lexeme;
         if((string($1->lexeme)!="print" && string($1->lexeme)!="range"&& string($1->lexeme)!="len"&& string($1->lexeme)!="main") &&  !search_sym_table(curr_sym_tbl.top(),$1->lexeme,0)){
-            cout<<"Sym_tbl_error: Variable "<<$1->lexeme<<" not declared at line "<<yylineno<<endl;
+            cout<<"Variable "<<$1->lexeme<<" not declared at line "<<yylineno<<endl;
+            return 0;
             // give error as type hint not found
         }
         $$->type_of_node=curr_type;
-        if(string($1->lexeme)=="print" || string($1->lexeme)=="range" )
+         if(string($1->lexeme)=="print" ){
+             if(prev_var_name=="range"){
+                p_prev_range=1;
+            }
+            print_func_call_active=1;
+            
             prev_var_name=string($1->lexeme);
-        
+        }
+        else if(string($1->lexeme)=="range"){
+            prev_var_name=string($1->lexeme);
+        }
         else if(string($1->lexeme)=="len"){
 
             if(prev_var_name=="range"){
@@ -1946,7 +2048,8 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         $$->addr=$1->lexeme;
         $$->type_of_node = $2->lexeme;
         if(check_is_in_global(curr_sym_tbl.top(),$1->lexeme)){
-            cout<<"Error --atom-- global variable redefined at line " <<yylineno <<".";
+            cout<<"Error global variable redefined at line " <<yylineno <<endl;
+            return 0;
         }
         if(is_param) {
             add_to_vector(parameter_vec, $1->lexeme, $2->lexeme,yylineno);
@@ -1955,7 +2058,8 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
             // delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
             int is_var=search_in_curr_scope(curr_sym_tbl.top(),$1->lexeme,0);
             if(is_var){
-                cout<<"Var redefine error at line "<<yylineno<<endl;
+                cout<<"Error variable redefined  at line "<<yylineno<<endl;
+                return 0;
                 // delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
             }
             create_entry(curr_sym_tbl.top(),  $1->lexeme,$2->lexeme,yylineno,0,NULL );
@@ -2136,21 +2240,25 @@ void create_ins(int type, string optype, string addr1,string addr2, string addr3
 }
 
 void print_instructions(){
+    ofstream fout;
+    string filePath = "./output/3ac.txt";
+    fout.open(filePath);
     for(auto ins: instructions){
         if(ins[0]=="3"){
-            cout << ins[2] << " = " << ins[3] << " " << ins[1] << " " << ins[4] << endl; 
+            fout << ins[2] << " = " << ins[3] << " " << ins[1] << " " << ins[4] << endl; 
         }
         else if(ins[0]=="2"){
             if(ins[1] == "="){
-                cout << ins[2] << " = " << ins[3] << endl;
+                fout << ins[2] << " = " << ins[3] << endl;
             }
             else{
-                cout << ins[2] << " = " << ins[1] << " " <<ins[3] << endl;
+                fout << ins[2] << " = " << ins[1] << " " <<ins[3] << endl;
             }
         }else if(ins[0]=="0"){
-            cout<<ins[1]<<" "<<ins[2]<<" "<<ins[3]<<" "<<ins[4]<<endl;
+            fout<<ins[1]<<" "<<ins[2]<<" "<<ins[3]<<" "<<ins[4]<<endl;
         }
     }
+    fout.close();
 }
 
 
@@ -2214,6 +2322,11 @@ int main(int argc, char* argv[]){
 		}
 	}
 
+    remove("output");
+    std::string folderName = "output";
+    std::filesystem::create_directory(folderName);
+
+
 	if(input_file == "" || noInputFile){
 		cout << "Please specify an input file." << endl;
 		return 0;
@@ -2261,7 +2374,8 @@ int main(int argc, char* argv[]){
     MakeDOTFile(ast);
 
     /* MakeDOTFile(start_node); */
-    print_sym_table(global_sym_table);
+    /* print_sym_table(global_sym_table); */
+    printToCSV(global_sym_table,0,global_sym_table->name);
     print_instructions();
 
 
