@@ -44,10 +44,18 @@ def sum_up_to_n(n:int) -> int:
     for i in range(n):
         total += i
     return total
+def main():
+    sum_result:int = sum_up_to_n(5)
 
-sum_result:int = sum_up_to_n(5)
+    if sum_result == 15:
+        print("Sum up to n test passed!")
+    else:
+        print("Sum up to n test failed!")
+    
+    i:int=1
+    for i in range(5):
+        print(i)
 
-if sum_result == 15:
-    print("Sum up to n test passed!")
-else:
-    print("Sum up to n test failed!")
+if __name__ == "__main__":
+    main()
+
