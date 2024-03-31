@@ -1,29 +1,14 @@
-t1 = 0
-i = t1
-t2 = 1
-t3 = 5
-t2 = t2 - 1
-t4 = t2
-label2:   
-t4 = t4 + 1
-t5 = t4 < t3
-if_false t5 goto label1
-i = t4 
+.t1 = 0
+i = .t1
+.t2 = 1
+.t3 = 5
+.t2 = .t2 - 1
+.t4 = .t2
+.label2:   
+.t4 = .t4 + 1
+.t5 = .t4 < .t3
+if_false .t5 goto .label1
+i = .t4 
 print, i  
-goto label2  
-label1:   
-sum:   
-move8 rbp -8(rsp) 
-rbp = rsp
-move4 0(rbp) x 
-z = x
-move z rax 
-move8 rbp rsp 
-move8 -8(rbp) rbp 
-add rsp $4 
-t6 = True
-if_false t6 goto label4
-t7 = 1
-x = t7
-goto label3  
-label4:   
+goto .label2  
+.label1:   

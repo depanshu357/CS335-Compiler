@@ -415,6 +415,7 @@ void printToCSV(sym_table * symbol_table, int sp_type, string func_name){
     string filePath = "./output/" + func_name + ".csv";
     fout.open(filePath);
     fout << "entry_no,name,type,line_no,sp_type,size,offset" << endl;
+    fout<<"function parameters"<<endl;
     for (int i = 0; i < symbol_table->parameters.size(); i++) {
         fout << i << ",";
         fout << symbol_table->parameters[i].name << ",";
@@ -424,6 +425,7 @@ void printToCSV(sym_table * symbol_table, int sp_type, string func_name){
         fout << symbol_table->parameters[i].size << ",";
         fout << symbol_table->parameters[i].offset << endl;
     }
+    fout<<"function body"<<endl;
     for (int i = 0; i < symbol_table->sym_tbl_entry.size(); i++) {
         fout << i << ",";
         fout << symbol_table->sym_tbl_entry[i].name << ",";

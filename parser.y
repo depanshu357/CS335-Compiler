@@ -2270,13 +2270,13 @@ void MakeDOTFile(NODE*cell) {
 
 string newTemp(){
     // string temp = ".t" + to_string(tempCount);
-    string temp = "t" + to_string(tempCount);
+    string temp = ".t" + to_string(tempCount);
     tempCount++;
     return temp;
 }
 string newLabel(){
     // string temp = ".label" + to_string(labelCount);
-    string temp = "label" + to_string(labelCount);
+    string temp = ".label" + to_string(labelCount);
     label_st.push_back(temp);
     labelCount++;
     return temp;

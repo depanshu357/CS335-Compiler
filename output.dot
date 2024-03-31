@@ -6,4 +6,79 @@ fontsize  = 30
 labelloc  = t
 
 node   [ fontname="Cascadia code" ]
+	105		[ style = solid label = "START"  ];
+	105 -> 104
+	104		[ style = solid label = "File Input"  ];
+	104 -> 26
+	26		[ style = solid label = "Expr_stmt"  ];
+	26 -> 2
+	2		[ style = solid label = "Identifier"  ];
+	2 -> 0
+	0		[ style = solid label = "IDENTIFIER 
+(i)" color = red shape = rectangle ];
+	2 -> 1
+	1		[ style = solid label = "TYPE_HINT 
+(:int)" color = red shape = rectangle ];
+	26 -> 25
+	25		[ style = solid label = "Expr_stmt"  ];
+	25 -> 3
+	3		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	25 -> 14
+	14		[ style = solid label = "INTEGER 
+(0)" color = red shape = rectangle ];
+	104 -> 102
+	102		[ style = solid label = "For_stmt"  ];
+	102 -> 28
+	28		[ style = solid label = "KEYWORD 
+(for)" color = red shape = rectangle ];
+	102 -> 29
+	29		[ style = solid label = "IDENTIFIER 
+(i)" color = red shape = rectangle ];
+	102 -> 30
+	30		[ style = solid label = "KEYWORD 
+(in)" color = red shape = rectangle ];
+	102 -> 66
+	66		[ style = solid label = "Terms"  ];
+	66 -> 38
+	38		[ style = solid label = "IDENTIFIER 
+(range)" color = red shape = rectangle ];
+	66 -> 63
+	63		[ style = solid label = "Arguments"  ];
+	63 -> 39
+	39		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	63 -> 62
+	62		[ style = solid label = "Arguments"  ];
+	62 -> 40
+	40		[ style = solid label = "INTEGER 
+(1)" color = red shape = rectangle ];
+	62 -> 41
+	41		[ style = solid label = "DELIMITER 
+(,)" color = red shape = rectangle ];
+	62 -> 51
+	51		[ style = solid label = "INTEGER 
+(5)" color = red shape = rectangle ];
+	63 -> 52
+	52		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	102 -> 64
+	64		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	102 -> 91
+	91		[ style = solid label = "Terms"  ];
+	91 -> 76
+	76		[ style = solid label = "IDENTIFIER 
+(print)" color = red shape = rectangle ];
+	91 -> 89
+	89		[ style = solid label = "Arguments"  ];
+	89 -> 77
+	77		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	89 -> 78
+	78		[ style = solid label = "IDENTIFIER 
+(i)" color = red shape = rectangle ];
+	89 -> 79
+	79		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
 }
