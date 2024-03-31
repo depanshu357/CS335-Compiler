@@ -46,6 +46,9 @@
     string prev_var_name="";
     string prev_dot_var="";
     int is_constructor=0;
+    int len_func_call_active=0;
+    int len_arg_pushed=0;
+    vector<vector<string>> len_func_arguments;
     int class_par_offset = 0,prev_self = 0;
     int p_prev_range=0;
 %}
@@ -1167,7 +1170,7 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                         create_ins(0,"push",func_arguments[i][0],"","");
                     }
                     create_ins(0,"push",$1->lexeme,"","");
-                    create_ins(0,"goto",string($1->type_of_node)+"@"+func_arguments[0][0],"","");
+                    create_ins(0,"call,",string($1->type_of_node)+"@"+func_arguments[0][0],"","");
                 }
         
                 class_func_call_active=-1;
@@ -1196,11 +1199,15 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             else if($2->type_of_node.size()>=5 && $2->type_of_node.substr(0,5)=="Small"){
                 $$->type_of_node= $1->type_of_node;
                 
+                if(func_call_active==1 && prev_var_name!="range" && prev_var_name!="len" && prev_var_name!="print")
+                {
+                    string reg=newTemp();
+                    create_ins(0,"move","rax",reg,"");
                 
-                string reg=newTemp();
-                create_ins(0,"move","rax",reg,"");
-                $$->addr=reg;
-                func_call_active=0;
+                    $$->addr=reg;
+                    // $$->addr=$2->addr;
+                    func_call_active=0;
+                }
 
             }
             else{
@@ -1229,44 +1236,55 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                 $2->addr=result;
                 $$->addr=result;
             }
+            
         }
          if($1->lexeme && string($1->lexeme)=="print"){ 
-            create_ins(0,"print(", $2->addr,")","");
+            create_ins(0,"print,", $2->addr,"","");
+            cout<<func_call_active<<" 1242"<<endl;
             // prev_var_name="";
         }
 
-
-
-        if($1->lexeme && string($1->lexeme)== "len" ){
-            if(p_prev_range==1){
+        if($1->lexeme && string($1->lexeme)=="len"){ 
+            $$->addr=$2->addr;
+             if(p_prev_range==1){
                 p_prev_range=0;
                 prev_var_name="range";
             }else{
                 prev_var_name="aryan";
             }
-            // cout<<" 1273 at line " << yylineno<<endl;
-            if($2==NULL){
-                cout<<"Error --atom_expr-- invalid len usage at line " <<yylineno <<endl;
-            }
-            else{
-                if($2->type_of_node.size()>=9 && $2->type_of_node.substr(0,9)!="Smalllist"){
-                    cout<<"Error --atom_expr-- invalid len arg type at line " <<yylineno <<endl;
-                }
-                // cout<<$2->type_of_node<<"  1277 "<<yylineno<<endl;
-                string temp=newTemp();
-                string reg=newTemp();
-                create_ins(0,temp,"=","-4","");
-                create_ins(2,"=",reg,$2->addr+"["+temp+"]","");
-                // len_func=-1;
-                $$->addr=reg;
-                $$->type_of_node="int";
-                if(func_call_active==1){
-                    func_arguments.push_back({reg,"int"});
-                }
-                // func_arguments.clear();
-            }
-
+            // prev_var_name="";
         }
+
+        // if($1->lexeme && string($1->lexeme)== "len" ){
+        //     if(p_prev_range==1){
+        //         p_prev_range=0;
+        //         prev_var_name="range";
+        //     }else{
+        //         prev_var_name="aryan";
+        //     }
+        //     // cout<<" 1273 at line " << yylineno<<endl;
+        //     if($2==NULL){
+        //         cout<<"Error --atom_expr-- invalid len usage at line " <<yylineno <<endl;
+        //     }
+        //     else{
+        //         if($2->type_of_node.size()>=9 && $2->type_of_node.substr(0,9)!="Smalllist"){
+        //             cout<<"Error --atom_expr-- invalid len arg type at line " <<yylineno <<endl;
+        //         }
+        //         // cout<<$2->type_of_node<<"  1277 "<<yylineno<<endl;
+        //         string temp=newTemp();
+        //         string reg=newTemp();
+        //         create_ins(0,temp,"=","-4","");
+        //         create_ins(2,"=",reg,$2->addr+"["+temp+"]","");
+        //         // len_func=-1;
+        //         $$->addr=reg;
+        //         $$->type_of_node="int";
+        //         if(func_call_active==1){
+        //             func_arguments.push_back({reg,"int"});
+        //         }
+        //         // func_arguments.clear();
+        //     }
+
+        // }
     }
     ;
 
@@ -1307,7 +1325,7 @@ trailer: SMALL_OPEN {
         //         cout<<endl;
         //     }   
         // }
-        if(func_call_active==1){
+        if(func_call_active==1 && len_func_call_active==0){
 
             if(is_constructor){
                 vector<st_node>sym_tbl_func_param=get_self_param(global_sym_table,func_arguments[0][0]);
@@ -1328,34 +1346,75 @@ trailer: SMALL_OPEN {
                     int self_mem=get_ctr_self_size(global_sym_table,func_arguments[0][0]);
                     create_ins(2,"=",reg,"alloc_mem("+to_string(self_mem)+")","");
                     create_ins(0,"push",reg,"","");
-                    create_ins(0,"goto",func_arguments[0][0]+"@__init__","","");
+                    create_ins(0,"call,",func_arguments[0][0]+"@__init__","","");
                     $$->addr=reg;
                 }
                 // is_constructor=0;
                 func_call_active=0;
+                cout<<" line 1341 "<<endl;
             }
             else{
                 vector<st_node>sym_tbl_func_param=get_parameters(curr_sym_tbl.top(),func_arguments[0][0]);
                 if(sym_tbl_func_param.size()+1!=func_arguments.size()){
                     cout<<"Error --trailer-- invalid number of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param.size()<<" arguments\n";
-                }else 
+                }else {
                     for(int i=sym_tbl_func_param.size()-1;i>=0;i--){
                         if(sym_tbl_func_param[i].type!=func_arguments[i+1][1]){
                             cout<<"Error --trailer-- invalid type of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param[i].type<<" type\n";
                         }
                         create_ins(0,"push",func_arguments[i+1][0],"","");
                     }
-                create_ins(0,"goto",func_arguments[0][0],"","");
+                    create_ins(0,"call,",func_arguments[0][0],"","");
+                    // if(prev_var_name!="range" && prev_var_name!="len" && prev_var_name!="print")
+                    // {
+                    //     string reg=newTemp();
+                    //     create_ins(0,"move","rax",reg,"");
+                    //     // cout<<prev_var_name<<endl;
+                    //     $$->addr=reg;
+                    //     // func_call_active=0;
+                    // }
+                }
+                // cout<<"found "<<endl;
+                // for(auto it:func_arguments){
+                //     for(auto it2:it){
+                //         cout<<it2<<" ";
+                //     }
+                //     cout<<endl;
+                // }
+                // cout<<"enddd"<<endl;
             }
             func_arguments.clear();
-            func_call_active=-1;
+            // cout<<"line 1354 "<<endl;
+            // func_call_active=-1;
         }
-        
+        else if(len_func_call_active==1){
+            len_func_call_active=0;
+            string temp=newTemp();
+            string reg=newTemp();
+            create_ins(0,temp,"=","-4","");
+            create_ins(2,"=",reg,len_func_arguments[0][0]+"["+temp+"]","");
+            // len_func=-1;
+            $$->addr=reg;
+            $$->type_of_node="int";
+            // if(func_call_active==1){
+            //     func_arguments.push_back({reg,"int"});
+            //     len_arg_pushed=1;
+            // }
+            // cout<<"at time after len"<<endl;
+            // for(auto it:func_arguments){
+            //     for(auto it2:it){
+            //         cout<<it2<<" ";
+            //     }
+            //     cout<<endl;
+            // }
+
+        }
         class_active = 0;
     }
     |SMALL_OPEN SMALL_CLOSE { 
         $$ = create_node(3,"Parantheses",$1,$2);
         $$->type_of_node = "Small";
+        if(func_call_active==1 && len_func_call_active==0){
 
          if(is_constructor){
                 // cout<<"is_contructor"<<" "<<yylineno<<endl;
@@ -1376,7 +1435,7 @@ trailer: SMALL_OPEN {
                     int self_mem=get_ctr_self_size(global_sym_table,func_arguments[0][0]);
                     create_ins(2,"=",reg,"alloc_mem("+to_string(self_mem)+")","");
                     create_ins(0,"push",reg,"","");
-                    create_ins(0,"goto",func_arguments[0][0]+"@__init__","","");
+                    create_ins(0,"call,",func_arguments[0][0]+"@__init__","","");
                     $$->addr=reg;
                 }
                 // is_constructor=0;
@@ -1393,13 +1452,15 @@ trailer: SMALL_OPEN {
                         }
                         create_ins(0,"push",func_arguments[i+1][0],"","");
                     }
-                create_ins(0,"goto",func_arguments[0][0],"","");
+                create_ins(0,"call,",func_arguments[0][0],"","");
                 func_call_active=-1;
             }
-            func_arguments.clear();      
+            // func_arguments.clear();      
 
             class_active = 0;
             func_arguments.clear();
+            // cout<<"line 1428 "<<endl;
+        }
     }
     |BOX_OPEN {box_active = 1;} subscriptlist BOX_CLOSE {
         $$ = create_node(4,"Square_bracket",$1,$3,$4);
@@ -1434,8 +1495,8 @@ trailer: SMALL_OPEN {
         if(class_active==1){
             class_func_call_active=1;
             func_arguments.clear();
+
             func_arguments.push_back({$2->lexeme, $2->type_of_node});
-            // cout<<"part1 done 1326"<<endl;
         }
     }
     ;
@@ -1485,11 +1546,19 @@ argument_list: argument_list COMMA argument { $$=create_node(4,"Arguments",$1,$2
             }
             range_arg.push_back($3->addr);
         }    
-        if(func_call_active==1){
-            func_arguments.push_back({$3->addr, $3->type_of_node});
+        if(func_call_active==1 && len_func_call_active==0 ){
+            if(len_arg_pushed==1){
+                len_arg_pushed=0;
+            }
+            else{
+                func_arguments.push_back({$3->addr, $3->type_of_node});
+            }
         }
         if(class_func_call_active==1){
             func_arguments.push_back({$3->addr, $3->type_of_node});
+        }
+        if(len_func_call_active==1){
+            len_func_arguments.push_back({$3->addr, $3->type_of_node});
         }
 
     }
@@ -1501,11 +1570,20 @@ argument_list: argument_list COMMA argument { $$=create_node(4,"Arguments",$1,$2
             }
             range_arg.push_back($1->addr);
         }
-        if(func_call_active==1){
-            func_arguments.push_back({$1->addr, $1->type_of_node});
+        if(func_call_active==1 && len_func_call_active==0){
+             if(len_arg_pushed==1){
+                len_arg_pushed=0;
+            }
+            else{
+                func_arguments.push_back({$1->addr, $1->type_of_node});
+            }
+            // cout<<$1->addr<<" "<<yylineno<<endl;
         }
         if(class_func_call_active==1){
             func_arguments.push_back({$1->addr, $1->type_of_node});
+        }
+        if(len_func_call_active==1){
+            len_func_arguments.push_back({$1->addr, $1->type_of_node});
         }
     }
     ;
@@ -1655,8 +1733,10 @@ not_test: NOT not_test {
     
 comparison: expr comp_op_expr_plus {
         $$=create_node(3,"Expressions",$1,$2);
-        if($2==NULL)
+        if($2==NULL){
             $$->type_of_node=$1->type_of_node;
+            $$->addr=$1->addr;
+        }
         else{
             // karna hai
             if($1->type_of_node!=$2->type_of_node){
@@ -1831,17 +1911,14 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
             prev_var_name=string($1->lexeme);
         
         else if(string($1->lexeme)=="len"){
-            // func_call_active=1;
+
             if(prev_var_name=="range"){
                 p_prev_range=1;
             }
-            // if(func_call_active!=0){
-            //     p_func_call_active=func_call_active;
-            //     func_call_active=0;
-            // }
-            // len_func=1;
+            len_func_call_active=1;
+            
             prev_var_name=string($1->lexeme);
-            // func_arguments.push_back({$1->addr, $1->type_of_node});
+
         }
         else if(search_for_func(global_sym_table,$1->lexeme)){
             func_call_active=1;
@@ -1851,6 +1928,7 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
             func_call_active=1;
             is_constructor=1;
             func_arguments.clear();
+
             string reg=newTemp();
             $$->addr=reg;
             constructor_reg=reg;
@@ -2013,6 +2091,7 @@ void MakeDOTFile(NODE*cell) {
         return;
     
     string value = string(cell->val);
+    // cout<<value<<endl;
     if(value.length()>2 && value[0]=='"' && value[value.length()-1]=='"')
     {
         value = value.substr(1,value.length()-2);

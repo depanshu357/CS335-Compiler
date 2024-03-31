@@ -1,0 +1,79 @@
+def merge(left: list[int], right: list[int]) -> list[int]:
+    merged: list[int] = [1]
+    left_index:int = 0
+    right_index:int = 0
+    while left_index < len(left) and right_index < len(right):
+        if left[left_index] <= right[right_index]:
+            # merged.append(left[left_index])
+            left_index += 1
+        else:
+            # merged.append(right[right_index])
+            right_index += 1
+    # merged.extend(left[left_index:])
+    # merged.extend(right[right_index:])
+    return merged
+
+def merge_sort(lst: list[int]) -> list[int]:
+    if len(lst) <= 1:
+        return lst
+    mid:int = len(lst) // 2
+    left:list[int] = merge_sort(lst)
+    right:list[int] = merge_sort(lst)
+    return merge(left, right)
+
+def quick_sort(lst: list[int]) -> list[int]:
+    if len(lst) <= 1:
+        return lst
+    pivot = lst[len(lst) // 2]
+    left = []
+    middle = []
+    right = []
+    for x in lst:
+        if x < pivot:
+            left.append(x)
+        elif x == pivot:
+            middle.append(x)
+        else:
+            right.append(x)
+    return quick_sort(left) + middle + quick_sort(right)
+
+# Test cases
+def test_sorting_algorithms():
+    # Test sorting an empty list
+    if(merge_sort([]) == []):
+        print("merge_sort([]) == []")
+    if(quick_sort([]) == []):
+        print("quick_sort([]) == []")
+
+    # Test sorting a list with one element
+    if(merge_sort([1]) == [1]):
+        print("merge_sort([1]) == [1]")
+    if(quick_sort([1]) == [1]):
+        print("quick_sort([1]) == [1]")
+
+    # Test sorting a list with multiple elements
+    #to show implicit line joining
+    if(merge_sort([3, 1, 4,
+                        1, 5, 9, 
+                        2, 6, 5, 
+                        3, 5]) == [1, 1, 2, 3, 
+                                   3, 4, 5, 5, 
+                                   5, 6, 9]) :
+        print("merge_sort([3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]) == [1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9]")
+    
+    if(quick_sort([3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]) == [1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9]):
+        print("quick_sort([3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]) == [1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9]")
+
+    # Test sorting a list with negative elements
+    #to show explicit line joining
+    if(merge_sort([3, -1, 4,\
+                        1, -5, 9,\
+                        2, -6, 5,\
+                        3, 5]) == [-6, -5, -1, 1, 2, 3, 3, 4, 5, 5, 9]):
+        print("merge_sort([3, -1, 4, 1, -5, 9, 2, -6, 5, 3, 5]) == [-6, -5, -1, 1, 2, 3, 3, 4, 5, 5, 9]")
+    
+    if(quick_sort([3, -1, 4, 1, -5, 9, 2, -6, 5, 3, 5]) == [-6, -5, -1, 1, 2, 3, 3, 4, 5, 5, 9]):
+        print("quick_sort([3, -1, 4, 1, -5, 9, 2, -6, 5, 3, 5]) == [-6, -5, -1, 1, 2, 3, 3, 4, 5, 5, 9]")
+
+if __name__ == "__main__":
+  test_sorting_algorithms()
