@@ -38,7 +38,6 @@
     int brack_open = 0;
     int class_active = 0;
     int class_func_call_active = 0;
-    int p_func_call_active = 0;
     string constructor_reg = ""; 
     vector<vector<string>> func_arguments;
     void create_ins(int type, string optype, string addr1, string addr2, string addr3);
@@ -48,7 +47,6 @@
     string prev_dot_var="";
     int is_constructor=0;
     int class_par_offset = 0,prev_self = 0;
-    int len_func=0;
     int p_prev_range=0;
 %}
 
@@ -210,7 +208,6 @@ for_stmt: FOR exprlist IN testlist COLON {
                 cout<<"Error invalid range arguments at line " <<yylineno <<". \n";
             }else if(range_arg.size()==1){
                 string reg = newTemp();
-                // cout<<"hehe "<<reg<<endl;
                 create_ins(2,"=",reg,"-1","");
                 low=reg;
                 high=range_arg[0];
@@ -232,7 +229,10 @@ for_stmt: FOR exprlist IN testlist COLON {
             create_ins(3,"<",temp2,temp1,high);
             create_ins(0,"if_false",temp2, "goto",label2);
             create_ins(0,$2->addr,"=",temp1,"");
+            
             prev_var_name="aryan";
+
+
         }
     } suite {
         
@@ -309,13 +309,15 @@ funcdef_title: NAME {
             //continue;
             add_parameters(curr_sym_tbl.top(), parameter_vec);
             is_param=0;
+            // cout<<endl<<"here ginf"<<endl;
+
+            // create_ins(0,"."+$1->lexeme+"":","","","");
         }
         else{
             sym_table * new_table = new sym_table();
             string func_type="func";
             if($4!=NULL){
                 func_type=$4->lexeme;
-                
             }
             else
                 func_type="None";
@@ -374,7 +376,6 @@ tfpdef: NAME { $$ = $1;
             // cout<<"this is running in if"<<endl;
             // give error as type hint not found
         }
-        // cout<<"is tfpdef "<<$1->lexeme<<endl;
         if(is_param) {
             add_to_vector(parameter_vec, $1->lexeme, $1->lexeme,yylineno);
             int size_of_var=8;
@@ -406,13 +407,11 @@ tfpdef: NAME { $$ = $1;
     }
     ;
 
-func_body_suite: simple_stmt {$$ = $1; 
-        // if(curr_sym_tbl.size()>1)
-        //     curr_sym_tbl.pop();    
+func_body_suite: simple_stmt {
+        $$ = $1; 
     }
-    | NEWLINE INDENT stmt_plus DEDENT { $$ = $3;
-    // if(curr_sym_tbl.size()>1)
-    //     curr_sym_tbl.pop();
+    | NEWLINE INDENT stmt_plus DEDENT { 
+        $$ = $3;
     }
 
 suite: simple_stmt {$$ = $1;}
@@ -426,12 +425,11 @@ stmt_plus: stmt stmt_plus {$$ = create_node(3,"Stmts",$1,$2);
 
 simple_stmt: small_stmt semi_colon_small_stmt_star NEWLINE {
         $$ = create_node(3,"Simple_stmts",$1,$2);
-       
-        
     }
     ;
 
-semi_colon_small_stmt_star: SEMI_COLON small_stmt semi_colon_small_stmt_star {$$ = create_node(4,"Small_stmts",$1,$2,$3);
+semi_colon_small_stmt_star: SEMI_COLON small_stmt semi_colon_small_stmt_star {
+        $$ = create_node(4,"Small_stmts",$1,$2,$3);
         // if($3 && $3->type_of_node!="undefined")
         //     $$->type_of_node= $3->type_of_node;
         // else 
@@ -468,7 +466,7 @@ return_stmt: RETURN testlist_star_expr {
           //continue; change int val to float
         }
         else if($2->type_of_node!=curr_sym_tbl.top()->return_type){
-            cout<<$2->type_of_node<<" "<<curr_sym_tbl.top()->name<<" hehe"<<endl;
+            // cout<<$2->type_of_node<<" "<<curr_sym_tbl.top()->name<<" hehe"<<endl;
             cout<<"Error --return_stmt-- invalid return type at line " <<yylineno <<". Expected "<<curr_sym_tbl.top()->return_type<<endl;
         }
 
@@ -524,7 +522,7 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
         
     }
     else if(($1->type_of_node!="int" && $1->type_of_node!="float") || ($3->type_of_node!="int" && $3->type_of_node!="float")){
-        cout<<"line 323 "<<$1->type_of_node<<" "<<$3->type_of_node<<endl;
+        // cout<<"line 323 "<<$1->type_of_node<<" "<<$3->type_of_node<<endl;
         cout<<"-Error --expr_stmt3-- invalid type at line " <<yylineno <<". Expected int or float\n";
     }
     $$->type_of_node= $1->type_of_node;
@@ -535,7 +533,7 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
         $$ = create_node(3,"Expr_stmt",$1,$2);
         if($1->type_of_node!=$2->type_of_node && (($1->type_of_node!="int" && $1->type_of_node!="float") || ( $2->type_of_node!="int" && $2->type_of_node!="float"))){
             cout<<"Error --expr_stmt4-- invalid type at line " <<yylineno <<". Expected "<<$1->type_of_node<<endl;
-            cout<<$1->type_of_node<<" "<<$2->type_of_node<<endl;
+            // cout<<$1->type_of_node<<" "<<$2->type_of_node<<endl;
             
         }
         $$->type_of_node= $1->type_of_node;
@@ -547,7 +545,6 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
         else if(func_call_active==-1){
             create_ins(0,"move","rax",$1->addr,"");
             func_call_active = 0;   
-            // cout<<"reachng 542"<<$2->addr<<endl;
         }
         else if(class_func_call_active==-1){
             create_ins(0,"move","rax",$1->addr,"");
@@ -556,29 +553,23 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
         }
         else if(prev_self==1){
             create_ins(0,"move",$2->addr,$1->addr,"");
-            // cout<<$2->addr<<" line 538 "<<$1->addr<<" "<<yylineno<<endl;
             prev_self=0;
         }else if(prev_self==2){
-            // cout<<"line 541 "<<yylineno<<endl;
             create_ins(0,"move",$2->addr,$1->addr,"");
             prev_self=0;
         }
         else{
             create_ins(2,$2->residual_ins, $1->addr,$2->addr, "");
-            // cout<<$2->addr<<" line 561 "<<$1->addr<<yylineno<<endl;
         }
-        // cout<<$2->addr<<" "<<$1->addr<<" line 536 "<<endl;
 
     }
     ;
     
 
 testlist:  test symbol_test_star  {
-    // cout<<"line 580 testlist"<<endl;
-    // cout<<prev_var_name<<endl;
-        $$ = create_node(3,"Expressions",$1,$2);
-        $$->type_of_node = $1->type_of_node;
-        $$->addr=$1->addr;
+    $$ = create_node(3,"Expressions",$1,$2);
+    $$->type_of_node = $1->type_of_node;
+    $$->addr=$1->addr;
     }
     
 symbol_test_star: COMMA test symbol_test_star {
@@ -589,7 +580,6 @@ symbol_test_star: COMMA test symbol_test_star {
 
 expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus {
         $$ = create_node(4,"Expr_stmt",$1,$2,$3);
-        // cout<<"from 1"<<endl;
         if($3!=NULL && $3->type_of_node!=$2->type_of_node){
             cout<<"Error --expr_stmt_option1_plus-- invalid type at line " <<yylineno <<". Expected "<<$2->type_of_node<<endl;
         }
@@ -599,8 +589,6 @@ expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus {
 
         $$->type_of_node= $2->type_of_node;
 
-        // cout<<"from 1"<<endl;
-    // $$->addr=
 
     }
     | EQUAL testlist_star_expr {$$ = create_node(3,"Expr_stmt",$1,$2);
@@ -609,18 +597,16 @@ expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus {
         $$->addr=$2->addr;
         $$->residual_ins=$1->lexeme;
 
-    // cout<<"from 2"<<yylineno<<endl;
-  
     }
     ;
 
 annassign: COLON test {$$ = create_node(3,"Identifiers",$1,$2); 
     //didnt get this production to use in the code so didnt implement the type_of_node
-    cout<<"Annassign1"<<endl;
+    // cout<<"Annassign1"<<endl;
     }
     | COLON test EQUAL testlist_star_expr {$$ = create_node(5,"Identifiers",$1,$2,$3,$4);
     //didnt get this production to use in the code so didnt implement the type_of_node
-    cout<<"Annassign2"<<endl;
+    // cout<<"Annassign2"<<endl;
     }
     ;
 
@@ -679,8 +665,6 @@ augassign: ADD_EQUAL {$$ = $1;}
     ;
 
 expr: xor_expr symbol_xor_expr_star {
-    // cout<<"expr working 681 "<<yylineno<<endl;
-    // cout<<prev_var_name<<endl;
     $$ = create_node(3,"Expressions",$1,$2);
      if($2==NULL || $2->type_of_node=="undefined"){
         $$->type_of_node= $1->type_of_node;
@@ -694,15 +678,12 @@ expr: xor_expr symbol_xor_expr_star {
     if($2==NULL){
         $$->addr= $1->addr;
         $$->residual_ins= $1->residual_ins;
-        // cout<<"line 492 "<<$1->addr<<" ";
     }else {
-        // cout<<"line 494 "<<$1->addr<<" "<<$2->addr<<" ";
         string reg = newTemp();
         create_ins(3,$2->residual_ins,reg,$1->addr,$2->addr);
         $$->addr = reg;
         $$->residual_ins = $1->residual_ins;
     }
-    // cout<<$$->addr<<endl;
 }
 
 /* star_expr: MUL expr {
@@ -1115,17 +1096,6 @@ power: atom_expr {$$ = $1;}
 
 atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
     | atom trailer_star{
-        // cout<<"line 1117 "<<$1->addr <<" "<<yylineno<<endl;
-        // if($1->lexeme)
-        // cout<<"line 1009 for range"<<$1->lexeme<<endl;
-       
-        // cout<<$2->type_of_node<<endl;
-        // cout<<$1->lexeme<<" "<<$2->lexeme<<endl;
-        // cout<<"line 1012 "<<$1->type_of_node<<" "<<yylineno<<endl;
-        // cout<<"1123 "<<endl;
-
-        // cout<<$1->addr<<" 1123 "<<yylineno<<endl;
-        
         $$=create_node(3,"Terms", $1,$2);
         if(is_dot_name == __TDOT__ && $2!=NULL){
             string full_name=string($1->lexeme)+after_dot_name;
@@ -1135,7 +1105,6 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             
             string reg=newTemp();
             create_ins(3,"+",reg,"self",to_string(class_par_offset));
-            // cout<<"line 1020 "<<class_par_offset<<endl;
             class_par_offset+=get_type_size($2->type_of_node);
             $$->addr=reg;
             if(string($1->lexeme)=="self")
@@ -1154,7 +1123,7 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                 }
                 else if(dot_is_spl_type.size()>=5 && dot_is_spl_type.substr(0,5)=="Small"){
                     int func_exist=search_class_func(global_sym_table,search_type_in_sym_table(curr_sym_tbl.top(),$1->lexeme),after_dot_name.substr(1,after_dot_name.size()-1));
-                    if(after_dot_name!=".__init__"&& !func_exist){
+                    if(!func_exist){
                         // cout<<$1->lexeme<<" "<<after_dot_name<<" this is full name"<<endl;
                         cout<<"Error --atom_expr-- invalid func call at line no "<<yylineno<<endl;
                     }
@@ -1164,7 +1133,6 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             is_dot_name=0;
 
             int curr_offset=get_offset_from_tbl(curr_sym_tbl.top(),full_name);
-            // if(curr_offset==-1) cout<<"shoudl be an error"<<endl;
             if(!brack_open){
                 if(curr_offset==-1 && dot_is_spl_type.size()==0){
                     cout<<$1->lexeme<<dot_is_spl_type<<($2==NULL)<<" Error --atom_expr-- invalid variable at line no "<<yylineno<<endl;
@@ -1173,20 +1141,14 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                 if(class_active==0 && dot_is_spl_type.size()==0)
                     {
                         create_ins(3,"+",reg,"self",to_string(curr_offset));
-                        cout<<"reching 1157"<<endl;
                     }
-                // class_par_offset+=get_type_size($2->type_of_node);
                 $$->addr=reg;
             }
-            // else if(curr_offset == -1) cout<<"bypassed but error"<<yylineno<<endl;
             if(string($1->lexeme)=="self")
                 prev_self=2;
 
-            // cout<<"reaching part 2 1157"<<endl;
 
             if(class_func_call_active==1){
-                // cout<<"reaching 1161 " << $1->type_of_node <<" "<<func_arguments.size()<<endl;
-                
                 vector<st_node>sym_tbl_func_param=get_class_func_parameters(global_sym_table,$1->type_of_node,func_arguments[0][0]);
                 // cout<<sym_tbl_func_param.size()<<" "<<func_arguments.size()<<endl;
                 if(sym_tbl_func_param.size()!=func_arguments.size()){
@@ -1206,7 +1168,6 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                 class_active=0;
                 func_arguments.clear();
             }
-            cout<<"exiting part2 1157"<<endl;
         }
 
 
@@ -1228,11 +1189,6 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             }
             else if($2->type_of_node.size()>=5 && $2->type_of_node.substr(0,5)=="Small"){
                 $$->type_of_node= $1->type_of_node;
-                if(len_func==-1){
-                    len_func=0;
-                    $$->addr=$2->addr;
-                    $$->type_of_node="int";
-                }
             }
             else{
                 string full_name=string($1->lexeme)+after_dot_name;
@@ -1251,9 +1207,9 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                 string arr_type=search_type_in_sym_table(curr_sym_tbl.top(),$1->lexeme);
                 int offset=get_type_size(arr_type.substr(5,arr_type.size()-6));
                 int arr_max_size=get_size_from_tbl(curr_sym_tbl.top(),$1->lexeme);
-                // if(box_value*offset>=arr_max_size){
-                //     cout<<"Error --atom_expr-- array index out of bound error "<<yylineno<<endl;
-                // }
+                if(box_value*offset>=arr_max_size){
+                    cout<<"Error --atom_expr-- array index out of bound error "<<yylineno<<endl;
+                }
                 string reg2 = newTemp();
                 create_ins(3,"*",reg2,$2->addr,to_string(offset));
                 create_ins(0, reg,"=",string($1->lexeme)+"["+reg2+"]","");
@@ -1265,6 +1221,7 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             create_ins(0,"print(", $2->addr,")","");
             // prev_var_name="";
         }
+
 
 
         if($1->lexeme && string($1->lexeme)== "len" ){
@@ -1337,17 +1294,11 @@ trailer: SMALL_OPEN {
         //         cout<<endl;
         //     }   
         // }
-        // cout<<"func arguments "<<endl;
-        // for(auto t:func_arguments){
-        //     for(auto t2:t) cout<<t2<<"  " ;
-        //     cout<<endl;
-        // }
-        if(func_call_active==1 && prev_var_name!="len"){
-            // cout<<"false func 1303"<<endl;
+        if(func_call_active==1){
+
             if(is_constructor){
                 vector<st_node>sym_tbl_func_param=get_self_param(global_sym_table,func_arguments[0][0]);
                 // cout<<"reaching 1289"<<func_arguments[0][0]<<sym_tbl_func_param.size()<<endl;
-                // if(func)
                 if(sym_tbl_func_param.size()!=func_arguments.size()){
                     cout<<"Error --trailer-- invalid number of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param.size()<<" arguments\n";
                 }
@@ -1356,13 +1307,13 @@ trailer: SMALL_OPEN {
                     for(int i=sym_tbl_func_param.size()-1;i>=1;i--){
                         total_size+=sym_tbl_func_param[i].size;
                         if(sym_tbl_func_param[i].type!=func_arguments[i][1]){
-                            cout<<"Error --trailer-- invalid type of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param[i].type<<" type got "<<func_arguments[i][1] <<" \n";
-
+                            cout<<"Error --trailer-- invalid type of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param[i].type<<" type\n";
                         }
                         create_ins(0,"push",func_arguments[i][0],"","");
                     }
                     string reg=func_arguments[0][2];
-                    create_ins(2,"=",reg,"alloc_mem("+to_string(total_size)+")","");
+                    int self_mem=get_ctr_self_size(global_sym_table,func_arguments[0][0]);
+                    create_ins(2,"=",reg,"alloc_mem("+to_string(self_mem)+")","");
                     create_ins(0,"push",reg,"","");
                     create_ins(0,"goto",func_arguments[0][0]+"@__init__","","");
                     $$->addr=reg;
@@ -1370,15 +1321,14 @@ trailer: SMALL_OPEN {
                 // is_constructor=0;
                 func_call_active=0;
             }
-            else {
+            else{
                 vector<st_node>sym_tbl_func_param=get_parameters(curr_sym_tbl.top(),func_arguments[0][0]);
                 if(sym_tbl_func_param.size()+1!=func_arguments.size()){
                     cout<<"Error --trailer-- invalid number of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param.size()<<" arguments\n";
                 }else 
                     for(int i=sym_tbl_func_param.size()-1;i>=0;i--){
                         if(sym_tbl_func_param[i].type!=func_arguments[i+1][1]){
-                            cout<<"Error --trailer-- invalid type of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param[i].type<<" type got "<<func_arguments[i+1][1] <<" \n";
-
+                            cout<<"Error --trailer-- invalid type of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param[i].type<<" type\n";
                         }
                         create_ins(0,"push",func_arguments[i+1][0],"","");
                     }
@@ -1387,39 +1337,17 @@ trailer: SMALL_OPEN {
             func_arguments.clear();
             func_call_active=-1;
         }
-
-        if(len_func==1){
-                if(func_arguments.size()!=1){
-                    cout<<"Error --trailer-- invalid number of arguments at line " <<yylineno <<". Expected 1 arguments\n";
-                }
-                // if(p_func_call_active!=0){
-                //     func_call_active=p_func_call_active;
-                //     p_func_call_active=0;
-                // }
-                if(func_arguments[0][1].substr(0,4)!="list"){
-                    cout<<"Error --trailer-- invalid type of arguments at line " <<yylineno <<". Expected "<<"list type\n";
-                    // cout<<"Error --trailer-- invalid type of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param[i].type<<" type got "<<func_arguments[i][1] <<" \n";
-
-                }
-                string temp=newTemp();
-                string reg=newTemp();
-                create_ins(0,temp,"=","-4","");
-                create_ins(2,"=",reg,func_arguments[0][0]+"["+temp+"]","");
-                len_func=-1;
-                $$->addr=reg;
-                func_arguments.clear();
-
-        }
-            class_active = 0;
+        
+        class_active = 0;
     }
     |SMALL_OPEN SMALL_CLOSE { 
         $$ = create_node(3,"Parantheses",$1,$2);
         $$->type_of_node = "Small";
 
          if(is_constructor){
-                cout<<"is_contructor"<<" "<<yylineno<<endl;
+                // cout<<"is_contructor"<<" "<<yylineno<<endl;
                 vector<st_node>sym_tbl_func_param=get_self_param(global_sym_table,func_arguments[0][0]);
-                if(sym_tbl_func_param.size()-1!=func_arguments.size()){
+                if(sym_tbl_func_param.size()!=func_arguments.size()){
                     cout<<"Error --trailer-- invalid number of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param.size()<<" arguments\n";
                 }
                 else{
@@ -1432,7 +1360,8 @@ trailer: SMALL_OPEN {
                         create_ins(0,"push",func_arguments[i][0],"","");
                     }
                     string reg=func_arguments[0][2];
-                    create_ins(2,"=",reg,"alloc_mem("+to_string(total_size)+")","");
+                    int self_mem=get_ctr_self_size(global_sym_table,func_arguments[0][0]);
+                    create_ins(2,"=",reg,"alloc_mem("+to_string(self_mem)+")","");
                     create_ins(0,"push",reg,"","");
                     create_ins(0,"goto",func_arguments[0][0]+"@__init__","","");
                     $$->addr=reg;
@@ -1440,7 +1369,7 @@ trailer: SMALL_OPEN {
                 // is_constructor=0;
                 func_call_active=0;
             }
-        else{
+            else{
                 vector<st_node>sym_tbl_func_param=get_parameters(curr_sym_tbl.top(),func_arguments[0][0]);
                 if(sym_tbl_func_param.size()+1!=func_arguments.size()){
                     cout<<"Error --trailer-- invalid number of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param.size()<<" arguments\n";
@@ -1453,11 +1382,11 @@ trailer: SMALL_OPEN {
                     }
                 create_ins(0,"goto",func_arguments[0][0],"","");
                 func_call_active=-1;
-        }
-        func_arguments.clear();      
+            }
+            func_arguments.clear();      
 
-        class_active = 0;
-        func_arguments.clear();
+            class_active = 0;
+            func_arguments.clear();
     }
     |BOX_OPEN {box_active = 1;} subscriptlist BOX_CLOSE {
         $$ = create_node(4,"Square_bracket",$1,$3,$4);
@@ -1493,7 +1422,7 @@ trailer: SMALL_OPEN {
             class_func_call_active=1;
             func_arguments.clear();
             func_arguments.push_back({$2->lexeme, $2->type_of_node});
-            cout<<"part1 done 1326"<<endl;
+            // cout<<"part1 done 1326"<<endl;
         }
     }
     ;
@@ -1520,19 +1449,10 @@ classdef: CLASS NAME {
             // pop off the parameters
         };
 
-/* classdef: CLASS NAME bracket_arglist_optional COLON suite {
-    $$=create_node(6,"Class_def",$1,$2,$3,$4,$5);
-    // sym_table * new_table = new sym_table();
-    // create_entry(curr_sym_tbl.top(),  $2->val,"class",yylineno,0,4,0,new_table );
-    // curr_sym_tbl.push(new_table);
-
-}; */
-
 bracket_arglist_optional: SMALL_OPEN SMALL_CLOSE {$$=create_node(3,"Parantheses",$1,$2);}
     | SMALL_OPEN arglist SMALL_CLOSE {
         $$=create_node(4,"Arguments",$1,$2,$3);
         $$->type_of_node=$2->type_of_node;
-        // cout<<"line 1252 "<<yylineno<<endl;
     }
     | {$$=NULL;}
     ;
@@ -1548,15 +1468,12 @@ argument_list: argument_list COMMA argument { $$=create_node(4,"Arguments",$1,$2
         $$->addr=$3->addr;
         if(prev_var_name=="range"){
             if($3->type_of_node!="int"){
-                cout<<$3->type_of_node<<" Error --arglist-- invalid type at line " <<yylineno <<". Expected int\n";
+                cout<<"Error --arglist-- invalid type at line " <<yylineno <<". Expected int\n";
             }
             range_arg.push_back($3->addr);
         }    
-        // cout<<"line 1289 "<<$3->addr<<yylineno<<endl;
-
-        if(func_call_active==1 || len_func==1){
+        if(func_call_active==1){
             func_arguments.push_back({$3->addr, $3->type_of_node});
-            // cout<<"line 1550 "<<$3->addr<<" "<<$3->type_of_node<<endl;
         }
         if(class_func_call_active==1){
             func_arguments.push_back({$3->addr, $3->type_of_node});
@@ -1564,22 +1481,15 @@ argument_list: argument_list COMMA argument { $$=create_node(4,"Arguments",$1,$2
 
     }
     | argument { 
-        // cout<<"line 1501 "<<$1->addr<<" "<<$1->val<<endl;
-        // cout<<"line 1520 "<<$1->addr<<endl;
         $$=$1;
         if(prev_var_name=="range"){
-            // cout<<$1->addr<<" 1520hehe"<<endl;
             if($1->type_of_node!="int"){
-                cout<<$1->type_of_node<<" Error --arglist-- invalid type at line " <<yylineno <<". Expected int\n";
+                cout<<"Error --arglist-- invalid type at line " <<yylineno <<". Expected int\n";
             }
             range_arg.push_back($1->addr);
         }
-        // cout<<"line 1289 "<<$$->addr<<yylineno<<endl;
-
-        if(func_call_active==1 || len_func==1){
-            // cout<<$1->addr<<" 1568 at line "<<yylineno<<endl;
+        if(func_call_active==1){
             func_arguments.push_back({$1->addr, $1->type_of_node});
-            // cout<<$1->addr <<" "<<$1->type_of_node<<" 1568 at line "<<yylineno<<endl;
         }
         if(class_func_call_active==1){
             func_arguments.push_back({$1->addr, $1->type_of_node});
@@ -1616,8 +1526,6 @@ argument: test { $$ = $1;}
         ){
             cout<<"Error --argument-- invalid type assign at line " <<yylineno <<".";
         }
-        // cout<<"arg working"<<endl;
-        // $$->type_of_node=$1->type_of_node;
     }
     | POW test {$$=create_node(3,"Power_term",$1,$2);}
     | MUL test {$$=create_node(3,"Mul_term",$1,$2);}
@@ -1709,7 +1617,6 @@ and_not_test_star: AND not_test and_not_test_star {
         {
             $$->residual_ins = $1->lexeme;
             $$->addr = $2->addr;
-            // cout<<$1->lexeme<<" "<<$$->addr<<endl;
         }
         else{
             string reg = newTemp();
@@ -1718,7 +1625,6 @@ and_not_test_star: AND not_test and_not_test_star {
             $$->addr = reg;
 
         }
-        // cout<<"Line 1158 "<<$$->addr<<" "<<$$->residual_ins<<" "<<endl;
     }
     | { $$ = NULL;}
     ;
@@ -1846,15 +1752,14 @@ test: or_test {
         $$=$1;
         $$->addr=$1->addr;
         $$->residual_ins=$1->residual_ins;
-        // cout<<"line  1613 "<<yylineno<<endl;
-        // cout<<prev_var_name<<endl;
+        // cout<<$$->addr<<" 1613 "<<yylineno<<endl;
     }
     |or_test IF or_test ELSE test {$$=create_node(6,"Expressions",$1,$2,$3,$4,$5);
-        if($1->type_of_node!=$5->type_of_node){
-            cout<<"Error --test-- invalid type assign at line " <<yylineno <<".";
-        }
-        $$->type_of_node=$1->type_of_node;
-        // cout<<$$->type_of_node<<"hello"<<endl;
+    if($1->type_of_node!=$5->type_of_node){
+        cout<<"Error --test-- invalid type assign at line " <<yylineno <<".";
+    }
+    $$->type_of_node=$1->type_of_node;
+    // cout<<$$->type_of_node<<"hello"<<endl;
 
     };
 
@@ -1873,20 +1778,24 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         // for(auto t: arr_elements) cout<<t<<" ";
         arr_active=0;
         string reg=newTemp();
-        string array_size=to_string(get_type_size($3->type_of_node)*arr_elements.size() + 4);
+        string array_size=to_string(get_type_size($3->type_of_node)*arr_elements.size()+4);
         create_ins(0,reg, "=","declare_array("+array_size+")","");
         $$->addr=reg;
         
         string temp=newTemp();
         create_ins(0,temp, "=","0","");
+
         //store the size of array in the first field
         create_ins(0,$$->addr+"["+temp+"]","=",to_string(arr_elements.size()),"");
         create_ins(3,"+",temp,temp,"4");
+
         for(auto it: arr_elements){
             create_ins(0,$$->addr+"["+temp+"]","=",it,"");
             create_ins(3,"+",temp,temp,to_string(get_type_size($3->type_of_node)));
         }
+        
         create_ins(3,"+",reg,reg,"4"); // increase the pointer to move ahead of the size field
+
         // $$->size = get_type_size($3->type_of_node)*arr_elements.size();
         update_size_entry(curr_sym_tbl.top(),prev_var_name, get_type_size($3->type_of_node)*arr_elements.size());
         arr_elements.clear();
@@ -1905,19 +1814,11 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
             // give error as type hint not found
         }
         $$->type_of_node=curr_type;
-        // cout<<"line 1276 "<<$$->addr<<endl;
-        // if(prev_var_name=="print"){
-            // cout<<$1->addr<<" sd "<<endl;
-        //     create_ins(0,"print(", $1->addr,")","");
-        //     prev_var_name="";
-        // }
-
-
         if(string($1->lexeme)=="print" || string($1->lexeme)=="range" )
             prev_var_name=string($1->lexeme);
+        
         else if(string($1->lexeme)=="len"){
             // func_call_active=1;
-            
             if(prev_var_name=="range"){
                 p_prev_range=1;
             }
@@ -1927,7 +1828,6 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
             // }
             // len_func=1;
             prev_var_name=string($1->lexeme);
-            
             // func_arguments.push_back({$1->addr, $1->type_of_node});
         }
         else if(search_for_func(global_sym_table,$1->lexeme)){
@@ -1947,7 +1847,7 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         else if(search_for_class(global_sym_table,$1->type_of_node)){
             class_active = 1;
             // cout<<"heeh"<<$1->type_of_node<<endl;
-            cout<<" line 1744 "<<yylineno<<endl;
+            // cout<<" line 1744 "<<yylineno<<endl;
         }
     }
     | NAME TYPE_HINT {

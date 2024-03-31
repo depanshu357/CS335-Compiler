@@ -7,38 +7,186 @@ parameters end-------
 2,len,int,0,1,4,8
 3,self,self,0,1,4,12
 4,__name__,__name__,0,1,4,16
-5,x,list[int],1,0,4,20
-6,y,int,2,0,4,24
-7,fun,int,4,1,4,28
+5,A,A,1,2,4,20
 -----------sub table with name start-----------
 entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: fun
+symbol table name: A
 parameters start-------
-0,x,int,4,0,4,0
+0,self,self,2,0,4,0
+1,z,int,2,0,4,4
 parameters end-------
+0,self.x,int,3,0,4,8
+1,self.y,int,4,0,4,12
+2,foo,None,6,1,4,16
+-----------sub table with name start-----------
+entry_no,name,type,line_no,sp_type,size,offset
+symbol table name: foo
+parameters start-------
+0,self,self,6,0,4,0
+1,x,int,6,0,4,4
+parameters end-------
+0,z,int,7,0,4,8
 -----------sub table end-----------
-t1 = 1
-t2 = 2
-t3 = declare_array(12) 
-t4 = 0 
-t3[t4] = 2 
-t4 = t4 + 4
-t3[t4] = t1 
-t4 = t4 + 4
-t3[t4] = t2 
-t4 = t4 + 4
-t3 = t3 + 4
-x = t3
-t5 = -4 
-t6 = x[t5]
-y = t6
-fun:   
+3,food,None,9,1,4,20
+-----------sub table with name start-----------
+entry_no,name,type,line_no,sp_type,size,offset
+symbol table name: food
+parameters start-------
+0,self,self,9,0,4,0
+1,x,int,9,0,4,4
+parameters end-------
+0,z,int,10,0,4,8
+-----------sub table end-----------
+-----------sub table end-----------
+6,B,B,11,2,4,24
+-----------sub table with name start-----------
+entry_no,name,type,line_no,sp_type,size,offset
+symbol table name: B
+parameters start-------
+0,self,self,12,0,4,0
+1,z,int,12,0,4,4
+parameters end-------
+0,self.x,int,13,0,4,8
+1,self.y,int,14,0,4,12
+2,foom,None,16,1,4,16
+-----------sub table with name start-----------
+entry_no,name,type,line_no,sp_type,size,offset
+symbol table name: foom
+parameters start-------
+0,self,self,16,0,4,0
+1,x,int,16,0,4,4
+parameters end-------
+0,z,int,17,0,4,8
+-----------sub table end-----------
+3,fooe,None,19,1,4,20
+-----------sub table with name start-----------
+entry_no,name,type,line_no,sp_type,size,offset
+symbol table name: fooe
+parameters start-------
+0,self,self,19,0,4,0
+1,x,int,19,0,4,4
+parameters end-------
+0,z,int,20,0,4,8
+-----------sub table end-----------
+-----------sub table end-----------
+7,aryan,A,22,0,4,28
+8,arr,list[int],23,0,4,32
+9,m,int,24,0,4,36
+10,z,int,27,0,4,40
+A@__init__:   
 move8 rbp -8(rsp) 
 rbp = rsp
-move4 0(rbp) x 
-print( x ) 
+move8 0(rbp) self 
+move4 8(rbp) z 
+t1 = self + 0
+t2 = 1
+move t2 t1 
+t3 = self + 4
+move z t3 
 move8 rbp rsp 
 move8 -8(rbp) rbp 
-add rsp $4 
-push y  
-goto fun  
+add rsp $12 
+A@foo:   
+move8 rbp -8(rsp) 
+rbp = rsp
+move8 0(rbp) self 
+move4 8(rbp) x 
+t4 = 5
+z = t4
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $12 
+A@food:   
+move8 rbp -8(rsp) 
+rbp = rsp
+move8 0(rbp) self 
+move4 8(rbp) x 
+t5 = 5
+z = t5
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $12 
+B@__init__:   
+move8 rbp -8(rsp) 
+rbp = rsp
+move8 0(rbp) self 
+move4 8(rbp) z 
+t6 = self + 8
+t7 = 1
+move t7 t6 
+t8 = self + 12
+move z t8 
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $12 
+B@foom:   
+move8 rbp -8(rsp) 
+rbp = rsp
+move8 0(rbp) self 
+move4 8(rbp) x 
+t9 = 5
+z = t9
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $12 
+B@fooe:   
+move8 rbp -8(rsp) 
+rbp = rsp
+move8 0(rbp) self 
+move4 8(rbp) x 
+t10 = 5
+z = t10
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $12 
+t12 = 2
+push t12  
+t11 = alloc_mem(8)
+push t11  
+goto A@__init__  
+aryan = t11
+t13 = 1
+t14 = 2
+t15 = 3
+t16 = 4
+t17 = 5
+t18 = declare_array(24) 
+t19 = 0 
+t18[t19] = 5 
+t19 = t19 + 4
+t18[t19] = t13 
+t19 = t19 + 4
+t18[t19] = t14 
+t19 = t19 + 4
+t18[t19] = t15 
+t19 = t19 + 4
+t18[t19] = t16 
+t19 = t19 + 4
+t18[t19] = t17 
+t19 = t19 + 4
+t18 = t18 + 4
+arr = t18
+t20 = -4 
+t21 = arr[t20]
+m = t21
+t22 = 3
+t23 = 2
+t24 = t22 * t23
+t25 = 2
+t26 = t24 + t25
+push t26  
+push aryan  
+goto A@foo  
+t28 = -4 
+t29 = arr[t28]
+t30 = -1
+t31 = t30
+label2:   
+t31 = t31 + 1
+t32 = t31 < t29
+if_false t32 goto label1
+m = t31 
+t33 = 5
+move rax z 
+goto label2  
+label1:   

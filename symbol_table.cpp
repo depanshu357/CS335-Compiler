@@ -189,6 +189,22 @@ vector<st_node> get_self_param(sym_table * symbol_table, string class_name){
     return {};
 }
 
+int get_ctr_self_size(sym_table * symbol_table, string class_name){
+    sym_table * curr;
+    int size = 0;
+    for (int i = 0; i < symbol_table->sym_tbl_entry.size(); i++){
+        if (symbol_table->sym_tbl_entry[i].name == class_name && symbol_table->sym_tbl_entry[i].sp_type == 2){
+            curr = symbol_table->sym_tbl_entry[i].sub_symbol_table;
+            for(int i=0;i<curr->sym_tbl_entry.size();i++){
+                if(curr->sym_tbl_entry[i].name.substr(0,5)=="self."){
+                    size+=curr->sym_tbl_entry[i].size;
+                }
+            }
+            return size;
+        }
+    }
+    return size;
+}
     int
     get_offset_from_tbl(sym_table *symbol_table, string var_name)
 {
@@ -263,7 +279,7 @@ vector<st_node> get_class_func_parameters(sym_table *symbol_table,string class_n
     }
     while (curr != NULL)
     {
-        cout<<"in loop "<<func_name<<endl;
+        // cout<<"in loop "<<func_name<<endl;
         for (int i = 0; i < curr->sym_tbl_entry.size(); i++)
         {
             if (curr->sym_tbl_entry[i].name == func_name && curr->sym_tbl_entry[i].sp_type == 1)
