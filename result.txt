@@ -7,186 +7,147 @@ parameters end-------
 2,len,int,0,1,4,8
 3,self,self,0,1,4,12
 4,__name__,__name__,0,1,4,16
-5,A,A,1,2,4,20
+5,bubbleSort,None,1,1,4,20
 -----------sub table with name start-----------
 entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: A
+symbol table name: bubbleSort
 parameters start-------
-0,self,self,2,0,4,0
-1,z,int,2,0,4,4
+0,array,list[int],1,0,4,0
 parameters end-------
-0,self.x,int,3,0,4,8
-1,self.y,int,4,0,4,12
-2,foo,None,6,1,4,16
+0,i,int,2,0,4,4
+1,j,int,3,0,4,8
+2,swapped,bool,5,0,4,12
+3,temp,int,8,0,4,16
+-----------sub table end-----------
+6,main,None,16,1,4,24
 -----------sub table with name start-----------
 entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: foo
+symbol table name: main
 parameters start-------
-0,self,self,6,0,4,0
-1,x,int,6,0,4,4
 parameters end-------
-0,z,int,7,0,4,8
+0,data,list[int],17,0,4,0
+1,i,int,21,0,4,4
 -----------sub table end-----------
-3,food,None,9,1,4,20
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: food
-parameters start-------
-0,self,self,9,0,4,0
-1,x,int,9,0,4,4
-parameters end-------
-0,z,int,10,0,4,8
------------sub table end-----------
------------sub table end-----------
-6,B,B,11,2,4,24
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: B
-parameters start-------
-0,self,self,12,0,4,0
-1,z,int,12,0,4,4
-parameters end-------
-0,self.x,int,13,0,4,8
-1,self.y,int,14,0,4,12
-2,foom,None,16,1,4,16
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: foom
-parameters start-------
-0,self,self,16,0,4,0
-1,x,int,16,0,4,4
-parameters end-------
-0,z,int,17,0,4,8
------------sub table end-----------
-3,fooe,None,19,1,4,20
------------sub table with name start-----------
-entry_no,name,type,line_no,sp_type,size,offset
-symbol table name: fooe
-parameters start-------
-0,self,self,19,0,4,0
-1,x,int,19,0,4,4
-parameters end-------
-0,z,int,20,0,4,8
------------sub table end-----------
------------sub table end-----------
-7,aryan,A,22,0,4,28
-8,arr,list[int],23,0,4,32
-9,m,int,24,0,4,36
-10,z,int,27,0,4,40
-A@__init__:   
+bubbleSort:   
 move8 rbp -8(rsp) 
 rbp = rsp
-move8 0(rbp) self 
-move4 8(rbp) z 
-t1 = self + 0
-t2 = 1
-move t2 t1 
-t3 = self + 4
-move z t3 
-move8 rbp rsp 
-move8 -8(rbp) rbp 
-add rsp $12 
-A@foo:   
-move8 rbp -8(rsp) 
-rbp = rsp
-move8 0(rbp) self 
-move4 8(rbp) x 
-t4 = 5
-z = t4
-move8 rbp rsp 
-move8 -8(rbp) rbp 
-add rsp $12 
-A@food:   
-move8 rbp -8(rsp) 
-rbp = rsp
-move8 0(rbp) self 
-move4 8(rbp) x 
-t5 = 5
-z = t5
-move8 rbp rsp 
-move8 -8(rbp) rbp 
-add rsp $12 
-B@__init__:   
-move8 rbp -8(rsp) 
-rbp = rsp
-move8 0(rbp) self 
-move4 8(rbp) z 
-t6 = self + 8
-t7 = 1
-move t7 t6 
-t8 = self + 12
-move z t8 
-move8 rbp rsp 
-move8 -8(rbp) rbp 
-add rsp $12 
-B@foom:   
-move8 rbp -8(rsp) 
-rbp = rsp
-move8 0(rbp) self 
-move4 8(rbp) x 
-t9 = 5
-z = t9
-move8 rbp rsp 
-move8 -8(rbp) rbp 
-add rsp $12 
-B@fooe:   
-move8 rbp -8(rsp) 
-rbp = rsp
-move8 0(rbp) self 
-move4 8(rbp) x 
-t10 = 5
-z = t10
-move8 rbp rsp 
-move8 -8(rbp) rbp 
-add rsp $12 
-t12 = 2
-push t12  
-t11 = alloc_mem(8)
-push t11  
-goto A@__init__  
-aryan = t11
-t13 = 1
-t14 = 2
-t15 = 3
-t16 = 4
-t17 = 5
-t18 = declare_array(24) 
-t19 = 0 
-t18[t19] = 5 
-t19 = t19 + 4
-t18[t19] = t13 
-t19 = t19 + 4
-t18[t19] = t14 
-t19 = t19 + 4
-t18[t19] = t15 
-t19 = t19 + 4
-t18[t19] = t16 
-t19 = t19 + 4
-t18[t19] = t17 
-t19 = t19 + 4
-t18 = t18 + 4
-arr = t18
-t20 = -4 
-t21 = arr[t20]
-m = t21
-t22 = 3
-t23 = 2
-t24 = t22 * t23
-t25 = 2
-t26 = t24 + t25
-push t26  
-push aryan  
-goto A@foo  
-t28 = -4 
-t29 = arr[t28]
-t30 = -1
-t31 = t30
+move4 0(rbp) array 
+t1 = 0
+i = t1
+t2 = 0
+j = t2
+move rax t3 
+t4 = -4 
+t5 = array[t4]
+move rax t6 
+t7 = -1
+t8 = t7
 label2:   
-t31 = t31 + 1
-t32 = t31 < t29
-if_false t32 goto label1
-m = t31 
-t33 = 5
-move rax z 
+t8 = t8 + 1
+t9 = t8 < t5
+if_false t9 goto label1
+i = t8 
+t10 = False
+swapped = t10
+t11 = 0
+move rax t12 
+t13 = -4 
+t14 = array[t13]
+t15 = 1
+t16 = i - t15
+t17 = t14 - t16
+move rax t18 
+t11 = t11 - 1
+t19 = t11
+label4:   
+t19 = t19 + 1
+t20 = t19 < t17
+if_false t20 goto label3
+j = t19 
+t22 = j * 4
+t23 = 1
+t24 = j + t23
+t26 = t24 * 4
+t27 = array[t22] > array[t26]
+if_false t27 goto label6
+t29 = j * 4
+temp = array[t29]
+t31 = j * 4
+t32 = 1
+t33 = j + t32
+t35 = t33 * 4
+array[t31] = array[t35]
+t36 = 1
+t37 = j + t36
+t39 = t37 * 4
+array[t39] = temp
+t40 = True
+swapped = t40
+goto label5  
+label6:   
+label5:   
+goto label4  
+label3:   
+t41 = not swapped
+if_false t41 goto label8
+goto label7  
+label8:   
+label7:   
 goto label2  
 label1:   
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $4 
+main:   
+move8 rbp -8(rsp) 
+rbp = rsp
+t42 = 2
+t43 = t42 * -1
+t44 = 45
+t45 = 0
+t46 = 11
+t47 = 9
+t48 = t47 * -1
+t49 = declare_array(24) 
+t50 = 0 
+t49[t50] = 5 
+t50 = t50 + 4
+t49[t50] = t43 
+t50 = t50 + 4
+t49[t50] = t44 
+t50 = t50 + 4
+t49[t50] = t45 
+t50 = t50 + 4
+t49[t50] = t46 
+t50 = t50 + 4
+t49[t50] = t48 
+t50 = t50 + 4
+t49 = t49 + 4
+data = t49
+push data  
+goto bubbleSort  
+move rax t51 
+t52 = 'Sorted Array in Ascending Order:'
+move rax t53 
+print( t52 ) 
+t54 = 0
+i = t54
+move rax t55 
+t56 = -4 
+t57 = data[t56]
+move rax t58 
+t59 = -1
+t60 = t59
+label10:   
+t60 = t60 + 1
+t61 = t60 < t57
+if_false t61 goto label9
+i = t60 
+t63 = i * 4
+move rax t64 
+print( data[t63] ) 
+goto label10  
+label9:   
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $0 

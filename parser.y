@@ -63,6 +63,7 @@
 %token <elem> IN IS IF ELSE 
 %token <elem> AND OR NOT
 %token <elem> TYPE_HINT FUNC_TYPE_HINT 
+%token <elem> __NAME__ __MAIN__
 %token <elem> ADD_EQUAL SUB_EQUAL MUL_EQUAL  AT_EQUAL  DIV_EQUAL MOD_EQUAL BITWISE_AND_EQUAL  BITWISE_OR_EQUAL  BITWISE_XOR_EQUAL SHIFT_LEFT_EQUAL  SHIFT_RIGHT_EQUAL  POW_EQUAL  FLOOR_DIV_EQUAL 
 %token INDENT DEDENT
 %type <elem> start file_input stmt compound_stmt async_stmt if_stmt if_stmt_deviation elif_namedexpr_test_colon_suite_star while_stmt while_stmt_deviation for_stmt   funcdef funcdef_title func_type_hint_optional parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr  symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr symbol_term_star term symbol_factor_star symbol_factor factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option expr_star_expr_option_list   testlist_comp   namedexpr_test test atom number string_plus  else_colon_suite_optional 
@@ -425,6 +426,11 @@ stmt_plus: stmt stmt_plus {$$ = create_node(3,"Stmts",$1,$2);
 
 simple_stmt: small_stmt semi_colon_small_stmt_star NEWLINE {
         $$ = create_node(3,"Simple_stmts",$1,$2);
+    }
+    | IF __NAME__ DOUBLE_EQUAL __MAIN__ COLON {
+        create_ins(0,"programStart:", "","","");
+    } suite {
+        $$ = create_node(3,"Simple_stmts",$1,$2,$3,$4,$5,$7);
     }
     ;
 
@@ -1189,6 +1195,13 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             }
             else if($2->type_of_node.size()>=5 && $2->type_of_node.substr(0,5)=="Small"){
                 $$->type_of_node= $1->type_of_node;
+                
+                
+                string reg=newTemp();
+                create_ins(0,"move","rax",reg,"");
+                $$->addr=reg;
+                func_call_active=0;
+
             }
             else{
                 string full_name=string($1->lexeme)+after_dot_name;
@@ -1207,14 +1220,14 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                 string arr_type=search_type_in_sym_table(curr_sym_tbl.top(),$1->lexeme);
                 int offset=get_type_size(arr_type.substr(5,arr_type.size()-6));
                 int arr_max_size=get_size_from_tbl(curr_sym_tbl.top(),$1->lexeme);
-                if(box_value*offset>=arr_max_size){
-                    cout<<"Error --atom_expr-- array index out of bound error "<<yylineno<<endl;
-                }
+                // if(box_value*offset>=arr_max_size){
+                //     cout<<"Error --atom_expr-- array index out of bound error "<<yylineno<<endl;
+                // }
                 string reg2 = newTemp();
                 create_ins(3,"*",reg2,$2->addr,to_string(offset));
-                create_ins(0, reg,"=",string($1->lexeme)+"["+reg2+"]","");
-                $2->addr=reg;
-                $$->addr=reg;
+                string result=string($1->lexeme)+"["+reg2+"]";
+                $2->addr=result;
+                $$->addr=result;
             }
         }
          if($1->lexeme && string($1->lexeme)=="print"){ 

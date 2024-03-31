@@ -17,7 +17,7 @@
 
 
 
-KEYWORD "False"|"await"|"else"|"import"|"pass"|"None"|"break"|"except"|"in"|"raise"|"True"|"class"|"finally"|"is"|"return"|"continue"|"for"|"lambda"|"try"|"as"|"def"|"from"|"nonlocal"|"while"|"assert"|"del"|"global"|"with"|"async"|"elif"|"if"|"yield"|{LOGICAL_OP}
+KEYWORD "False"|"await"|"else"|"import"|"pass"|"None"|"break"|"except"|"in"|"raise"|"True"|"class"|"finally"|"is"|"return"|"continue"|"for"|"lambda"|"try"|"as"|"def"|"from"|"nonlocal"|"while"|"assert"|"del"|"global"|"with"|"async"|"elif"|"if"|"yield"|{LOGICAL_OP}|"\"__main__\""|"__name__"|"\'__main__\'"
 PRIMITIVE_TYPES "int"|"str"|"float"|"bool"|"void"|"char"|"double" 
 TYPE_HINT {PRIMITIVE_TYPES}|("list["({PRIMITIVE_TYPES}|{IDENTIFIER})"]")|{IDENTIFIER}
 
@@ -153,7 +153,10 @@ ERRORCHAR "$"|"?"|"`"
     else if(oper=="global") return GLOBAL;
     else if(oper=="with") return WITH;
     else if(oper=="None") return NONE;
-}
+    else if(oper=="__name__") return __NAME__;
+    else if(oper=="\"__main__\"" || oper=="\'__main__\'") return __MAIN__;
+    }
+
 
 <INITIAL,SMALL_STATE,CURLY_STATE,BOX_STATE>":"[ \t]*{TYPE_HINT} {
     string lexeme_out=string(yytext);
