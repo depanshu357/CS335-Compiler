@@ -3,4 +3,14 @@ compile: parser.y lexer.l
 		flex lexer.l
 		g++ parser.tab.c lex.yy.c -o main
 clean:	
-		rm -f main parser.tab.c parser.tab.h lex.yy.c *.dot *.png graph.pdf *.output *.csv
+		rm -f main parser.tab.c parser.tab.h lex.yy.c *.dot *.png graph.pdf *.output *.csv *.o 
+
+run: outputfile
+	./outputfile
+
+outputfile: $(file)
+	@echo $(file)
+	gcc -g -no-pie $(file) -o outputfile 
+
+# clean:
+# 	rm -f outputfile

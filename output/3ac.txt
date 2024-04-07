@@ -1,14 +1,4 @@
-.t1 = 0
-i = .t1
-.t2 = 1
-.t3 = 5
-.t2 = .t2 - 1
-.t4 = .t2
-.label2:   
-.t4 = .t4 + 1
-.t5 = .t4 < .t3
-if_false .t5 goto .label1
-i = .t4 
-print, i  
-goto .label2  
-.label1:   
+.t1 = 3
+.t2 = 2
+.t3 = .t1 + .t2
+i = .t3

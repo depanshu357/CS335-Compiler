@@ -2,10 +2,12 @@
     #include <bits/stdc++.h>
     #include "node.h"
     #include "symbol_table.cpp"
+    #include "x_86.cpp"
     using namespace std;
     int yylex();    
     int yyerror(const char *s);
     extern int yylineno;
+    // extern create_x86_code();
     extern stack<int> indent_stack;
     NODE *start_node;
 	fstream fout;
@@ -2428,9 +2430,9 @@ int main(int argc, char* argv[]){
     printToCSV(global_sym_table,0,global_sym_table->name);
     print_instructions();
 
-
     fout<<"}";
     fout.close();
+    create_x86_code(instructions);
 
     return 0;
 }
