@@ -144,6 +144,8 @@ int    search_sym_table(sym_table *symbol_table, string name, int sp_type)
     return 0;
 }
 
+
+
 int search_for_func(sym_table * symbol_table, string name){
     sym_table * curr = symbol_table;
     while(curr!=NULL){

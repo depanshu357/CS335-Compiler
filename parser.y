@@ -2,7 +2,7 @@
     #include <bits/stdc++.h>
     #include "node.h"
     #include "symbol_table.cpp"
-    #include "x_86.cpp"
+    // #include "x_86.cpp"
     using namespace std;
     int yylex();    
     int yyerror(const char *s);
@@ -42,8 +42,10 @@
     int class_func_call_active = 0;
     string constructor_reg = ""; 
     vector<vector<string>> func_arguments;
+    vector<string> x86_file;
     void create_ins(int type, string optype, string addr1, string addr2, string addr3);
-    vector<vector<string>> instructions;
+    void print_x86_ins(vector<string> & ins, sym_table * symbol_table);
+    vector<vector<string>>instructions;
     vector<string>range_arg;
     string prev_var_name="";
     string prev_dot_var="";
@@ -2288,6 +2290,7 @@ void create_ins(int type, string optype, string addr1,string addr2, string addr3
     vector<string> instruct{to_string(type), optype, addr1, addr2, addr3};
     instructions.push_back(instruct);
     instCount++;
+    print_x86_ins(instruct,curr_sym_tbl.top());
 
 }
 
@@ -2316,6 +2319,95 @@ void print_instructions(){
 
 
 
+// 3AC functions below----------------------
+
+
+
+
+
+int get_offset(string temp, sym_table *symbol_table, string &reg)
+{
+    if (temp[0] == '.')
+    {
+        int offset=stoi(temp.substr(2));
+        reg="-"+to_string((offset-1)*8)+"(%r15)";
+        return offset;
+    }
+    else if (temp[0] == '-' || temp[0] <= '9' && temp[0] >= '0')
+    {
+        reg="$"+temp;
+        return stoi(temp);
+    }
+    else
+    {
+        int offset= get_offset_from_tbl(symbol_table, temp);
+        reg="-"+to_string(offset)+"(%rbp)";
+        return 0;
+    }
+}
+
+void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
+{
+    if (ins[0] == "3")
+    {
+        string reg1,reg2,reg3;
+        int temp1 = get_offset(ins[2], symbol_table,reg1);
+        int temp2 = get_offset(ins[3], symbol_table,reg2);
+        int temp3 = get_offset(ins[4], symbol_table,reg3);
+        
+        if (ins[1] == "+")
+        {
+            x86_file.push_back("movq "+reg2+", %r13");
+            cout<<x86_file.back()<<endl;
+            x86_file.push_back("movq "+reg3+", %r14");
+            cout<<x86_file.back()<<endl;
+            x86_file.push_back("addq %r13, %r14");
+            cout<<x86_file.back()<<endl;
+            x86_file.push_back("movq %r14, "+reg1);
+            cout << x86_file.back() << endl;
+            // x86_file.push_back("movq 0(%r1) %r2\n");
+            // x86_file.push_back("movq 8(%r1) %r3\n");
+            // x86_file.push_back("movq %r3 16(%r1)\n");
+            // x86_file.push_back("movq %r3 16(%r1)\n");
+        }
+        else if (ins[0] == "-")
+        {
+            x86_file.push_back("movq 0(%r1) %r2\n");
+            x86_file.push_back("movq 8(%r1) %r3\n");
+            x86_file.push_back("sub %r2 %r3\n");
+            x86_file.push_back("movq %r2 16(%r1)\n");
+        }
+    }
+    else if(ins[0]=="2"){
+        if(ins[1]=="="){
+            string reg1, reg2;
+            int temp1 = get_offset(ins[2], symbol_table, reg1);
+            int temp2 = get_offset(ins[3], symbol_table, reg2);
+            cout<<ins[2]<<" "<<temp1<<endl;
+            cout<<ins[3]<<" "<<temp2<<endl;
+        }
+    }
+}
+
+void create_x86_file(){
+    ofstream fout;
+    string filePath = "./output/test3.s";
+    fout.open(filePath);
+    fout<<"# global data  #\n";
+    fout<<"    .data\n";
+    fout<<"format: .asciz \"%d\n\"";
+    fout<<"    .text\n";
+    fout<<"    .global main\n";    
+    for(auto ins: x86_file){
+        fout<<ins<<endl;
+    }
+    fout<<"# exit syscall"<<endl;
+    fout<<"mov $60, %rax"<<endl;
+    fout<<"xor %rdi, %rdi"<<endl;
+    fout<<"syscall"<<endl;
+    fout.close();
+
+}
 
 int main(int argc, char* argv[]){
     indent_stack.push(0);
@@ -2432,7 +2524,9 @@ int main(int argc, char* argv[]){
 
     fout<<"}";
     fout.close();
-    create_x86_code(instructions);
+
+    create_x86_file();
+    // create_x86_code(instructions,global_sym_table);
 
     return 0;
 }
