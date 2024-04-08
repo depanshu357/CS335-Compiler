@@ -2386,8 +2386,11 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             string reg1, reg2;
             int temp1 = get_offset(ins[2], symbol_table, reg1);
             int temp2 = get_offset(ins[3], symbol_table, reg2);
-            cout<<ins[2]<<" "<<temp1<<endl;
-            cout<<ins[3]<<" "<<temp2<<endl;
+            if(ins[3][0]>= '0' && ins[3][0]<='9'){
+                x86_file.push_back("movq "+reg2+", "+reg1);
+            }
+            // cout<<ins[2]<<" "<<temp1<<endl;
+            // cout<<ins[3]<<" "<<temp2<<endl;
         }
     }else if(ins[0]=="0"){
         if(ins[1]=="print,"){
