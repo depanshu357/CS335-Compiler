@@ -2348,8 +2348,7 @@ int get_offset(string temp, sym_table *symbol_table, string &reg)
 
 void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
 {
-    if (ins[0] == "3")
-    {
+    if (ins[0] == "3"){
         string reg1,reg2,reg3;
         int temp1 = get_offset(ins[2], symbol_table,reg1);
         int temp2 = get_offset(ins[3], symbol_table,reg2);
@@ -2372,10 +2371,14 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
         }
         else if (ins[0] == "-")
         {
-            x86_file.push_back("movq 0(%r1) %r2\n");
-            x86_file.push_back("movq 8(%r1) %r3\n");
-            x86_file.push_back("sub %r2 %r3\n");
-            x86_file.push_back("movq %r2 16(%r1)\n");
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            cout << x86_file.back() << endl;
+            x86_file.push_back("movq " + reg3 + ", %r14");
+            cout << x86_file.back() << endl;
+            x86_file.push_back("subq %r13, %r14");
+            cout << x86_file.back() << endl;
+            x86_file.push_back("movq %r14, " + reg1);
+            cout << x86_file.back() << endl;
         }
     }
     else if(ins[0]=="2"){
@@ -2386,6 +2389,17 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             cout<<ins[2]<<" "<<temp1<<endl;
             cout<<ins[3]<<" "<<temp2<<endl;
         }
+    }else if(ins[0]=="0"){
+        if(ins[1]=="print,"){
+            string reg;
+            int offset=get_offset(ins[2],symbol_table,reg);
+            x86_file.push_back("mov "+reg+", %rax");
+            x86_file.push_back("mov %rax, %rsi");
+            x86_file.push_back("lea .note0(%rip), %rdi");
+            x86_file.push_back("mov %rax, %rdi");
+            x86_file.push_back("xor %rax, %rax");
+            x86_file.push_back("call printf@plt");
+        }
     }
 }
 
@@ -2393,18 +2407,19 @@ void create_x86_file(){
     ofstream fout;
     string filePath = "./output/test3.s";
     fout.open(filePath);
-    fout<<"# global data  #\n";
-    fout<<"    .data\n";
-    fout<<"format: .asciz \"%d\n\"";
-    fout<<"    .text\n";
-    fout<<"    .global main\n";    
+    fout<<".section .data\n";
+    fout<<".section .text\n";
+    fout<<".section .rodata\n";
+    fout<<".note0:"<<endl;
+    fout<<"        .string \"%ld\\n\""<<endl;
+    fout<<"        .text"<<endl;
+    fout<<".global main\n";
+    fout<<"main:\n";
     for(auto ins: x86_file){
         fout<<ins<<endl;
     }
-    fout<<"# exit syscall"<<endl;
-    fout<<"mov $60, %rax"<<endl;
-    fout<<"xor %rdi, %rdi"<<endl;
-    fout<<"syscall"<<endl;
+    fout<<"\n";
+    fout<<"ret"<<endl;
     fout.close();
 
 }
