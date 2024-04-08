@@ -2398,7 +2398,7 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             int offset=get_offset(ins[2],symbol_table,reg);
             x86_file.push_back("mov "+reg+", %rax");
             x86_file.push_back("mov %rax, %rsi");
-            x86_file.push_back("lea .note0(%rip), %rdi");
+            x86_file.push_back("lea .note0(%rip), %rax");
             x86_file.push_back("mov %rax, %rdi");
             x86_file.push_back("xor %rax, %rax");
             x86_file.push_back("call printf@plt");
@@ -2418,13 +2418,18 @@ void create_x86_file(){
     fout<<"        .text"<<endl;
     fout<<".global main\n";
     fout<<"main:\n";
+    fout << "push %rbp\n";
+    fout << "movq %rsp, %r15\n";
     for(auto ins: x86_file){
         fout<<ins<<endl;
     }
     fout<<"\n";
-    fout<<"ret"<<endl;
+    // fout<<"ret"<<endl;
+     fout<<"pop %rbx"<<endl;
+    fout<< "mov $60, %rax       # System call number for exit\n";
+    fout<<"xor %rdi, %rdi      # Exit code is 0\n";
+    fout<<"syscall\n";
     fout.close();
-
 }
 
 int main(int argc, char* argv[]){
