@@ -6,20 +6,15 @@
         .text
 .global main
 main:
-push %rbx
+push %rbp
 movq %rsp, %r15
 movq $3, -0(%r15)
 movq $2, -8(%r15)
-movq -0(%r15), %r13
+movq -0(%r15), %rdx
 movq -8(%r15), %r14
-addq %r13, %r14
-movq %r14, -16(%r15)
-mov -16(%r15), %rax
-mov %rax, %rsi
-lea .note0(%rip), %rax
-mov %rax, %rdi
-xor %rax, %rax
-call printf@plt
+cqto
+idivq %r14
+movq %rdx, -16(%r15)
 
 pop %rbx
 mov $60, %rax       # System call number for exit

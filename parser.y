@@ -2357,28 +2357,43 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
         if (ins[1] == "+")
         {
             x86_file.push_back("movq "+reg2+", %r13");
-            cout<<x86_file.back()<<endl;
             x86_file.push_back("movq "+reg3+", %r14");
-            cout<<x86_file.back()<<endl;
             x86_file.push_back("addq %r13, %r14");
-            cout<<x86_file.back()<<endl;
             x86_file.push_back("movq %r14, "+reg1);
-            cout << x86_file.back() << endl;
             // x86_file.push_back("movq 0(%r1) %r2\n");
             // x86_file.push_back("movq 8(%r1) %r3\n");
             // x86_file.push_back("movq %r3 16(%r1)\n");
             // x86_file.push_back("movq %r3 16(%r1)\n");
         }
-        else if (ins[0] == "-")
+        else if (ins[1] == "-")
         {
             x86_file.push_back("movq " + reg2 + ", %r13");
-            cout << x86_file.back() << endl;
             x86_file.push_back("movq " + reg3 + ", %r14");
-            cout << x86_file.back() << endl;
             x86_file.push_back("subq %r13, %r14");
-            cout << x86_file.back() << endl;
             x86_file.push_back("movq %r14, " + reg1);
-            cout << x86_file.back() << endl;
+        }else if(ins[1] == "*")
+        {
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");
+            x86_file.push_back("imulq %r13, %r14");
+            x86_file.push_back("movq %r14, " + reg1);
+        }else if(ins[1]=="/"){
+            x86_file.push_back("movq "+reg2+", %rdx"); // $rdx for higher order, %rax for lower order
+            x86_file.push_back("movq "+reg3+", %r14");
+            x86_file.push_back("cqto");
+            x86_file.push_back("idivq %r14");
+            x86_file.push_back("movq %rax, " + reg1);
+        }else if(ins[1]=="//"){
+
+        }else if(ins[1]=="%"){
+            x86_file.push_back("movq "+reg2+", %rdx"); // $rdx for higher order, %rax for lower order
+            x86_file.push_back("movq "+reg3+", %r14");
+            x86_file.push_back("cqto");
+            x86_file.push_back("idivq %r14");
+            x86_file.push_back("movq %rdx, " + reg1);
+        }
+        for(auto x: x86_file){
+            cout<<x<<endl;
         }
     }
     else if(ins[0]=="2"){
