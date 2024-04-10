@@ -2371,41 +2371,113 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             x86_file.push_back("movq " + reg3 + ", %r14");
             x86_file.push_back("subq %r13, %r14");
             x86_file.push_back("movq %r14, " + reg1);
-        }else if(ins[1] == "*")
+        }
+        else if(ins[1] == "*")
         {
             x86_file.push_back("movq " + reg2 + ", %r13");
             x86_file.push_back("movq " + reg3 + ", %r14");
             x86_file.push_back("imulq %r13, %r14");
             x86_file.push_back("movq %r14, " + reg1);
         }else if(ins[1]=="/"){
-            x86_file.push_back("movq "+reg2+", %rdx"); // $rdx for higher order, %rax for lower order
+            x86_file.push_back("movq "+reg2+", %rax"); // $rdx for higher order, %rax for lower order
             x86_file.push_back("movq "+reg3+", %r14");
             x86_file.push_back("cqto");
             x86_file.push_back("idivq %r14");
             x86_file.push_back("movq %rax, " + reg1);
         }else if(ins[1]=="//"){
-
+            x86_file.push_back("movq "+reg2+", %rax"); // $rdx for higher order, %rax for lower order
+            x86_file.push_back("movq "+reg3+", %r14");
+            x86_file.push_back("cqto");
+            x86_file.push_back("idivq %r14");
+            x86_file.push_back("movq %rax, " + reg1);
         }else if(ins[1]=="%"){
-            x86_file.push_back("movq "+reg2+", %rdx"); // $rdx for higher order, %rax for lower order
+            x86_file.push_back("movq "+reg2+", %rax"); // $rdx for higher order, %rax for lower order
             x86_file.push_back("movq "+reg3+", %r14");
             x86_file.push_back("cqto");
             x86_file.push_back("idivq %r14");
             x86_file.push_back("movq %rdx, " + reg1);
+        }
+        else if(ins[1]==">"){
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");     // Move the value of 'a' into %rax
+            x86_file.push_back("cmpq %r14, %r13");      // Compare 'a' with 'b'
+            x86_file.push_back("setg %al");             // Set %al to 1 if 'a' is greater than 'b', otherwise set to 0
+            x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
+            x86_file.push_back("movq %r14, "+reg1);
+        }
+        else if(ins[1]=="<"){
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");     // Move the value of 'a' into %rax
+            x86_file.push_back("cmpq %r13, %r14");      // Compare 'b' with 'a'
+            x86_file.push_back("setg %al");             // Set %al to 1 if 'b' is greater than 'a', otherwise set to 0
+            x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
+            x86_file.push_back("movq %r14, "+reg1);
+        }
+        else if(ins[1]==">="){
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");     // Move the value of 'a' into %rax
+            x86_file.push_back("cmpq %r14, %r13");      // Compare 'a' with 'b'
+            x86_file.push_back("setge %al");             // Set %al to 1 if 'a' is greater than or equal to 'b', otherwise set to 0
+            x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
+            x86_file.push_back("movq %r14, "+reg1);
+        }
+        else if(ins[1]=="<="){
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");     // Move the value of 'a' into %rax
+            x86_file.push_back("cmpq %r13, %r14");      // Compare 'b' with 'a'
+            x86_file.push_back("setge %al");             // Set %al to 1 if 'b' is greater than or equal to 'a', otherwise set to 0
+            x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
+            x86_file.push_back("movq %r14, "+reg1);
+        }
+        else if(ins[1]=="=="){
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");     // Move the value of 'a' into %rax
+            x86_file.push_back("cmpq %r13, %r14");      // Compare 'b' with 'a'
+            x86_file.push_back("sete %al");             // Set %al to 1 if 'b' is  equal to 'a', otherwise set to 0
+            x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
+            x86_file.push_back("movq %r14, "+reg1);
+        }
+        else if(ins[1]=="=="){
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");     // Move the value of 'a' into %rax
+            x86_file.push_back("cmpq %r13, %r14");      // Compare 'b' with 'a'
+            x86_file.push_back("setne %al");             // Set %al to 1 if 'b' is not equal to 'a', otherwise set to 0
+            x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
+            x86_file.push_back("movq %r14, "+reg1);
+        }
+        else if (ins[1] == "&")
+        {
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");
+            x86_file.push_back("andq %r13, %r14");
+            x86_file.push_back("movq %r14, " + reg1);
+        }
+        else if (ins[1] == "|")
+        {
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");
+            x86_file.push_back("orq %r13, %r14");
+            x86_file.push_back("movq %r14, " + reg1);
         }
         for(auto x: x86_file){
             cout<<x<<endl;
         }
     }
     else if(ins[0]=="2"){
+        string reg1, reg2;
+        int temp1 = get_offset(ins[2], symbol_table, reg1);
+        int temp2 = get_offset(ins[3], symbol_table, reg2);
         if(ins[1]=="="){
-            string reg1, reg2;
-            int temp1 = get_offset(ins[2], symbol_table, reg1);
-            int temp2 = get_offset(ins[3], symbol_table, reg2);
             if(ins[3][0]>= '0' && ins[3][0]<='9'){
                 x86_file.push_back("movq "+reg2+", "+reg1);
             }
             // cout<<ins[2]<<" "<<temp1<<endl;
             // cout<<ins[3]<<" "<<temp2<<endl;
+        }
+        else if(ins[1]="~"){
+            x86_file.push_back("movq " + reg3 + ", %r14");
+            x86_file.push_back("notq %r14");
+            x86_file.push_back("movq %r14, " + reg2);
         }
     }else if(ins[0]=="0"){
         if(ins[1]=="print,"){

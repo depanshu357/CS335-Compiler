@@ -6,10 +6,10 @@ fontsize  = 30
 labelloc  = t
 
 node   [ fontname="Cascadia code" ]
-	34		[ style = solid label = "START"  ];
-	34 -> 31
-	31		[ style = solid label = "Expr_stmt"  ];
-	31 -> 2
+	31		[ style = solid label = "START"  ];
+	31 -> 28
+	28		[ style = solid label = "Expr_stmt"  ];
+	28 -> 2
 	2		[ style = solid label = "Identifier"  ];
 	2 -> 0
 	0		[ style = solid label = "IDENTIFIER 
@@ -17,22 +17,17 @@ node   [ fontname="Cascadia code" ]
 	2 -> 1
 	1		[ style = solid label = "TYPE_HINT 
 (:int)" color = red shape = rectangle ];
-	31 -> 30
-	30		[ style = solid label = "Expr_stmt"  ];
-	30 -> 3
+	28 -> 27
+	27		[ style = solid label = "Expr_stmt"  ];
+	27 -> 3
 	3		[ style = solid label = "ASSIGNMENT_OP 
 (=)" color = red shape = rectangle ];
-	30 -> 21
-	21		[ style = solid label = "Terms"  ];
-	21 -> 14
-	14		[ style = solid label = "INTEGER 
-(3)" color = red shape = rectangle ];
-	21 -> 19
-	19		[ style = solid label = "Mod_term"  ];
-	19 -> 15
-	15		[ style = solid label = "ARITHMETIC_OP 
-(%)" color = red shape = rectangle ];
-	19 -> 17
-	17		[ style = solid label = "INTEGER 
-(2)" color = red shape = rectangle ];
+	27 -> 17
+	17		[ style = solid label = "Tilde_term"  ];
+	17 -> 14
+	14		[ style = solid label = "BITWISE_OP 
+(~)" color = red shape = rectangle ];
+	17 -> 15
+	15		[ style = solid label = "INTEGER 
+(7)" color = red shape = rectangle ];
 }
