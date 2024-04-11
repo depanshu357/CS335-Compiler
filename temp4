@@ -13,7 +13,7 @@ node   [ fontname="Cascadia code" ]
 	2		[ style = solid label = "Identifier"  ];
 	2 -> 0
 	0		[ style = solid label = "IDENTIFIER 
-(i)" color = red shape = rectangle ];
+(x)" color = red shape = rectangle ];
 	2 -> 1
 	1		[ style = solid label = "TYPE_HINT 
 (:int)" color = red shape = rectangle ];
@@ -22,12 +22,12 @@ node   [ fontname="Cascadia code" ]
 	27 -> 3
 	3		[ style = solid label = "ASSIGNMENT_OP 
 (=)" color = red shape = rectangle ];
-	27 -> 17
-	17		[ style = solid label = "Tilde_term"  ];
-	17 -> 14
-	14		[ style = solid label = "BITWISE_OP 
-(~)" color = red shape = rectangle ];
-	17 -> 15
-	15		[ style = solid label = "INTEGER 
-(7)" color = red shape = rectangle ];
+	27 -> 23
+	23		[ style = solid label = "Not_term"  ];
+	23 -> 14
+	14		[ style = solid label = "KEYWORD 
+(not)" color = red shape = rectangle ];
+	23 -> 15
+	15		[ style = solid label = "KEYWORD 
+(True)" color = red shape = rectangle ];
 }

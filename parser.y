@@ -55,7 +55,8 @@
     int print_func_call_active=0;
     vector<vector<string>> len_func_arguments;
     vector<vector<string>> print_func_arguments;
-    int class_par_offset = 0,prev_self = 0;
+    map<string, string> offset_vec;
+    int class_par_offset = 0, prev_self = 0;
     int p_prev_range=0;
 %}
 
@@ -240,7 +241,8 @@ for_stmt: FOR exprlist IN testlist COLON {
             create_ins(3,"+",temp1,temp1,"1");
             create_ins(3,"<",temp2,temp1,high);
             create_ins(0,"if_false",temp2, "goto",label2);
-            create_ins(0,$2->addr,"=",temp1,"");
+            create_ins(2,"=", $2->addr,temp1,"");
+            // create_ins(0,$2->addr,"=",temp1,"");
             
             prev_var_name="aryan";
 
@@ -558,8 +560,12 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
     |testlist_star_expr  {$$ = $1;}
     |testlist_star_expr expr_stmt_option1_plus  {
         $$ = create_node(3,"Expr_stmt",$1,$2);
-        if($1->type_of_node!=$2->type_of_node && (($1->type_of_node!="int" && $1->type_of_node!="float") || ( $2->type_of_node!="int" && $2->type_of_node!="float"))){
+        if(($1->type_of_node=="int" && $2->type_of_node=="bool") || ($1->type_of_node=="bool" && $2->type_of_node=="int")){
+
+        }
+        else if($1->type_of_node!=$2->type_of_node && (($1->type_of_node!="int" && $1->type_of_node!="float") || ( $2->type_of_node!="int" && $2->type_of_node!="float"))){
             cout<<"Error invalid assignment type at line " <<yylineno <<endl;
+            cout<<$1->type_of_node<<" "<<$2->type_of_node<<endl;
             return 0;
             // cout<<$1->type_of_node<<" "<<$2->type_of_node<<endl;
             
@@ -610,6 +616,7 @@ expr_stmt_option1_plus:EQUAL testlist_star_expr expr_stmt_option1_plus {
         $$ = create_node(4,"Expr_stmt",$1,$2,$3);
         if($3!=NULL && $3->type_of_node!=$2->type_of_node){
             cout<<"Error invalid assignment type at line " <<yylineno <<endl;
+            cout<<"line 620\n";
             return 0;
         }
         create_ins(2,$3->residual_ins, $2->addr,$3->addr, "");
@@ -1494,7 +1501,8 @@ trailer: SMALL_OPEN {
             len_func_call_active=0;
             string temp=newTemp();
             string reg=newTemp();
-            create_ins(0,temp,"=","-4","");
+            create_ins(2,"=",temp,"-4","");
+            // create_ins(0,temp,"=","-4","");
             create_ins(2,"=",reg,len_func_arguments[0][0]+"["+temp+"]","");
             // len_func=-1;
             $$->addr=reg;
@@ -1792,7 +1800,7 @@ or_test: and_test or_and_test_star{
         if($2==NULL)
             $$->type_of_node=$1->type_of_node;
         else{
-            // karna hai
+            $$->type_of_node="int";
             }
         
         if($2==NULL ){
@@ -1831,6 +1839,7 @@ and_test: not_test and_not_test_star {
         $$->type_of_node=$1->type_of_node;
     else{
         // karna hai
+        $$->type_of_node="int";
         }
     if($2==NULL ){
         $$->addr=$1->addr;
@@ -1848,6 +1857,7 @@ and_test: not_test and_not_test_star {
 
 and_not_test_star: AND not_test and_not_test_star {
         $$=create_node(4,"And_term",$1,$2,$3);
+        $$->type_of_node="int";
         if($3==NULL)
         {
             $$->residual_ins = $1->lexeme;
@@ -1858,7 +1868,6 @@ and_not_test_star: AND not_test and_not_test_star {
             create_ins(2,$3->residual_ins, reg,$2->addr,$3->addr);
             $$->residual_ins = $1->lexeme;
             $$->addr = reg;
-
         }
     }
     | { $$ = NULL;}
@@ -2023,7 +2032,8 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         $$->addr=reg;
         
         string temp=newTemp();
-        create_ins(0,temp, "=","0","");
+        create_ins(2,"=",temp,"0","");
+        // create_ins(0,temp, "=","0","");
 
         //store the size of array in the first field
         create_ins(0,$$->addr+"["+temp+"]","=",to_string(arr_elements.size()),"");
@@ -2288,15 +2298,20 @@ string newLabel(){
 
 void create_ins(int type, string optype, string addr1,string addr2, string addr3 ){
     vector<string> instruct{to_string(type), optype, addr1, addr2, addr3};
+    if(type==3 || type==2)
+    {
+        curr_sym_tbl.top()->x86_offset-=8;
+        offset_vec[addr1] = to_string(curr_sym_tbl.top()->x86_offset);
+    }
     instructions.push_back(instruct);
     instCount++;
     print_x86_ins(instruct,curr_sym_tbl.top());
 
 }
 
-void print_instructions(){
+void print_instructions(string filename){
     ofstream fout;
-    string filePath = "./output/3ac.txt";
+    string filePath = "./output/"+filename+".txt";
     fout.open(filePath);
     for(auto ins: instructions){
         if(ins[0]=="3"){
@@ -2329,25 +2344,31 @@ int get_offset(string temp, sym_table *symbol_table, string &reg)
 {
     if (temp[0] == '.')
     {
-        int offset=stoi(temp.substr(2));
+        /* int offset=stoi(temp.substr(2));
         reg="-"+to_string((offset-1)*8)+"(%r15)";
-        return offset;
+        return offset; */
+        reg = offset_vec[temp] + "(%rbp)";
+        return 0;
     }
     else if (temp[0] == '-' || temp[0] <= '9' && temp[0] >= '0')
     {
         reg="$"+temp;
-        return stoi(temp);
+        return 0;
     }
     else
     {
         int offset= get_offset_from_tbl(symbol_table, temp);
-        reg="-"+to_string(offset)+"(%rbp)";
+        /* reg="-"+to_string(offset)+"(%rbp)"; */
+        reg=offset_vec[temp]+"(%rbp)";
         return 0;
     }
 }
 
 void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
 {
+    /* if(ins[2]=="i"){
+        cout<<ins[0]<<"heheheehe"<<endl;
+    } */
     if (ins[0] == "3"){
         string reg1,reg2,reg3;
         int temp1 = get_offset(ins[2], symbol_table,reg1);
@@ -2369,8 +2390,8 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
         {
             x86_file.push_back("movq " + reg2 + ", %r13");
             x86_file.push_back("movq " + reg3 + ", %r14");
-            x86_file.push_back("subq %r13, %r14");
-            x86_file.push_back("movq %r14, " + reg1);
+            x86_file.push_back("subq %r14, %r13");
+            x86_file.push_back("movq %r13, " + reg1);
         }
         else if(ins[1] == "*")
         {
@@ -2458,26 +2479,61 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             x86_file.push_back("movq " + reg3 + ", %r14");
             x86_file.push_back("orq %r13, %r14");
             x86_file.push_back("movq %r14, " + reg1);
+        }else if(ins[1]=="and"){
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");
+            x86_file.push_back("cmpq $0, %r13");
+            x86_file.push_back("setne %al");
+            x86_file.push_back("movzbq %al, %r13");
+            x86_file.push_back("cmpq $0, %r14");
+            x86_file.push_back("setne %al");
+            x86_file.push_back("movzbq %al, %r14");
+            x86_file.push_back("andq %r13, %r14");
+            x86_file.push_back("movq %r14, " + reg1);
+        }else if(ins[1]=="or"){
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");
+            x86_file.push_back("cmpq $0, %r13");
+            x86_file.push_back("setne %al");
+            x86_file.push_back("movzbq %al, %r13");
+            x86_file.push_back("cmpq $0, %r14");
+            x86_file.push_back("setne %al");
+            x86_file.push_back("movzbq %al, %r14");
+            x86_file.push_back("orq %r13, %r14");
+            x86_file.push_back("movq %r14, " + reg1);
         }
-        for(auto x: x86_file){
-            cout<<x<<endl;
-        }
+        
     }
     else if(ins[0]=="2"){
         string reg1, reg2;
         int temp1 = get_offset(ins[2], symbol_table, reg1);
         int temp2 = get_offset(ins[3], symbol_table, reg2);
+        /* if(ins[2]=="i"){
+            cout<<ins[1]<<" hehehe "<<reg1<<" "<<reg2<<endl;        } */
         if(ins[1]=="="){
             if(ins[3][0]>= '0' && ins[3][0]<='9'){
                 x86_file.push_back("movq "+reg2+", "+reg1);
+                /* cout<<reg1<<" "<<reg2<<endl;             */
+            }
+            else{
+                x86_file.push_back("movq " + reg2 + ", %r13");
+                x86_file.push_back("movq %r13, " +  reg1);
             }
             // cout<<ins[2]<<" "<<temp1<<endl;
             // cout<<ins[3]<<" "<<temp2<<endl;
         }
-        else if(ins[1]="~"){
-            x86_file.push_back("movq " + reg3 + ", %r14");
+        else if(ins[1]=="~"){
+            x86_file.push_back("movq " + reg2 + ", %r14");
             x86_file.push_back("notq %r14");
-            x86_file.push_back("movq %r14, " + reg2);
+            x86_file.push_back("movq %r14, " + reg1);
+        }else if(ins[1]=="not"){
+            cout<<"not aya"<<endl;
+            x86_file.push_back("movq " + reg2 + ", %r14");
+            x86_file.push_back("cmpq $0, %r14");
+            x86_file.push_back("sete %al");
+            x86_file.push_back("movzbq %al, %r14");
+            x86_file.push_back("movq %r14, " + reg1);
+
         }
     }else if(ins[0]=="0"){
         if(ins[1]=="print,"){
@@ -2490,12 +2546,27 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             x86_file.push_back("xor %rax, %rax");
             x86_file.push_back("call printf@plt");
         }
+        else if(ins[1]=="goto"){
+            cout<<"jumpp "<<ins[2]<<endl;
+            x86_file.push_back("jmp "+ins[2]);
+        }
+        else if(ins[1].back()==':'){
+            cout<<"reaching : "<<ins[1]<<endl;
+            x86_file.push_back(ins[1]);
+        }
+        else if(ins[1] == "if_false"){
+            string reg;
+            int offset=get_offset(ins[2],symbol_table,reg);
+            x86_file.push_back("mov "+reg+", %rax");
+            x86_file.push_back("cmp $0, %rax");
+            x86_file.push_back("je "+ins[4]);
+        }
     }
 }
 
-void create_x86_file(){
+void create_x86_file(string filename){
     ofstream fout;
-    string filePath = "./output/test3.s";
+    string filePath = "./output/"+filename+".s";
     fout.open(filePath);
     fout<<".section .data\n";
     fout<<".section .text\n";
@@ -2506,13 +2577,13 @@ void create_x86_file(){
     fout<<".global main\n";
     fout<<"main:\n";
     fout << "push %rbp\n";
-    fout << "movq %rsp, %r15\n";
+    fout << "movq %rsp, %rbp\n";
     for(auto ins: x86_file){
         fout<<ins<<endl;
     }
     fout<<"\n";
     // fout<<"ret"<<endl;
-     fout<<"pop %rbx"<<endl;
+    fout<<"pop %rbx"<<endl;
     fout<< "mov $60, %rax       # System call number for exit\n";
     fout<<"xor %rdi, %rdi      # Exit code is 0\n";
     fout<<"syscall\n";
@@ -2630,12 +2701,12 @@ int main(int argc, char* argv[]){
     /* MakeDOTFile(start_node); */
     /* print_sym_table(global_sym_table); */
     printToCSV(global_sym_table,0,global_sym_table->name);
-    print_instructions();
+    print_instructions(output_file);
 
     fout<<"}";
     fout.close();
 
-    create_x86_file();
+    create_x86_file(output_file);
     // create_x86_code(instructions,global_sym_table);
 
     return 0;

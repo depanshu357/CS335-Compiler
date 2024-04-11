@@ -1,0 +1,17 @@
+.t1 = 0
+i = .t1
+.t2 = 0
+j = .t2
+.t3 = 1
+.t4 = 5
+.t3 = .t3 - 1
+.t5 = .t3
+.label2:   
+.t5 = .t5 + 1
+.t6 = .t5 < .t4
+if_false .t6 goto .label1
+i = .t5
+.t7 = 4
+j = .t7
+goto .label2  
+.label1:   
