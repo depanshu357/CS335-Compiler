@@ -2298,14 +2298,22 @@ string newLabel(){
 
 void create_ins(int type, string optype, string addr1,string addr2, string addr3 ){
     vector<string> instruct{to_string(type), optype, addr1, addr2, addr3};
-    if(type==3 || type==2)
+    int flag=0;
+    if((type==3 || type==2 )&& offset_vec.find(addr1)==offset_vec.end())
     {
         curr_sym_tbl.top()->x86_offset-=8;
         offset_vec[addr1] = to_string(curr_sym_tbl.top()->x86_offset);
+        flag=1;
+        // x86_file.push_back("subq $8, %rsp");
+        // cout<<"subq $8, %rsp"<<endl;
     }
     instructions.push_back(instruct);
     instCount++;
     print_x86_ins(instruct,curr_sym_tbl.top());
+    // if(flag){
+    //     x86_file.push_back("subq $8, %rsp");
+    //     flag=0;
+    // }
 
 }
 
@@ -2363,6 +2371,8 @@ int get_offset(string temp, sym_table *symbol_table, string &reg)
         return 0;
     }
 }
+
+
 
 void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
 {
@@ -2501,6 +2511,47 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             x86_file.push_back("movzbq %al, %r14");
             x86_file.push_back("orq %r13, %r14");
             x86_file.push_back("movq %r14, " + reg1);
+        }else if(ins[1]=="**"){
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");
+            x86_file.push_back("movq %r13, %rax");
+            x86_file.push_back("movq %r14, %rcx");
+            x86_file.push_back("xor %rdx, %rdx");
+            x86_file.push_back("movq $1, %rdx");
+            x86_file.push_back("cmpq $0, %rcx");
+            x86_file.push_back("je .label" + to_string(labelCount));
+            x86_file.push_back(".label" + to_string(labelCount) + ":");
+            x86_file.push_back("imul %rax, %rdx");
+            x86_file.push_back("dec %rcx");
+            x86_file.push_back("cmpq $0, %rcx");
+            x86_file.push_back("jne .label" + to_string(labelCount));
+            x86_file.push_back("movq %rdx, " + reg1);
+            labelCount++;
+        }
+        else if(ins[1]=="<<"){
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");
+            x86_file.push_back("movq %r13, %rax");
+            x86_file.push_back("movq %r14, %rcx");
+            x86_file.push_back("shl %cl, %al");
+            x86_file.push_back("movq %al, " + reg1);
+        }
+        else if(ins[1]==">>"){
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");
+            x86_file.push_back("movq %r13, %rax");
+            x86_file.push_back("movq %r14, %rcx");
+            x86_file.push_back("shr %cl, %al");
+            x86_file.push_back("movq %al, " + reg1);
+        }
+        else if(ins[1]=="in"){
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");
+        }else if(ins[1]=="^"){
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");
+            x86_file.push_back("xorq %r13, %r14");
+            x86_file.push_back("movq %r14, " + reg1);
         }
         
     }
@@ -2544,10 +2595,12 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             x86_file.push_back("lea .note0(%rip), %rax");
             x86_file.push_back("mov %rax, %rdi");
             x86_file.push_back("xor %rax, %rax");
+            // x86_file.push_back("subq $"+to_string(curr_sym_tbl.top()->x86_offset *(-1))+", %rsp");
             x86_file.push_back("call printf@plt");
+            // x86_file.push_back("pop %rbp");
         }
         else if(ins[1]=="goto"){
-            cout<<"jumpp "<<ins[2]<<endl;
+            cout<<"jumppp "<<ins[2]<<endl;
             x86_file.push_back("jmp "+ins[2]);
         }
         else if(ins[1].back()==':'){

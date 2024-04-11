@@ -11,7 +11,9 @@ j = .t2
 .t6 = .t5 < .t4
 if_false .t6 goto .label1
 i = .t5
-.t7 = 4
-j = .t7
+.t7 = 1
+.t8 = j + .t7
+j = .t8
 goto .label2  
 .label1:   
+print, j  

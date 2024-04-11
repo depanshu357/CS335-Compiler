@@ -8,15 +8,14 @@
 main:
 push %rbp
 movq %rsp, %rbp
-movq (%rbp), %r13
-movq %r13, -8(%rbp)
-movq -8(%rbp), %r14
-cmpq $0, %r14
-sete %al
-movzbq %al, %r14
-movq %r14, -16(%rbp)
-movq -16(%rbp), %r13
-movq %r13, -24(%rbp)
+movq $5, -8(%rbp)
+movq $3, -16(%rbp)
+movq -8(%rbp), %r13
+movq -16(%rbp), %r14
+xorq %r13, %r14
+movq %r14, -24(%rbp)
+movq -24(%rbp), %r13
+movq %r13, -32(%rbp)
 
 pop %rbx
 mov $60, %rax       # System call number for exit

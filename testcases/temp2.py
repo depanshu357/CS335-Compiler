@@ -1,1 +1,1 @@
-x:int = not True
+x:int = 5^3
