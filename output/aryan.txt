@@ -1,4 +1,5 @@
-.t1 = 0
+main:   
+.t1 = 123
 i = .t1
 .t2 = 0
 j = .t2
@@ -11,6 +12,13 @@ j = .t2
 .t6 = .t5 < .t4
 if_false .t6 goto .label1
 i = .t5
-print, i  
+print, j  
+.t7 = i * j
+.t8 = 1
+.t9 = .t7 + .t8
+j = .t9
 goto .label2  
 .label1:   
+move8 rbp rsp 
+move8 -8(rbp) rbp 
+add rsp $0 
