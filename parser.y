@@ -57,6 +57,7 @@
     vector<vector<string>> print_func_arguments;
     map<string, string> offset_vec;
     int class_par_offset = 0, prev_self = 0;
+    vector<sym_table*>sym_tbl_info;
     int p_prev_range=0;
 %}
 
@@ -308,19 +309,23 @@ funcdef:  DEF funcdef_title  func_body_suite {
 funcdef_title: NAME {
         parameter_vec.clear(); 
         is_param=1;
-        if(curr_sym_tbl.top()->name!="global"){
-            create_ins(0,curr_sym_tbl.top()->name+"@"+$1->lexeme+":","","","");
-        }
-        else
-            create_ins(0,string($1->lexeme)+":","","","");
-        create_ins(0,"move8", "rbp","-8(rsp)","");
-        create_ins(2,"=", "rbp","rsp","");
+        // if(curr_sym_tbl.top()->name!="global"){
+        //     create_ins(0,curr_sym_tbl.top()->name+"@"+$1->lexeme+":","","","");
+        // }
+        // else
+        //     create_ins(0,string($1->lexeme)+":","","","");
+
+        // create_ins(0,"move8", "rbp","-8(rsp)","");
+        // create_ins(2,"=", "rbp","rsp","");
     } 
     parameters func_type_hint_optional COLON { 
         $$ = create_node(5,"Func_def",$1,$3,$4,$5);
         $$->lexeme=$1->lexeme;
         // cout << $1->lexeme << "TESSSSS"<< endl;
-   
+        int check_flag=0;
+        if(curr_sym_tbl.top()->name!="global"){
+            check_flag=1;
+        }
         if(string($1->lexeme)=="__init__"){
             //continue;
             add_parameters(curr_sym_tbl.top(), parameter_vec);
@@ -344,6 +349,12 @@ funcdef_title: NAME {
             $$->type_of_node= func_type;
             curr_sym_tbl.top()->return_type= func_type;
         }
+
+        if(check_flag){
+            create_ins(0,curr_sym_tbl.top()->name+"@"+$1->lexeme+":","","","");
+        }
+        else
+            create_ins(0,string($1->lexeme)+":","","","");
 }
 ;
 
@@ -2298,18 +2309,22 @@ string newLabel(){
 
 void create_ins(int type, string optype, string addr1,string addr2, string addr3 ){
     vector<string> instruct{to_string(type), optype, addr1, addr2, addr3};
-    int flag=0;
-    if((type==3 || type==2 )&& offset_vec.find(addr1)==offset_vec.end())
+    // int flag=0;
+    if((type==3 || type==2 )&& offset_vec.find(curr_sym_tbl.top()->name+addr1)==offset_vec.end())
     {
         curr_sym_tbl.top()->x86_offset-=8;
-        offset_vec[addr1] = to_string(curr_sym_tbl.top()->x86_offset);
-        flag=1;
+        offset_vec[curr_sym_tbl.top()->name+addr1] = to_string(curr_sym_tbl.top()->x86_offset);
+        // flag=1;
         // x86_file.push_back("subq $8, %rsp");
         // cout<<"subq $8, %rsp"<<endl;
     }
     instructions.push_back(instruct);
+    sym_tbl_info.push_back(curr_sym_tbl.top());
     instCount++;
-    print_x86_ins(instruct,curr_sym_tbl.top());
+    // print_x86_ins(instruct,curr_sym_tbl.top());
+
+
+
     // if(flag){
     //     x86_file.push_back("subq $8, %rsp");
     //     flag=0;
@@ -2355,7 +2370,7 @@ int get_offset(string temp, sym_table *symbol_table, string &reg)
         /* int offset=stoi(temp.substr(2));
         reg="-"+to_string((offset-1)*8)+"(%r15)";
         return offset; */
-        reg = offset_vec[temp] + "(%rbp)";
+        reg = offset_vec[symbol_table->name+temp] + "(%rbp)";
         return 0;
     }
     else if (temp[0] == '-' || temp[0] <= '9' && temp[0] >= '0')
@@ -2367,7 +2382,7 @@ int get_offset(string temp, sym_table *symbol_table, string &reg)
     {
         int offset= get_offset_from_tbl(symbol_table, temp);
         /* reg="-"+to_string(offset)+"(%rbp)"; */
-        reg=offset_vec[temp]+"(%rbp)";
+        reg=offset_vec[symbol_table->name+temp]+"(%rbp)";
         return 0;
     }
 }
@@ -2600,12 +2615,30 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             // x86_file.push_back("pop %rbp");
         }
         else if(ins[1]=="goto"){
-            cout<<"jumppp "<<ins[2]<<endl;
+            // cout<<"jumppp "<<ins[2]<<endl;
             x86_file.push_back("jmp "+ins[2]);
         }
         else if(ins[1].back()==':'){
-            cout<<"reaching : "<<ins[1]<<endl;
+            // cout<<"reaching : "<<ins[1]<<endl;
             x86_file.push_back(ins[1]);
+                // cout<<symbol_table->name<<" reaching "<<ins[1]<<endl;
+            if(ins[1]=="main:"){
+                x86_file.push_back("pushq %rbp");
+                x86_file.push_back("movq %rsp, %rbp");
+            }
+            if(ins[1]!="main:"&& (symbol_table->name+":" ==ins[1])){
+                x86_file.push_back("pushq %rbp");
+                x86_file.push_back("movq %rsp, %rbp");
+                x86_file.push_back("pushq %rbx");
+                x86_file.push_back("pushq %rdi");
+                x86_file.push_back("pushq %rsi");
+                x86_file.push_back("pushq %r12");
+                x86_file.push_back("pushq %r13");
+                x86_file.push_back("pushq %r14");
+                x86_file.push_back("pushq %r15");
+
+                x86_file.push_back("subq $"+to_string(symbol_table->x86_offset*(-1))+", %rsp");
+            }
         }
         else if(ins[1] == "if_false"){
             string reg;
@@ -2628,10 +2661,11 @@ void create_x86_file(string filename){
     fout<<"        .string \"%ld\\n\""<<endl;
     fout<<"        .text"<<endl;
     fout<<".global main\n";
-    fout<<"main:\n";
-    fout << "push %rbp\n";
-    fout << "movq %rsp, %rbp\n";
+    // fout<<"main:\n";
+    // fout << "push %rbp\n";
+    // fout << "movq %rsp, %rbp\n";
     for(auto ins: x86_file){
+        
         fout<<ins<<endl;
     }
     fout<<"\n";
@@ -2641,6 +2675,12 @@ void create_x86_file(string filename){
     fout<<"xor %rdi, %rdi      # Exit code is 0\n";
     fout<<"syscall\n";
     fout.close();
+}
+
+void generate_x86_ins(){
+    for(int i=0;i<instructions.size();i++){
+        print_x86_ins(instructions[i],sym_tbl_info[i]);
+    }
 }
 
 int main(int argc, char* argv[]){
@@ -2754,10 +2794,12 @@ int main(int argc, char* argv[]){
     /* MakeDOTFile(start_node); */
     /* print_sym_table(global_sym_table); */
     printToCSV(global_sym_table,0,global_sym_table->name);
-    print_instructions(output_file);
 
     fout<<"}";
     fout.close();
+    print_instructions(output_file);
+
+    generate_x86_ins();
 
     create_x86_file(output_file);
     // create_x86_code(instructions,global_sym_table);
