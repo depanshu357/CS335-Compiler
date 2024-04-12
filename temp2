@@ -1,0 +1,92 @@
+digraph G{
+
+label     = "AST"
+fontname  = "Cascadia code"
+fontsize  = 30
+labelloc  = t
+
+node   [ fontname="Cascadia code" ]
+	97		[ style = solid label = "START"  ];
+	97 -> 95
+	95		[ style = solid label = "Func_def"  ];
+	95 -> 0
+	0		[ style = solid label = "KEYWORD 
+(def)" color = red shape = rectangle ];
+	95 -> 6
+	6		[ style = solid label = "Func_def"  ];
+	6 -> 1
+	1		[ style = solid label = "IDENTIFIER 
+(main)" color = red shape = rectangle ];
+	6 -> 4
+	4		[ style = solid label = "Parantheses"  ];
+	4 -> 2
+	2		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	4 -> 3
+	3		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	6 -> 5
+	5		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	95 -> 94
+	94		[ style = solid label = "Stmts"  ];
+	94 -> 33
+	33		[ style = solid label = "Expr_stmt"  ];
+	33 -> 9
+	9		[ style = solid label = "Identifier"  ];
+	9 -> 7
+	7		[ style = solid label = "IDENTIFIER 
+(x)" color = red shape = rectangle ];
+	9 -> 8
+	8		[ style = solid label = "TYPE_HINT 
+(:int)" color = red shape = rectangle ];
+	33 -> 32
+	32		[ style = solid label = "Expr_stmt"  ];
+	32 -> 10
+	10		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	32 -> 21
+	21		[ style = solid label = "INTEGER 
+(45)" color = red shape = rectangle ];
+	94 -> 93
+	93		[ style = solid label = "Stmts"  ];
+	93 -> 65
+	65		[ style = solid label = "Expr_stmt"  ];
+	65 -> 35
+	35		[ style = solid label = "IDENTIFIER 
+(x)" color = red shape = rectangle ];
+	65 -> 64
+	64		[ style = solid label = "Expr_stmt"  ];
+	64 -> 36
+	36		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	64 -> 57
+	57		[ style = solid label = "Expressions"  ];
+	57 -> 47
+	47		[ style = solid label = "IDENTIFIER 
+(x)" color = red shape = rectangle ];
+	57 -> 56
+	56		[ style = solid label = "Shift_right_expr"  ];
+	56 -> 48
+	48		[ style = solid label = "BITWISE_OP 
+(>>)" color = red shape = rectangle ];
+	56 -> 52
+	52		[ style = solid label = "INTEGER 
+(3)" color = red shape = rectangle ];
+	93 -> 82
+	82		[ style = solid label = "Terms"  ];
+	82 -> 67
+	67		[ style = solid label = "IDENTIFIER 
+(print)" color = red shape = rectangle ];
+	82 -> 80
+	80		[ style = solid label = "Arguments"  ];
+	80 -> 68
+	68		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	80 -> 69
+	69		[ style = solid label = "IDENTIFIER 
+(x)" color = red shape = rectangle ];
+	80 -> 70
+	70		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+}

@@ -24,7 +24,7 @@ typedef struct sym_table {
 } sym_table;
 
 int  get_type_size(string s){
-    
+    return 8;
     if(s=="int"){
         return 4;
     }
