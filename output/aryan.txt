@@ -1,43 +1,4 @@
-temp:   
-move8 16(%rbp) a 
-.t1 = 0
-.t2 = a == .t1
-if_false .t2 goto .label2
-.t3 = 1
-move8 .t3 %rax 
-ret   
-goto .label1  
-.label2:   
-.label1:   
-.t4 = 1
-.t5 = a == .t4
-if_false .t5 goto .label4
-.t6 = 1
-move8 .t6 %rax 
-ret   
-goto .label3  
-.label4:   
-.label3:   
-.t7 = 1
-.t8 = a - .t7
-push .t8  
-call, temp  
-move8 %rax .t9 
-.t10 = 2
-.t11 = a - .t10
-push .t11  
-call, temp  
-move8 %rax .t12 
-.t13 = .t9 + .t12
-move8 .t13 %rax 
-ret   
 main:   
-.t14 = 123
-i = .t14
-print, i  
-.t15 = 5
-push .t15  
-call, temp  
-move8 %rax .t16 
-i = .t16
+.t1 = 123
+i = .t1
 print, i  

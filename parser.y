@@ -214,7 +214,7 @@ for_stmt: FOR exprlist IN testlist COLON {
             create_ins(3,"+",temp1,temp1,to_string(offset));
             create_ins(3,"<",temp2,temp1,to_string(max_size));
             create_ins(0,"if_false",temp2, "goto",label2);
-            create_ins(0,$2->addr,"=",$4->addr+"["+temp1+"]","");
+            create_ins(0,$2->addr,"=",$4->addr+"[aryyna"+temp1+"]","");
         }
         else{
             string low,high;
@@ -1543,7 +1543,7 @@ trailer: SMALL_OPEN {
             string reg=newTemp();
             create_ins(2,"=",temp,"-4","");
             // create_ins(0,temp,"=","-4","");
-            create_ins(2,"=",reg,len_func_arguments[0][0]+"["+temp+"]","");
+            create_ins(2,"=",reg,len_func_arguments[0][0]+"[aryan"+temp+"]","");
             // len_func=-1;
             $$->addr=reg;
             $$->type_of_node="int";
@@ -2067,7 +2067,7 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         // for(auto t: arr_elements) cout<<t<<" ";
         arr_active=0;
         string reg=newTemp();
-        string array_size=to_string(get_type_size($3->type_of_node)*arr_elements.size()+4);
+        string array_size=to_string(get_type_size($3->type_of_node)*arr_elements.size()+8);
         create_ins(0,reg, "=","declare_array("+array_size+")","");
         $$->addr=reg;
         
@@ -2077,14 +2077,14 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
 
         //store the size of array in the first field
         create_ins(0,$$->addr+"["+temp+"]","=",to_string(arr_elements.size()),"");
-        create_ins(3,"+",temp,temp,"4");
+        create_ins(3,"+",temp,temp,"8");
 
         for(auto it: arr_elements){
             create_ins(0,$$->addr+"["+temp+"]","=",it,"");
             create_ins(3,"+",temp,temp,to_string(get_type_size($3->type_of_node)));
         }
         
-        create_ins(3,"+",reg,reg,"4"); // increase the pointer to move ahead of the size field
+        create_ins(3,"+",reg,reg,"8"); // increase the pointer to move ahead of the size field
 
         // $$->size = get_type_size($3->type_of_node)*arr_elements.size();
         update_size_entry(curr_sym_tbl.top(),prev_var_name, get_type_size($3->type_of_node)*arr_elements.size());
@@ -2643,7 +2643,23 @@ string res_ins;
         /* if(ins[2]=="i"){
             cout<<ins[1]<<" hehehe "<<reg1<<" "<<reg2<<endl;        } */
         if(ins[1]=="="){
-            if(ins[3][0]>= '0' && ins[3][0]<='9'){
+            
+            if(ins[3].back()==']'){
+                string reg4,reg5,reg6;
+                string s1 = ins[3].substr(0, ins[3].find('['));
+                string s2 = ins[3].substr(ins[3].find('[') + 1, ins[3].find(']') - ins[3].find('[') - 1);
+                
+                int temp1=get_offset(s1,symbol_table,reg4);
+                int temp2=get_offset(s2,symbol_table,reg5);
+                int temp3=get_offset(ins[2],symbol_table,reg6);
+                
+                x86_file.push_back("movq "+ reg4 + ", %r13");
+                x86_file.push_back("movq "+ reg5 + ", %r14");
+                x86_file.push_back("movq (%r13, %r14), %r15");
+                x86_file.push_back("movq %r15, "+reg6);
+
+            }
+            else if(ins[3][0]>= '0' && ins[3][0]<='9'){
                 x86_file.push_back("movq "+reg2+", "+reg1);
                 /* cout<<reg1<<" "<<reg2<<endl;             */
             }
@@ -2671,14 +2687,18 @@ string res_ins;
         if(ins[1]=="print,"){
             string reg;
             int offset=get_offset(ins[2],symbol_table,reg);
+            // x86_file.push_back("push %rbx");
             x86_file.push_back("mov "+reg+", %rax");
             x86_file.push_back("mov %rax, %rsi");
             x86_file.push_back("lea .note0(%rip), %rax");
             x86_file.push_back("mov %rax, %rdi");
             x86_file.push_back("xor %rax, %rax");
             // x86_file.push_back("subq $"+to_string(curr_sym_tbl.top()->x86_offset *(-1))+", %rsp");
+            x86_file.push_back("shr $4, %rsp");   // Shift right by 4 bits
+            x86_file.push_back("add $1, %rsp");   // Add 1
+            x86_file.push_back("shl $4, %rsp");   // Shift left by 4 bits
             x86_file.push_back("call printf@plt");
-            // x86_file.push_back("pop %rbp");
+            // x86_file.push_back("pop %rbx");
         }
         else if(ins[1]=="goto"){
             // cout<<"jumppp "<<ins[2]<<endl;
@@ -2715,6 +2735,9 @@ string res_ins;
             x86_file.push_back("je "+ins[4]);
         }
         else if(ins[1]== "call,"){
+            x86_file.push_back("shr $4, %rsp");   // Shift right by 4 bits
+            x86_file.push_back("add $1, %rsp");   // Add 1
+            x86_file.push_back("shl $4, %rsp"); 
             x86_file.push_back("call "+ins[2]);
             x86_file.push_back("addq %r13, %rsp"); //restoring the space allocated for pushing the arguments
 
@@ -2750,13 +2773,30 @@ string res_ins;
             x86_file.push_back("pushq "+reg);
         }
         else if(ins[3].substr(0,13)=="declare_array"){
-            string size = ins[3].substr(14, ins[3].size()-2);
-            x86_file.push_back("movq $"+to_string(stoi(size)*2)+", %rdi");
+            string size = ins[3].substr(14, ins[3].size()-15);
+            x86_file.push_back("shr $4, %rsp");   // Shift right by 4 bits
+            x86_file.push_back("add $1, %rsp");   // Add 1
+            x86_file.push_back("shl $4, %rsp"); 
+            x86_file.push_back("movq $"+ size +", %rdi");
             x86_file.push_back("call malloc@plt");
             //got the pointer to array in %rax
             string reg;
             int temp=get_offset(ins[1],symbol_table,reg);
             x86_file.push_back("movq %rax, " + reg);
+        }
+        else if(ins[1].back()==']'){
+            string reg1,reg2,reg3;
+            string s1 = ins[1].substr(0, ins[1].find('['));
+            string s2 = ins[1].substr(ins[1].find('[') + 1, ins[1].find(']') - ins[1].find('[') - 1);
+            int temp1=get_offset(s1,symbol_table,reg1);
+            int temp2=get_offset(s2,symbol_table,reg2);
+            int temp3=get_offset(ins[3],symbol_table,reg3);
+            
+            x86_file.push_back("movq "+ reg1 + ", %r13");
+            x86_file.push_back("movq "+ reg2 + ", %r14");
+            x86_file.push_back("movq "+ reg3 + ", %r15");
+            x86_file.push_back("movq %r15, (%r13, %r14)"); // Store the value 4 at memory location a + offset
+
         }
     }
 }
