@@ -1,14 +1,16 @@
-def temp(a:int, b:int)->int:
-    i:int=1
-    return i
+def temp(a:int)->int:
+    if(a==0):
+        return 1
+    if(a==1):
+        return 1
+    return temp(a-1)+ temp(a-2)
 
 def main():
     i:int=123
-    j:int=0
-    temp(i,j)
-    for i in range(1,5):
-        print(j)
-        
-        j=i*j+1
+    print(i)
+    i=temp(5)
+    print(i)
+    # i=temp(12)
+    # print(i)
     # i=4
     # i:int = 4 and 5 

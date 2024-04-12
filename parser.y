@@ -297,9 +297,9 @@ funcdef:  DEF funcdef_title  func_body_suite {
                 // cout<<"poping "<<curr_sym_tbl.top()->name<<endl; 
                 curr_sym_tbl.pop(); 
         } 
-        create_ins(0,"move8","%rbp","%rsp","");
-        create_ins(0,"move8","-8(%rbp)","%rbp","");
-        create_ins(0,"add", "%rsp","$"+to_string(func_par_offset),"");
+        // create_ins(0,"move8","%rbp","%rsp","");
+        // create_ins(0,"move8","-8(%rbp)","%rbp","");
+        // create_ins(0,"addq", "%rsp","$"+to_string(func_par_offset*2),"");
         func_par_offset = 0;
         prev_self = 0;
     }
@@ -349,6 +349,12 @@ funcdef_title: NAME {
             is_param=0;
             $$->type_of_node= func_type;
             curr_sym_tbl.top()->return_type= func_type;
+
+            for(auto it:parameter_vec){
+                curr_sym_tbl.top()->x86_offset-=8;
+                offset_vec[curr_sym_tbl.top()->name+it.name] = to_string(curr_sym_tbl.top()->x86_offset);
+            }
+
         }
 
         if(check_flag){
@@ -413,9 +419,10 @@ tfpdef: NAME { $$ = $1;
         if(is_param) {
             add_to_vector(parameter_vec, $1->lexeme, $1->lexeme,yylineno);
             int size_of_var=8;
-            // create_ins(0,"move"+to_string(size_of_var),to_string(func_par_offset)+"(%rbp)",$1->lexeme,"");
+            // create_ins(0,"move8"+to_string(size_of_var),to_string(func_par_offset)+"(%rbp)",$1->lexeme,"");
             parameter_ins.push_back({"0","move8",to_string(func_par_offset)+"(%rbp)",$1->lexeme,""});
             func_par_offset+=size_of_var; //size of self pointer
+            
         }
         $$->type_of_node= search_type_in_sym_table(curr_sym_tbl.top(),$1->lexeme);
         }
@@ -423,8 +430,8 @@ tfpdef: NAME { $$ = $1;
         if(is_param) {
             add_to_vector(parameter_vec, $1->lexeme, $2->lexeme,yylineno);
             int size_of_var=get_type_size($2->lexeme);
-            // create_ins(0,"move"+to_string(size_of_var),to_string(func_par_offset)+"(%rbp)",$1->lexeme,"");
-            parameter_ins.push_back({"0","move8",to_string(func_par_offset)+"(%rbp)",$1->lexeme,""});
+            // create_ins(0,"move8"+to_string(size_of_var),to_string(func_par_offset)+"(%rbp)",$1->lexeme,"");
+            parameter_ins.push_back({"0","move8",to_string(func_par_offset +16)+"(%rbp)",$1->lexeme,""});
             func_par_offset+=size_of_var;
         }
         else{
@@ -512,7 +519,8 @@ return_stmt: RETURN testlist_star_expr {
             return 0;
         }
 
-        create_ins(0,"move",$2->addr,"%rax","");
+        create_ins(0,"move8",$2->addr,"%rax","");
+        create_ins(0,"ret","","","");
         
     }
     | RETURN {
@@ -521,6 +529,8 @@ return_stmt: RETURN testlist_star_expr {
             cout<<"Error invalid return type at line " <<yylineno <<endl;
             return 0;
         }
+        create_ins(0,"ret","","","");
+
     }
     ;
 
@@ -559,8 +569,10 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
     //didnt get this production to use in the code so didnt implement the type_of_node
     }
     | testlist_star_expr augassign testlist {
+        // cout<<"line 323\n";
+        // cout<<$2->lexeme<<endl;
     $$ = create_node(4,"Expr_stmt",$1,$2,$3);
-    if(string($2->lexeme)=="&=" || string($2->lexeme)=="|=" || string($2->lexeme)=="^=" || string($2->lexeme)=="<<=" || string($2->lexeme)==">>="){
+    if((string($2->lexeme)=="&=" || string($2->lexeme)=="|=" || string($2->lexeme)=="^=" || string($2->lexeme)=="<<=" || string($2->lexeme)==">>=") && ($1->type_of_node!="int" || $3->type_of_node!="int")){
         if($1->type_of_node!="int" || $3->type_of_node!="int"){
             cout<<"Error invalid operand type at line " <<yylineno <<endl;
             return 0;
@@ -571,8 +583,18 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
         // cout<<"line 323 "<<$1->type_of_node<<" "<<$3->type_of_node<<endl;
         cout<<"Error invalid operand type at line " <<yylineno <<endl;
             return 0;
-    }
-    $$->type_of_node= $1->type_of_node;
+    }else{
+            // cout<<$1->type_of_node<<" "<<$3->type_of_node<<" "<<$2->lexeme<<endl;
+            string operation = string($2->lexeme).substr(0,string($2->lexeme).size()-1);
+            // string reg = newTemp();
+            // cout<<operation<<endl;
+            // cout<<$1->addr<<" "<<operation<<$1->addr<<"+"<<$3->addr<<endl;
+            string reg = newTemp();
+            create_ins(3,operation,reg,$1->addr,$3->addr);
+            create_ins(2,"=", $1->addr,reg,"");
+            $$->addr = $1->addr;
+        }
+        $$->type_of_node= $1->type_of_node;
 
     }
     |testlist_star_expr  {$$ = $1;}
@@ -595,19 +617,19 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
             func_call_active = 0;
         }
         else if(func_call_active==-1){
-            create_ins(0,"move","%rax",$1->addr,"");
+            create_ins(0,"move8","%rax",$1->addr,"");
             func_call_active = 0;   
         }
         else if(class_func_call_active==-1){
-            create_ins(0,"move","%rax",$1->addr,"");
+            create_ins(0,"move8","%rax",$1->addr,"");
             class_func_call_active = 0;
             class_active = 0;
         }
         else if(prev_self==1){
-            create_ins(0,"move",$2->addr,$1->addr,"");
+            create_ins(0,"move8",$2->addr,$1->addr,"");
             prev_self=0;
         }else if(prev_self==2){
-            create_ins(0,"move",$2->addr,$1->addr,"");
+            create_ins(0,"move8",$2->addr,$1->addr,"");
             prev_self=0;
         }
         else{
@@ -1291,7 +1313,7 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                 if(func_call_active==1 && prev_var_name!="range" && prev_var_name!="len" && prev_var_name!="print")
                 {
                     string reg=newTemp();
-                    create_ins(0,"move","%rax",reg,"");
+                    create_ins(0,"move8","%rax",reg,"");
                 
                     $$->addr=reg;
                     // $$->addr=$2->addr;
@@ -1496,7 +1518,7 @@ trailer: SMALL_OPEN {
                     // if(prev_var_name!="range" && prev_var_name!="len" && prev_var_name!="print")
                     // {
                     //     string reg=newTemp();
-                    //     create_ins(0,"move","%rax",reg,"");
+                    //     create_ins(0,"move8","%rax",reg,"");
                     //     // cout<<prev_var_name<<endl;
                     //     $$->addr=reg;
                     //     // func_call_active=0;
@@ -2302,6 +2324,7 @@ void MakeDOTFile(NODE*cell) {
 
 string newTemp(){
     // string temp = ".t" + to_string(tempCount);
+    
     string temp = ".t" + to_string(tempCount);
     tempCount++;
     return temp;
@@ -2317,10 +2340,18 @@ string newLabel(){
 void create_ins(int type, string optype, string addr1,string addr2, string addr3 ){
     vector<string> instruct{to_string(type), optype, addr1, addr2, addr3};
     // int flag=0;
-    if((type==3 || type==2 )&& offset_vec.find(curr_sym_tbl.top()->name+addr1)==offset_vec.end())
+    if((type==2 || type==3) &&offset_vec.find(curr_sym_tbl.top()->name+addr1)==offset_vec.end())
     {
         curr_sym_tbl.top()->x86_offset-=8;
         offset_vec[curr_sym_tbl.top()->name+addr1] = to_string(curr_sym_tbl.top()->x86_offset);
+        // flag=1;
+        // x86_file.push_back("subq $8, %rsp");
+        // cout<<"subq $8, %rsp"<<endl;
+    }
+    if(type==0 && optype=="move8" && addr2[0]=='.'&& offset_vec.find(curr_sym_tbl.top()->name+addr2)==offset_vec.end())
+    {
+        curr_sym_tbl.top()->x86_offset-=8;
+        offset_vec[curr_sym_tbl.top()->name+addr2] = to_string(curr_sym_tbl.top()->x86_offset);
         // flag=1;
         // x86_file.push_back("subq $8, %rsp");
         // cout<<"subq $8, %rsp"<<endl;
@@ -2394,7 +2425,7 @@ int get_offset(string temp, sym_table *symbol_table, string &reg)
         return 0;
     }
     else if(temp[0]=='%'){
-        reg=temp[0];
+        reg=temp;
         return 0;
     }
     else{
@@ -2584,7 +2615,7 @@ string res_ins;
             x86_file.push_back("movq %r13, %rax");
             x86_file.push_back("movq %r14, %rcx");
             x86_file.push_back("shl %cl, %al");
-            x86_file.push_back("movq %al, " + reg1);
+            x86_file.push_back("movq %rax, " + reg1);
         }
         else if(ins[1]==">>"){
             x86_file.push_back("movq " + reg2 + ", %r13");
@@ -2592,7 +2623,7 @@ string res_ins;
             x86_file.push_back("movq %r13, %rax");
             x86_file.push_back("movq %r14, %rcx");
             x86_file.push_back("shr %cl, %al");
-            x86_file.push_back("movq %al, " + reg1);
+            x86_file.push_back("movq %rax, " + reg1);
         }
         else if(ins[1]=="in"){
             x86_file.push_back("movq " + reg2 + ", %r13");
@@ -2660,10 +2691,12 @@ string res_ins;
             if(ins[1]=="main:"){
                 x86_file.push_back("pushq %rbp");
                 x86_file.push_back("movq %rsp, %rbp");
+                x86_file.push_back("subq $"+to_string(symbol_table->x86_offset*(-1))+", %rsp");
             }
             if(ins[1]!="main:"&& (symbol_table->name+":" ==ins[1])){
                 x86_file.push_back("pushq %rbp");
                 x86_file.push_back("movq %rsp, %rbp");
+                x86_file.push_back("subq $"+to_string(symbol_table->x86_offset*(-1))+", %rsp");
                 x86_file.push_back("pushq %rbx");
                 x86_file.push_back("pushq %rdi");
                 x86_file.push_back("pushq %rsi");
@@ -2672,7 +2705,6 @@ string res_ins;
                 x86_file.push_back("pushq %r14");
                 x86_file.push_back("pushq %r15");
 
-                x86_file.push_back("subq $"+to_string(symbol_table->x86_offset*(-1))+", %rsp");
             }
         }
         else if(ins[1] == "if_false"){
@@ -2683,19 +2715,48 @@ string res_ins;
             x86_file.push_back("je "+ins[4]);
         }
         else if(ins[1]== "call,"){
-            
+            x86_file.push_back("call "+ins[2]);
+            x86_file.push_back("addq %r13, %rsp"); //restoring the space allocated for pushing the arguments
+
         }else if(ins[1]=="move8"){
             string reg1,reg2;
             int temp1=get_offset(ins[2],symbol_table,reg1);
             int temp2=get_offset(ins[3],symbol_table,reg2);
             if((reg1[0]=='-'|| (reg1[0]<='9'&& reg1[0]>='0')) && (reg2[0]=='-'|| (reg2[0]<='9'&& reg2[0]>='0')))
             {
-                x86_file.push_back("movq "+reg2+", %r13");
-                x86_file.push_back("movq %r13, "+reg1);
+                x86_file.push_back("movq "+reg1+", %r13");
+                x86_file.push_back("movq %r13, "+reg2);
             }
             else{
-                x86_file.push_back("movq "+reg2+", "+reg1);                
+                x86_file.push_back("movq "+reg1+", "+reg2);
             }
+        }
+        else if(ins[1]=="ret"){
+            x86_file.push_back("popq %r15");
+            x86_file.push_back("popq %r14");
+            x86_file.push_back("popq %r13");
+            x86_file.push_back("popq %r12");
+            x86_file.push_back("popq %rsi");
+            x86_file.push_back("popq %rdi");
+            x86_file.push_back("popq %rbx");
+            x86_file.push_back("addq $"+to_string(symbol_table->x86_offset*(-1))+", %rsp");
+            x86_file.push_back("popq %rbp");
+            x86_file.push_back("movq $"+to_string(symbol_table->parameter_count*8)+", %r13");
+            x86_file.push_back("ret");
+        }
+        else if(ins[1]=="push"){
+            string reg;
+            int temp=get_offset(ins[2],symbol_table,reg);
+            x86_file.push_back("pushq "+reg);
+        }
+        else if(ins[3].substr(0,13)=="declare_array"){
+            string size = ins[3].substr(14, ins[3].size()-2);
+            x86_file.push_back("movq $"+to_string(stoi(size)*2)+", %rdi");
+            x86_file.push_back("call malloc@plt");
+            //got the pointer to array in %rax
+            string reg;
+            int temp=get_offset(ins[1],symbol_table,reg);
+            x86_file.push_back("movq %rax, " + reg);
         }
     }
 }

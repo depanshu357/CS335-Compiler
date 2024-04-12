@@ -1,0 +1,7 @@
+main:   
+.t1 = 45
+x = .t1
+.t2 = 3
+.t3 = x >> .t2
+x = .t3
+print, x  

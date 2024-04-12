@@ -1,5 +1,5 @@
-i:int=3-2
-# i:int= 6-4
-print(i)
-# i=4
-# i:int = 4 and 5 
+def main():
+    print(3)
+    data : list[int] = [5, 3, 8, 2, 1, 9, 4, 6, 7]
+
+
