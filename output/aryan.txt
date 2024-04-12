@@ -1,24 +1,37 @@
-main:   
-.t1 = 123
+temp:   
+move8 0(%rbp) a 
+move8 4(%rbp) b 
+.t1 = 1
 i = .t1
-.t2 = 0
-j = .t2
-.t3 = 1
-.t4 = 5
-.t3 = .t3 - 1
-.t5 = .t3
+move i %rax 
+move8 %rbp %rsp 
+move8 -8(%rbp) %rbp 
+add %rsp $8 
+main:   
+.t2 = 123
+i = .t2
+.t3 = 0
+j = .t3
+push j  
+push i  
+call, temp  
+move %rax .t4 
+.t5 = 1
+.t6 = 5
+.t5 = .t5 - 1
+.t7 = .t5
 .label2:   
-.t5 = .t5 + 1
-.t6 = .t5 < .t4
-if_false .t6 goto .label1
-i = .t5
+.t7 = .t7 + 1
+.t8 = .t7 < .t6
+if_false .t8 goto .label1
+i = .t7
 print, j  
-.t7 = i * j
-.t8 = 1
-.t9 = .t7 + .t8
-j = .t9
+.t9 = i * j
+.t10 = 1
+.t11 = .t9 + .t10
+j = .t11
 goto .label2  
 .label1:   
-move8 rbp rsp 
-move8 -8(rbp) rbp 
-add rsp $0 
+move8 %rbp %rsp 
+move8 -8(%rbp) %rbp 
+add %rsp $0 

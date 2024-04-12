@@ -53,6 +53,7 @@
     int len_func_call_active=0;
     int len_arg_pushed=0;
     int print_func_call_active=0;
+    vector<vector<string>>parameter_ins;
     vector<vector<string>> len_func_arguments;
     vector<vector<string>> print_func_arguments;
     map<string, string> offset_vec;
@@ -296,9 +297,9 @@ funcdef:  DEF funcdef_title  func_body_suite {
                 // cout<<"poping "<<curr_sym_tbl.top()->name<<endl; 
                 curr_sym_tbl.pop(); 
         } 
-        create_ins(0,"move8","rbp","rsp","");
-        create_ins(0,"move8","-8(rbp)","rbp","");
-        create_ins(0,"add", "rsp","$"+to_string(func_par_offset),"");
+        create_ins(0,"move8","%rbp","%rsp","");
+        create_ins(0,"move8","-8(%rbp)","%rbp","");
+        create_ins(0,"add", "%rsp","$"+to_string(func_par_offset),"");
         func_par_offset = 0;
         prev_self = 0;
     }
@@ -315,8 +316,8 @@ funcdef_title: NAME {
         // else
         //     create_ins(0,string($1->lexeme)+":","","","");
 
-        // create_ins(0,"move8", "rbp","-8(rsp)","");
-        // create_ins(2,"=", "rbp","rsp","");
+        // create_ins(0,"move8", "%rbp","-8(%rsp)","");
+        // create_ins(2,"=", "%rbp","%rsp","");
     } 
     parameters func_type_hint_optional COLON { 
         $$ = create_node(5,"Func_def",$1,$3,$4,$5);
@@ -355,6 +356,10 @@ funcdef_title: NAME {
         }
         else
             create_ins(0,string($1->lexeme)+":","","","");
+        for(auto it:parameter_ins){
+            create_ins(stoi(it[0]),it[1],it[2],it[3],it[4]);
+        }
+        parameter_ins.clear();
 }
 ;
 
@@ -408,7 +413,8 @@ tfpdef: NAME { $$ = $1;
         if(is_param) {
             add_to_vector(parameter_vec, $1->lexeme, $1->lexeme,yylineno);
             int size_of_var=8;
-            create_ins(0,"move"+to_string(size_of_var),to_string(func_par_offset)+"(rbp)",$1->lexeme,"");
+            // create_ins(0,"move"+to_string(size_of_var),to_string(func_par_offset)+"(%rbp)",$1->lexeme,"");
+            parameter_ins.push_back({"0","move8",to_string(func_par_offset)+"(%rbp)",$1->lexeme,""});
             func_par_offset+=size_of_var; //size of self pointer
         }
         $$->type_of_node= search_type_in_sym_table(curr_sym_tbl.top(),$1->lexeme);
@@ -417,7 +423,8 @@ tfpdef: NAME { $$ = $1;
         if(is_param) {
             add_to_vector(parameter_vec, $1->lexeme, $2->lexeme,yylineno);
             int size_of_var=get_type_size($2->lexeme);
-            create_ins(0,"move"+to_string(size_of_var),to_string(func_par_offset)+"(rbp)",$1->lexeme,"");
+            // create_ins(0,"move"+to_string(size_of_var),to_string(func_par_offset)+"(%rbp)",$1->lexeme,"");
+            parameter_ins.push_back({"0","move8",to_string(func_par_offset)+"(%rbp)",$1->lexeme,""});
             func_par_offset+=size_of_var;
         }
         else{
@@ -505,7 +512,7 @@ return_stmt: RETURN testlist_star_expr {
             return 0;
         }
 
-        create_ins(0,"move",$2->addr,"rax","");
+        create_ins(0,"move",$2->addr,"%rax","");
         
     }
     | RETURN {
@@ -588,11 +595,11 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
             func_call_active = 0;
         }
         else if(func_call_active==-1){
-            create_ins(0,"move","rax",$1->addr,"");
+            create_ins(0,"move","%rax",$1->addr,"");
             func_call_active = 0;   
         }
         else if(class_func_call_active==-1){
-            create_ins(0,"move","rax",$1->addr,"");
+            create_ins(0,"move","%rax",$1->addr,"");
             class_func_call_active = 0;
             class_active = 0;
         }
@@ -1284,7 +1291,7 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                 if(func_call_active==1 && prev_var_name!="range" && prev_var_name!="len" && prev_var_name!="print")
                 {
                     string reg=newTemp();
-                    create_ins(0,"move","rax",reg,"");
+                    create_ins(0,"move","%rax",reg,"");
                 
                     $$->addr=reg;
                     // $$->addr=$2->addr;
@@ -1489,7 +1496,7 @@ trailer: SMALL_OPEN {
                     // if(prev_var_name!="range" && prev_var_name!="len" && prev_var_name!="print")
                     // {
                     //     string reg=newTemp();
-                    //     create_ins(0,"move","rax",reg,"");
+                    //     create_ins(0,"move","%rax",reg,"");
                     //     // cout<<prev_var_name<<endl;
                     //     $$->addr=reg;
                     //     // func_call_active=0;
@@ -2375,11 +2382,22 @@ int get_offset(string temp, sym_table *symbol_table, string &reg)
     }
     else if (temp[0] == '-' || temp[0] <= '9' && temp[0] >= '0')
     {
-        reg="$"+temp;
+        //check if string contains % or not
+        if (temp.find("%") != string::npos)
+        {
+            reg = temp;
+        }
+        else
+        {
+            reg = "$" + temp;
+        }
         return 0;
     }
-    else
-    {
+    else if(temp[0]=='%'){
+        reg=temp[0];
+        return 0;
+    }
+    else{
         int offset= get_offset_from_tbl(symbol_table, temp);
         /* reg="-"+to_string(offset)+"(%rbp)"; */
         reg=offset_vec[symbol_table->name+temp]+"(%rbp)";
@@ -2394,6 +2412,23 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
     /* if(ins[2]=="i"){
         cout<<ins[0]<<"heheheehe"<<endl;
     } */
+string res_ins;
+     if(ins[0]=="3"){
+            res_ins=ins[2] + " = " + ins[3] + " " + ins[1] + " " + ins[4] ; 
+    }
+    else if(ins[0]=="2"){
+        if(ins[1] == "="){
+            res_ins=ins[2] + " = " + ins[3] ;
+        }
+        else{
+            res_ins= ins[2] + " = " + ins[1] +" " +ins[3] ;
+        }
+    }else if(ins[0]=="0"){
+        res_ins=ins[1]+" "+ins[2]+" "+ins[3]+" "+ins[4];
+    }
+    x86_file.push_back("\n#"+res_ins);
+
+
     if (ins[0] == "3"){
         string reg1,reg2,reg3;
         int temp1 = get_offset(ins[2], symbol_table,reg1);
@@ -2647,6 +2682,21 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             x86_file.push_back("cmp $0, %rax");
             x86_file.push_back("je "+ins[4]);
         }
+        else if(ins[1]== "call,"){
+            
+        }else if(ins[1]=="move8"){
+            string reg1,reg2;
+            int temp1=get_offset(ins[2],symbol_table,reg1);
+            int temp2=get_offset(ins[3],symbol_table,reg2);
+            if((reg1[0]=='-'|| (reg1[0]<='9'&& reg1[0]>='0')) && (reg2[0]=='-'|| (reg2[0]<='9'&& reg2[0]>='0')))
+            {
+                x86_file.push_back("movq "+reg2+", %r13");
+                x86_file.push_back("movq %r13, "+reg1);
+            }
+            else{
+                x86_file.push_back("movq "+reg2+", "+reg1);                
+            }
+        }
     }
 }
 
@@ -2679,6 +2729,7 @@ void create_x86_file(string filename){
 
 void generate_x86_ins(){
     for(int i=0;i<instructions.size();i++){
+        
         print_x86_ins(instructions[i],sym_tbl_info[i]);
     }
 }
