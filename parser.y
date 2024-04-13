@@ -1267,6 +1267,7 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                     cout<<"Error invalid number of arguments at line " <<yylineno <<". Expected "<<sym_tbl_func_param.size()<<" arguments\n";
                     return 0;
                 }else {
+                    create_ins(0,"#callnew","","","");
                     for(int i=sym_tbl_func_param.size()-1;i>=1;i--){
                         if(sym_tbl_func_param[i].type!=func_arguments[i][1] ){
                             if(sym_tbl_func_param[i].type=="int" && func_arguments[i][1]=="float"){
@@ -1466,6 +1467,7 @@ trailer: SMALL_OPEN {
                 }
                 else{
                     int total_size=0;
+                    create_ins(0,"#callnew","","","");
                     for(int i=sym_tbl_func_param.size()-1;i>=1;i--){
                         total_size+=sym_tbl_func_param[i].size;
                         if(sym_tbl_func_param[i].type!=func_arguments[i][1] ){
@@ -1502,6 +1504,7 @@ trailer: SMALL_OPEN {
                     return 0;
 
                 }else {
+                    create_ins(0,"#callnew","","","");
                     for(int i=sym_tbl_func_param.size()-1;i>=0;i--){
                         if(sym_tbl_func_param[i].type!=func_arguments[i+1][1] ){
                             if(sym_tbl_func_param[i].type=="int" && func_arguments[i+1][1]=="float"){
@@ -1590,6 +1593,7 @@ trailer: SMALL_OPEN {
                 }
                 else{
                     int total_size=0;
+                    create_ins(0,"#callnew","","","");
                     for(int i=sym_tbl_func_param.size()-1;i>=1;i--){
                         total_size+=sym_tbl_func_param[i].size;
                         if(sym_tbl_func_param[i].type!=func_arguments[i-1][1] ){
@@ -1624,6 +1628,7 @@ trailer: SMALL_OPEN {
                      cout<<"Error invalid number of arguments at line " <<yylineno <<endl;
                     return 0;
                 }else 
+                    create_ins(0,"#callnew","","","");
                     for(int i=sym_tbl_func_param.size()-1;i>=0;i--){
                         if(sym_tbl_func_param[i].type!=func_arguments[i][1] ){
                             if(sym_tbl_func_param[i].type=="int" && func_arguments[i+1][1]=="float"){
@@ -2466,6 +2471,14 @@ string get_last_offset(string temp){
     }else return "0";
 }
 
+void callnew(sym_table * symbol_table){
+    x86_file.push_back("movq %rsp, "+to_string((symbol_table->x86_offset-8))+"(%rbp)");
+    x86_file.push_back("shr $4, %rsp");   // Shift right by 4 bits
+    x86_file.push_back("sub $1, %rsp");   // Add 1
+    x86_file.push_back("shl $4, %rsp"); 
+    return;
+}
+
 void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
 {
     /* if(ins[2]=="i"){
@@ -2505,12 +2518,55 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
 
     if (ins[0] == "3"){
         string reg1,reg2,reg3;
-        int temp1 = get_offset(ins[2], symbol_table,reg1);
-        string offset_1 = get_last_offset(reg1);
-        int temp2 = get_offset(ins[3], symbol_table,reg2);
-        string offset_2 = get_last_offset(reg2);
-        int temp3 = get_offset(ins[4], symbol_table,reg3);
-        string offset_3 = get_last_offset(reg3);
+        string offset_1,offset_2,offset_3;
+        if(ins[2].back() == ']'){
+            string reg4,reg5;
+            string s1 = ins[2].substr(0, ins[3].find('['));
+            string s2 = ins[2].substr(ins[3].find('[') + 1, ins[2].find(']') - ins[2].find('[') - 1);
+            
+            int temp1=get_offset(s1,symbol_table,reg4);
+            int temp2=get_offset(s2,symbol_table,reg5);
+            
+            x86_file.push_back("movq "+ reg4 + ", %r8");
+            x86_file.push_back("movq "+ reg5 + ", %r9");
+            reg1 = "( %r8, %r9 )";
+        }
+        else{
+            int temp1 = get_offset(ins[2], symbol_table,reg1);
+            offset_1 = get_last_offset(reg1);
+        }
+        if(ins[3].back()==']'){
+            string reg4,reg5;
+            string s1 = ins[3].substr(0, ins[3].find('['));
+            string s2 = ins[3].substr(ins[3].find('[') + 1, ins[3].find(']') - ins[3].find('[') - 1);
+            
+            int temp1=get_offset(s1,symbol_table,reg4);
+            int temp2=get_offset(s2,symbol_table,reg5);
+            
+            x86_file.push_back("movq "+ reg4 + ", %r10");
+            x86_file.push_back("movq "+ reg5 + ", %r11");
+            reg2 = "( %r10, %r11 )";
+        }
+        else{
+            int temp2 = get_offset(ins[3], symbol_table,reg2);
+            offset_2 = get_last_offset(reg2);
+        }
+        if(ins[4].back()==']'){
+            string reg4,reg5;
+            string s1 = ins[4].substr(0, ins[4].find('['));
+            string s2 = ins[4].substr(ins[4].find('[') + 1, ins[4].find(']') - ins[4].find('[') - 1);
+            
+            int temp1=get_offset(s1,symbol_table,reg4);
+            int temp2=get_offset(s2,symbol_table,reg5);
+            
+            x86_file.push_back("movq "+ reg4 + ", %r12");
+            x86_file.push_back("movq "+ reg5 + ", %r15");
+            reg3 = "( %r12, %r15 )";
+        }
+        else{
+            int temp3 = get_offset(ins[4], symbol_table,reg3);
+            offset_3 = get_last_offset(reg3);
+        }
         // cout<<offset_1<<" "<<offset_2<<" "<<offset_3<<endl;
         
         if (ins[1] == "+")
@@ -2685,10 +2741,39 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
     }
     else if(ins[0]=="2"){
         string reg1, reg2;
-        int temp1 = get_offset(ins[2], symbol_table, reg1);
-        string offset_1 = get_last_offset(reg1);
-        int temp2 = get_offset(ins[3], symbol_table, reg2);
-        string offset_2 = get_last_offset(reg2);
+        string offset_1, offset_2;
+        if(ins[2].back() == ']'){
+            string reg4,reg5;
+            string s1 = ins[2].substr(0, ins[2].find('['));
+            string s2 = ins[2].substr(ins[2].find('[') + 1, ins[2].find(']') - ins[2].find('[') - 1);
+            
+            int temp1=get_offset(s1,symbol_table,reg4);
+            int temp2=get_offset(s2,symbol_table,reg5);
+            
+            x86_file.push_back("movq "+ reg4 + ", %r8");
+            x86_file.push_back("movq "+ reg5 + ", %r9");
+            reg1 = "( %r8, %r9 )";
+        }
+        else{
+            int temp1 = get_offset(ins[2], symbol_table, reg1);
+            offset_1 = get_last_offset(reg1);
+        }
+        if(ins[3].back()==']'){
+            string reg4,reg5;
+            string s1 = ins[3].substr(0, ins[3].find('['));
+            string s2 = ins[3].substr(ins[3].find('[') + 1, ins[3].find(']') - ins[3].find('[') - 1);
+            
+            int temp1=get_offset(s1,symbol_table,reg4);
+            int temp2=get_offset(s2,symbol_table,reg5);
+            
+            x86_file.push_back("movq "+ reg4 + ", %r10");
+            x86_file.push_back("movq "+ reg5 + ", %r11");
+            reg2 = "( %r10, %r11 )";
+        }
+        else{
+            int temp2 = get_offset(ins[3], symbol_table, reg2);
+            offset_2 = get_last_offset(reg2);
+        }
         // cout<<offset_1<<" "<<offset_2<<endl;
         /* if(ins[2]=="i"){
             cout<<ins[1]<<" hehehe "<<reg1<<" "<<reg2<<endl;        } */
@@ -2700,24 +2785,12 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
                 str_map[offset_1] = "\\n";
                 str_map[offset_2] = "\\n";
             }
-            if(ins[3].back()==']'){
-                string reg4,reg5,reg6;
-                string s1 = ins[3].substr(0, ins[3].find('['));
-                string s2 = ins[3].substr(ins[3].find('[') + 1, ins[3].find(']') - ins[3].find('[') - 1);
-                
-                int temp1=get_offset(s1,symbol_table,reg4);
-                int temp2=get_offset(s2,symbol_table,reg5);
-                int temp3=get_offset(ins[2],symbol_table,reg6);
-                
-                x86_file.push_back("movq "+ reg4 + ", %r13");
-                x86_file.push_back("movq "+ reg5 + ", %r14");
-                x86_file.push_back("movq (%r13, %r14), %r15");
-                x86_file.push_back("movq %r15, "+reg6);
-
+            if(ins[3].back()==']' && ins[2].back()==']'){
+                x86_file.push_back("movq "+reg2+", %r13");
+                x86_file.push_back("movq %r13, "+reg1);
             }
             else if(ins[3][0]>= '0' && ins[3][0]<='9'){
                 x86_file.push_back("movq "+reg2+", "+reg1);
-                /* cout<<reg1<<" "<<reg2<<endl;             */
             }
             else{
                 x86_file.push_back("movq " + reg2 + ", %r13");
@@ -2741,8 +2814,23 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
     }else if(ins[0]=="0"){
         if(ins[1]=="print,"){
             string reg;
-            int offset=get_offset(ins[2],symbol_table,reg);
-            string offset_1 = get_last_offset(reg);
+            string offset_1;
+            if(ins[2].back()==']'){
+                string reg4,reg5;
+                string s1 = ins[2].substr(0, ins[2].find('['));
+                string s2 = ins[2].substr(ins[2].find('[') + 1, ins[2].find(']') - ins[2].find('[') - 1);
+                
+                int temp1=get_offset(s1,symbol_table,reg4);
+                int temp2=get_offset(s2,symbol_table,reg5);
+                
+                x86_file.push_back("movq "+ reg4 + ", %r8");
+                x86_file.push_back("movq "+ reg5 + ", %r9");
+                reg = "( %r8, %r9 )";
+            }
+            else{
+                int temp1 = get_offset(ins[2], symbol_table, reg);
+                offset_1 = get_last_offset(reg);
+            }
             // cout<<offset_1<<endl;
             // x86_file.push_back("push %rbx");
             x86_file.push_back("mov "+reg+", %rax");
@@ -2756,11 +2844,10 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             x86_file.push_back("mov %rax, %rdi");
             x86_file.push_back("xor %rax, %rax");
             // x86_file.push_back("subq $"+to_string(curr_sym_tbl.top()->x86_offset *(-1))+", %rsp");
-            x86_file.push_back("shr $4, %rsp");   // Shift right by 4 bits
-            x86_file.push_back("sub $1, %rsp");   // Add 1
-            x86_file.push_back("shl $4, %rsp");   // Shift left by 4 bits
+            callnew(symbol_table);
             x86_file.push_back("call printf@plt");
-            // x86_file.push_back("pop %rbx");
+            x86_file.push_back("movq "+to_string((symbol_table->x86_offset-8))+"(%rbp), %rsp");
+            // x86_file.push_back("pop %rsp");
         }
         else if(ins[1]=="goto"){
             // cout<<"jumppp "<<ins[2]<<endl;
@@ -2773,7 +2860,7 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             if(ins[1]=="main:"){
                 x86_file.push_back("pushq %rbp");
                 x86_file.push_back("movq %rsp, %rbp");
-                x86_file.push_back("subq $"+to_string(symbol_table->x86_offset*(-1))+", %rsp");
+                x86_file.push_back("subq $"+to_string(symbol_table->x86_offset*(-1) + 8)+", %rsp");
             }
             if(ins[1]!="main:"&& (symbol_table->name+":" ==ins[1])){
                 x86_file.push_back("pushq %rbp");
@@ -2797,11 +2884,11 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             x86_file.push_back("je "+ins[4]);
         }
         else if(ins[1]== "call,"){
-            x86_file.push_back("shr $4, %rsp");   // Shift right by 4 bits
-            x86_file.push_back("sub $1, %rsp");   // Add 1
-            x86_file.push_back("shl $4, %rsp"); 
+        //    callnew(symbol_table); //handled in antoher if condition #callnew
             x86_file.push_back("call "+ins[2]);
             x86_file.push_back("addq %r13, %rsp"); //restoring the space allocated for pushing the arguments
+            x86_file.push_back("movq "+to_string((symbol_table->x86_offset-8))+"(%rbp), %rsp");
+            // x86_file.push_back("pop %rsp"); //restoring the prev rsp before callnew
 
         }else if(ins[1]=="move8"){
             string reg1,reg2;
@@ -2836,11 +2923,11 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
         }
         else if(ins[3].substr(0,13)=="declare_array"){
             string size = ins[3].substr(14, ins[3].size()-15);
-            x86_file.push_back("shr $4, %rsp");   // Shift right by 4 bits
-            x86_file.push_back("sub $1, %rsp");   // Add 1
-            x86_file.push_back("shl $4, %rsp"); 
+            callnew(symbol_table);
             x86_file.push_back("movq $"+ size +", %rdi");
             x86_file.push_back("call malloc@plt");
+            x86_file.push_back("movq "+to_string((symbol_table->x86_offset-8))+"(%rbp), %rsp");
+            // x86_file.push_back("pop %rsp"); //restoring the prev rsp before callnew
             //got the pointer to array in %rax
             string reg;
             int temp=get_offset(ins[1],symbol_table,reg);
@@ -2859,6 +2946,9 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             x86_file.push_back("movq "+ reg3 + ", %r15");
             x86_file.push_back("movq %r15, (%r13, %r14)"); // Store the value 4 at memory location a + offset
 
+        }
+        else if(ins[1]=="#callnew"){
+            callnew(symbol_table);
         }
     }
 }

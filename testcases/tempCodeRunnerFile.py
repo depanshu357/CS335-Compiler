@@ -9,17 +9,16 @@ def temp(a:int)->int:
     # print(i)
     # print(j)
     x:int=temp(a-1)+ temp(a-2)
-    data : list[int] = [10,9,8,7,6,5,4,3,2,1]
-    data[1] = data[2] * data[3]
-    i:int = data[1]
-    print(i)
+    print("The fib of ")
+    print(a)
+    print(" is ")
+    print(x)
     return x
 
 
 def main():
     i:int=123
     print(i)
-    i=temp(2)
+    i=temp(5)
     print(i)
     print("func ended")
-

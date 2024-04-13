@@ -1,46 +1,10 @@
-temp:   
-move8 16(%rbp) a 
-.t1 = 0
-.t2 = a == .t1
-if_false .t2 goto .label2
-.t3 = 1
-move8 .t3 %rax 
-ret   
-goto .label1  
-.label2:   
-.label1:   
-.t4 = 1
-.t5 = a == .t4
-if_false .t5 goto .label4
-.t6 = 1
-move8 .t6 %rax 
-ret   
-goto .label3  
-.label4:   
-.label3:   
-.t7 = 1
-.t8 = a - .t7
-push .t8  
-call, temp  
-move8 %rax .t9 
-.t10 = 2
-.t11 = a - .t10
-push .t11  
-call, temp  
-move8 %rax .t12 
-.t13 = .t9 + .t12
-move8 .t13 %rax 
-ret   
 main:   
-.t14 = 123
-i = .t14
-print, i  
-.t15 = 5
-push .t15  
-call, temp  
-move8 %rax .t16 
-i = .t16
-print, i  .t6 = 5
+.t1 = 10
+.t2 = 9
+.t3 = 8
+.t4 = 7
+.t5 = 6
+.t6 = 5
 .t7 = 4
 .t8 = 3
 .t9 = 2
@@ -71,43 +35,20 @@ print, i  .t6 = 5
 .t12 = .t12 + 8
 .t11 = .t11 + 8
 data = .t11
-.t13 = 0
+.t13 = 1
 .t15 = .t13 * 8
-i = data[.t15]
-.t16 = 1
+.t16 = 2
 .t18 = .t16 * 8
-j = data[.t18]
-.t19 = 2
+.t19 = 3
 .t21 = .t19 * 8
-k = data[.t21]
-.t22 = 3
-.t24 = .t22 * 8
-l = data[.t24]
-.t25 = 4
-.t27 = .t25 * 8
-m = data[.t27]
-.t28 = 5
-.t30 = .t28 * 8
-n = data[.t30]
-.t31 = 6
-.t33 = .t31 * 8
-o = data[.t33]
-.t34 = 7
-.t36 = .t34 * 8
-p = data[.t36]
-.t37 = 8
-.t39 = .t37 * 8
-q = data[.t39]
-.t40 = 9
-.t42 = .t40 * 8
-r = data[.t42]
+.t22 = data[.t18] * data[.t21]
+data[.t15] = .t22
+.t23 = 1
+.t25 = .t23 * 8
+i = data[.t25]
 print, i int 
-print, j int 
-print, k int 
-print, l int 
-print, m int 
-print, n int 
-print, o int 
-print, p int 
-print, q int 
-print, r int 
+.t26 = 1
+.t28 = .t26 * 8
+print, data[.t28] int 
+.t29 = "SAB HO GAYA"
+print, .t29 str 
