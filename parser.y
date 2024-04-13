@@ -2518,12 +2518,55 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
 
     if (ins[0] == "3"){
         string reg1,reg2,reg3;
-        int temp1 = get_offset(ins[2], symbol_table,reg1);
-        string offset_1 = get_last_offset(reg1);
-        int temp2 = get_offset(ins[3], symbol_table,reg2);
-        string offset_2 = get_last_offset(reg2);
-        int temp3 = get_offset(ins[4], symbol_table,reg3);
-        string offset_3 = get_last_offset(reg3);
+        string offset_1,offset_2,offset_3;
+        if(ins[2].back() == ']'){
+            string reg4,reg5;
+            string s1 = ins[2].substr(0, ins[3].find('['));
+            string s2 = ins[2].substr(ins[3].find('[') + 1, ins[2].find(']') - ins[2].find('[') - 1);
+            
+            int temp1=get_offset(s1,symbol_table,reg4);
+            int temp2=get_offset(s2,symbol_table,reg5);
+            
+            x86_file.push_back("movq "+ reg4 + ", %r8");
+            x86_file.push_back("movq "+ reg5 + ", %r9");
+            reg1 = "( %r8, %r9 )";
+        }
+        else{
+            int temp1 = get_offset(ins[2], symbol_table,reg1);
+            offset_1 = get_last_offset(reg1);
+        }
+        if(ins[3].back()==']'){
+            string reg4,reg5;
+            string s1 = ins[3].substr(0, ins[3].find('['));
+            string s2 = ins[3].substr(ins[3].find('[') + 1, ins[3].find(']') - ins[3].find('[') - 1);
+            
+            int temp1=get_offset(s1,symbol_table,reg4);
+            int temp2=get_offset(s2,symbol_table,reg5);
+            
+            x86_file.push_back("movq "+ reg4 + ", %r10");
+            x86_file.push_back("movq "+ reg5 + ", %r11");
+            reg2 = "( %r10, %r11 )";
+        }
+        else{
+            int temp2 = get_offset(ins[3], symbol_table,reg2);
+            offset_2 = get_last_offset(reg2);
+        }
+        if(ins[4].back()==']'){
+            string reg4,reg5;
+            string s1 = ins[4].substr(0, ins[4].find('['));
+            string s2 = ins[4].substr(ins[4].find('[') + 1, ins[4].find(']') - ins[4].find('[') - 1);
+            
+            int temp1=get_offset(s1,symbol_table,reg4);
+            int temp2=get_offset(s2,symbol_table,reg5);
+            
+            x86_file.push_back("movq "+ reg4 + ", %r12");
+            x86_file.push_back("movq "+ reg5 + ", %r15");
+            reg3 = "( %r12, %r15 )";
+        }
+        else{
+            int temp3 = get_offset(ins[4], symbol_table,reg3);
+            offset_3 = get_last_offset(reg3);
+        }
         // cout<<offset_1<<" "<<offset_2<<" "<<offset_3<<endl;
         
         if (ins[1] == "+")
@@ -2698,10 +2741,39 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
     }
     else if(ins[0]=="2"){
         string reg1, reg2;
-        int temp1 = get_offset(ins[2], symbol_table, reg1);
-        string offset_1 = get_last_offset(reg1);
-        int temp2 = get_offset(ins[3], symbol_table, reg2);
-        string offset_2 = get_last_offset(reg2);
+        string offset_1, offset_2;
+        if(ins[2].back() == ']'){
+            string reg4,reg5;
+            string s1 = ins[2].substr(0, ins[2].find('['));
+            string s2 = ins[2].substr(ins[2].find('[') + 1, ins[2].find(']') - ins[2].find('[') - 1);
+            
+            int temp1=get_offset(s1,symbol_table,reg4);
+            int temp2=get_offset(s2,symbol_table,reg5);
+            
+            x86_file.push_back("movq "+ reg4 + ", %r8");
+            x86_file.push_back("movq "+ reg5 + ", %r9");
+            reg1 = "( %r8, %r9 )";
+        }
+        else{
+            int temp1 = get_offset(ins[2], symbol_table, reg1);
+            offset_1 = get_last_offset(reg1);
+        }
+        if(ins[3].back()==']'){
+            string reg4,reg5;
+            string s1 = ins[3].substr(0, ins[3].find('['));
+            string s2 = ins[3].substr(ins[3].find('[') + 1, ins[3].find(']') - ins[3].find('[') - 1);
+            
+            int temp1=get_offset(s1,symbol_table,reg4);
+            int temp2=get_offset(s2,symbol_table,reg5);
+            
+            x86_file.push_back("movq "+ reg4 + ", %r10");
+            x86_file.push_back("movq "+ reg5 + ", %r11");
+            reg2 = "( %r10, %r11 )";
+        }
+        else{
+            int temp2 = get_offset(ins[3], symbol_table, reg2);
+            offset_2 = get_last_offset(reg2);
+        }
         // cout<<offset_1<<" "<<offset_2<<endl;
         /* if(ins[2]=="i"){
             cout<<ins[1]<<" hehehe "<<reg1<<" "<<reg2<<endl;        } */
@@ -2713,24 +2785,12 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
                 str_map[offset_1] = "\\n";
                 str_map[offset_2] = "\\n";
             }
-            if(ins[3].back()==']'){
-                string reg4,reg5,reg6;
-                string s1 = ins[3].substr(0, ins[3].find('['));
-                string s2 = ins[3].substr(ins[3].find('[') + 1, ins[3].find(']') - ins[3].find('[') - 1);
-                
-                int temp1=get_offset(s1,symbol_table,reg4);
-                int temp2=get_offset(s2,symbol_table,reg5);
-                int temp3=get_offset(ins[2],symbol_table,reg6);
-                
-                x86_file.push_back("movq "+ reg4 + ", %r13");
-                x86_file.push_back("movq "+ reg5 + ", %r14");
-                x86_file.push_back("movq (%r13, %r14), %r15");
-                x86_file.push_back("movq %r15, "+reg6);
-
+            if(ins[3].back()==']' && ins[2].back()==']'){
+                x86_file.push_back("movq "+reg2+", %r13");
+                x86_file.push_back("movq %r13, "+reg1);
             }
             else if(ins[3][0]>= '0' && ins[3][0]<='9'){
                 x86_file.push_back("movq "+reg2+", "+reg1);
-                /* cout<<reg1<<" "<<reg2<<endl;             */
             }
             else{
                 x86_file.push_back("movq " + reg2 + ", %r13");
@@ -2754,8 +2814,23 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
     }else if(ins[0]=="0"){
         if(ins[1]=="print,"){
             string reg;
-            int offset=get_offset(ins[2],symbol_table,reg);
-            string offset_1 = get_last_offset(reg);
+            string offset_1;
+            if(ins[2].back()==']'){
+                string reg4,reg5;
+                string s1 = ins[2].substr(0, ins[2].find('['));
+                string s2 = ins[2].substr(ins[2].find('[') + 1, ins[2].find(']') - ins[2].find('[') - 1);
+                
+                int temp1=get_offset(s1,symbol_table,reg4);
+                int temp2=get_offset(s2,symbol_table,reg5);
+                
+                x86_file.push_back("movq "+ reg4 + ", %r8");
+                x86_file.push_back("movq "+ reg5 + ", %r9");
+                reg = "( %r8, %r9 )";
+            }
+            else{
+                int temp1 = get_offset(ins[2], symbol_table, reg);
+                offset_1 = get_last_offset(reg);
+            }
             // cout<<offset_1<<endl;
             // x86_file.push_back("push %rbx");
             x86_file.push_back("mov "+reg+", %rax");

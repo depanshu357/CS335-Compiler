@@ -1,9 +1,12 @@
-print("hello")
-print("hello")
+def main():   
 
-# def main():   
+    data : list[int] = [10,9,8,7,6,5,4,3,2,1]
+    data[1] = data[2] * data[3]
+    i:int = data[1]
+    print(i)
+    print(data[1])
+    print("SAB HO GAYA")
 
-#     data : list[int] = [10,9,8,7,6,5,4,3,2,1]
 #     i:int=data[0]
 #     j:int=data[1]
 #     k:int=data[2]

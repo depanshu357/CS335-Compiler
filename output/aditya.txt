@@ -1,53 +1,54 @@
-temp:   
-move8 16(%rbp) a 
-.t1 = 0
-.t2 = a == .t1
-if_false .t2 goto .label2
-.t3 = 1
-move8 .t3 %rax 
-ret   
-goto .label1  
-.label2:   
-.label1:   
-.t4 = 1
-.t5 = a == .t4
-if_false .t5 goto .label4
-.t6 = 1
-move8 .t6 %rax 
-ret   
-goto .label3  
-.label4:   
-.label3:   
-.t7 = 1
-.t8 = a - .t7
-#callnew   
-push .t8  
-call, temp  
-move8 %rax .t9 
-.t10 = 2
-.t11 = a - .t10
-#callnew   
-push .t11  
-call, temp  
-move8 %rax .t12 
-.t13 = .t9 + .t12
-x = .t13
-.t14 = "The fib of "
-print, .t14 str 
-print, a int 
-.t15 = " is "
-print, .t15 str 
-print, x int 
-move8 x %rax 
-ret   
 main:   
-.t16 = 123
-i = .t16
+.t1 = 10
+.t2 = 9
+.t3 = 8
+.t4 = 7
+.t5 = 6
+.t6 = 5
+.t7 = 4
+.t8 = 3
+.t9 = 2
+.t10 = 1
+.t11 = declare_array(88) 
+.t12 = 0
+.t11[.t12] = 10 
+.t12 = .t12 + 8
+.t11[.t12] = .t1 
+.t12 = .t12 + 8
+.t11[.t12] = .t2 
+.t12 = .t12 + 8
+.t11[.t12] = .t3 
+.t12 = .t12 + 8
+.t11[.t12] = .t4 
+.t12 = .t12 + 8
+.t11[.t12] = .t5 
+.t12 = .t12 + 8
+.t11[.t12] = .t6 
+.t12 = .t12 + 8
+.t11[.t12] = .t7 
+.t12 = .t12 + 8
+.t11[.t12] = .t8 
+.t12 = .t12 + 8
+.t11[.t12] = .t9 
+.t12 = .t12 + 8
+.t11[.t12] = .t10 
+.t12 = .t12 + 8
+.t11 = .t11 + 8
+data = .t11
+.t13 = 1
+.t15 = .t13 * 8
+.t16 = 2
+.t18 = .t16 * 8
+.t19 = 3
+.t21 = .t19 * 8
+.t22 = data[.t18] * data[.t21]
+data[.t15] = .t22
+.t23 = 1
+.t25 = .t23 * 8
+i = data[.t25]
 print, i int 
-.t17 = 5
-#callnew   
-push .t17  
-call, temp  
-move8 %rax .t18 
-i = .t18
-print, i int 
+.t26 = 1
+.t28 = .t26 * 8
+print, data[.t28] int 
+.t29 = "SAB HO GAYA"
+print, .t29 str 
