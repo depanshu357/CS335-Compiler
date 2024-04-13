@@ -1,4 +1,0 @@
-main:   
-.t1 = 123
-i = .t1
-print, i  

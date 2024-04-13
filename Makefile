@@ -12,5 +12,14 @@ outputfile: $(file)
 	@echo $(file)
 	gcc -g -no-pie $(file) -o outputfile 
 
+temporary: 
+		bison -t -d -v parser.y 
+		flex lexer.l
+		g++ parser.tab.c lex.yy.c -o main
+		./main --input=./testcases/temp2.py --output=temp2
+		gcc -g -no-pie ./output/temp2.s -o temp2.o
+		./temp2.o
+
+
 # clean:
 # 	rm -f outputfile

@@ -2,6 +2,7 @@
     #include <bits/stdc++.h>
     #include "node.h"
     #include "symbol_table.cpp"
+    #include <typeinfo>
     // #include "x_86.cpp"
     using namespace std;
     int yylex();    
@@ -57,9 +58,14 @@
     vector<vector<string>> len_func_arguments;
     vector<vector<string>> print_func_arguments;
     map<string, string> offset_vec;
+    string last_offset = "0";
     int class_par_offset = 0, prev_self = 0;
     vector<sym_table*>sym_tbl_info;
     int p_prev_range=0;
+    int strCount = 0;
+    string get_str_name();
+    map<string,string> str_map;
+    string last_string = "";
 %}
 
 %union {
@@ -358,7 +364,7 @@ funcdef_title: NAME {
         }
 
         if(check_flag){
-            create_ins(0,curr_sym_tbl.top()->name+"@"+$1->lexeme+":","","","");
+            create_ins(0,curr_sym_tbl.top()->prev_sym_table->name+"@"+$1->lexeme+":","","","");
         }
         else
             create_ins(0,string($1->lexeme)+":","","","");
@@ -419,7 +425,7 @@ tfpdef: NAME { $$ = $1;
         if(is_param) {
             add_to_vector(parameter_vec, $1->lexeme, $1->lexeme,yylineno);
             int size_of_var=8;
-            // create_ins(0,"move8"+to_string(size_of_var),to_string(func_par_offset)+"(%rbp)",$1->lexeme,"");
+            // create_ins(0,"move"+to_string(size_of_var),to_string(func_par_offset)+"(%rbp)",$1->lexeme,"");
             parameter_ins.push_back({"0","move8",to_string(func_par_offset)+"(%rbp)",$1->lexeme,""});
             func_par_offset+=size_of_var; //size of self pointer
             
@@ -430,7 +436,7 @@ tfpdef: NAME { $$ = $1;
         if(is_param) {
             add_to_vector(parameter_vec, $1->lexeme, $2->lexeme,yylineno);
             int size_of_var=get_type_size($2->lexeme);
-            // create_ins(0,"move8"+to_string(size_of_var),to_string(func_par_offset)+"(%rbp)",$1->lexeme,"");
+            // create_ins(0,"move"+to_string(size_of_var),to_string(func_par_offset)+"(%rbp)",$1->lexeme,"");
             parameter_ins.push_back({"0","move8",to_string(func_par_offset +16)+"(%rbp)",$1->lexeme,""});
             func_par_offset+=size_of_var;
         }
@@ -1562,7 +1568,7 @@ trailer: SMALL_OPEN {
         }
          else if(print_func_call_active==1){
             print_func_call_active=0;
-            create_ins(0,"print,",print_func_arguments[0][0],"","");
+            create_ins(0,"print,",print_func_arguments[0][0],print_func_arguments[0][1],"");
             print_func_arguments.clear();
             // len_func=-1;
             $$->addr=$3->addr;
@@ -2187,6 +2193,7 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         string reg=newTemp();
         create_ins(2,"=", reg,$1->addr,"");
         $$->addr=reg;
+
         // if(prev_var_name=="print"){
         //     create_ins(0,"print(", $1->addr,")","");
         //     prev_var_name="";
@@ -2337,6 +2344,12 @@ string newLabel(){
     return temp;
 }
 
+string get_str_name(){
+    string temp = ".str" + to_string(strCount);
+    strCount++;
+    return temp;
+}
+
 void create_ins(int type, string optype, string addr1,string addr2, string addr3 ){
     vector<string> instruct{to_string(type), optype, addr1, addr2, addr3};
     // int flag=0;
@@ -2409,6 +2422,11 @@ int get_offset(string temp, sym_table *symbol_table, string &reg)
         reg="-"+to_string((offset-1)*8)+"(%r15)";
         return offset; */
         reg = offset_vec[symbol_table->name+temp] + "(%rbp)";
+        // last_offset = offset_vec[symbol_table->name+temp].substr(1);
+        string offset_temp = offset_vec[symbol_table->name+temp];
+        if(offset_temp.size())
+            last_offset = offset_vec[symbol_table->name+temp].substr(1);
+        else last_offset = "0";
         return 0;
     }
     else if (temp[0] == '-' || temp[0] <= '9' && temp[0] >= '0')
@@ -2426,24 +2444,34 @@ int get_offset(string temp, sym_table *symbol_table, string &reg)
     }
     else if(temp[0]=='%'){
         reg=temp;
+        last_offset = "0";
         return 0;
     }
     else{
         int offset= get_offset_from_tbl(symbol_table, temp);
         /* reg="-"+to_string(offset)+"(%rbp)"; */
         reg=offset_vec[symbol_table->name+temp]+"(%rbp)";
+        // last_offset = offset_vec[symbol_table->name+temp].substr(1);
+        string offset_temp = offset_vec[symbol_table->name+temp];
+        if(offset_temp.size())
+            last_offset = offset_vec[symbol_table->name+temp].substr(1);
+        else last_offset = "0";
         return 0;
     }
 }
 
-
+string get_last_offset(string temp){
+    if(temp.size()>6){
+        return temp.substr(1,temp.size()-7);
+    }else return "0";
+}
 
 void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
 {
     /* if(ins[2]=="i"){
         cout<<ins[0]<<"heheheehe"<<endl;
     } */
-string res_ins;
+    string res_ins;
      if(ins[0]=="3"){
             res_ins=ins[2] + " = " + ins[3] + " " + ins[1] + " " + ins[4] ; 
     }
@@ -2458,13 +2486,32 @@ string res_ins;
         res_ins=ins[1]+" "+ins[2]+" "+ins[3]+" "+ins[4];
     }
     x86_file.push_back("\n#"+res_ins);
+    // cout<<ins[3]
+    char firstLetter = ins[3][0];
+    int is_string = 0;
+    if(firstLetter>='0' && firstLetter<='9'){
+        // cout<<"it is a number : "<<ins[3]<<endl;
+    }else if(firstLetter=='"'){
+        // cout<<"it is a string : "<<ins[3]<<endl;
+        last_string = ins[3];
+        is_string = 1;
+    }
+        // cout<<last_offset<<endl;
+    
+
+    // string strx = typeid(ins[3]).name();
+    // cout<<strx<<endl;
 
 
     if (ins[0] == "3"){
         string reg1,reg2,reg3;
         int temp1 = get_offset(ins[2], symbol_table,reg1);
+        string offset_1 = get_last_offset(reg1);
         int temp2 = get_offset(ins[3], symbol_table,reg2);
+        string offset_2 = get_last_offset(reg2);
         int temp3 = get_offset(ins[4], symbol_table,reg3);
+        string offset_3 = get_last_offset(reg3);
+        // cout<<offset_1<<" "<<offset_2<<" "<<offset_3<<endl;
         
         if (ins[1] == "+")
         {
@@ -2639,11 +2686,20 @@ string res_ins;
     else if(ins[0]=="2"){
         string reg1, reg2;
         int temp1 = get_offset(ins[2], symbol_table, reg1);
+        string offset_1 = get_last_offset(reg1);
         int temp2 = get_offset(ins[3], symbol_table, reg2);
+        string offset_2 = get_last_offset(reg2);
+        // cout<<offset_1<<" "<<offset_2<<endl;
         /* if(ins[2]=="i"){
             cout<<ins[1]<<" hehehe "<<reg1<<" "<<reg2<<endl;        } */
         if(ins[1]=="="){
-            
+            if(last_string.size()>2){
+                str_map[offset_1] = last_string.substr(1,last_string.size()-2)+"\\n";
+                str_map[offset_2] = last_string.substr(1,last_string.size()-2)+"\\n";
+            }else{
+                str_map[offset_1] = "\\n";
+                str_map[offset_2] = "\\n";
+            }
             if(ins[3].back()==']'){
                 string reg4,reg5,reg6;
                 string s1 = ins[3].substr(0, ins[3].find('['));
@@ -2675,7 +2731,6 @@ string res_ins;
             x86_file.push_back("notq %r14");
             x86_file.push_back("movq %r14, " + reg1);
         }else if(ins[1]=="not"){
-            cout<<"not aya"<<endl;
             x86_file.push_back("movq " + reg2 + ", %r14");
             x86_file.push_back("cmpq $0, %r14");
             x86_file.push_back("sete %al");
@@ -2687,15 +2742,22 @@ string res_ins;
         if(ins[1]=="print,"){
             string reg;
             int offset=get_offset(ins[2],symbol_table,reg);
+            string offset_1 = get_last_offset(reg);
+            // cout<<offset_1<<endl;
             // x86_file.push_back("push %rbx");
             x86_file.push_back("mov "+reg+", %rax");
             x86_file.push_back("mov %rax, %rsi");
-            x86_file.push_back("lea .note0(%rip), %rax");
+            if(ins[3]=="str"){
+                string str_name=get_str_name();
+                x86_file.push_back("leaq .str"+offset_1+"(%rip), %rax");
+            }else{
+                x86_file.push_back("lea .note0(%rip), %rax");
+            }
             x86_file.push_back("mov %rax, %rdi");
             x86_file.push_back("xor %rax, %rax");
             // x86_file.push_back("subq $"+to_string(curr_sym_tbl.top()->x86_offset *(-1))+", %rsp");
             x86_file.push_back("shr $4, %rsp");   // Shift right by 4 bits
-            x86_file.push_back("add $1, %rsp");   // Add 1
+            x86_file.push_back("sub $1, %rsp");   // Add 1
             x86_file.push_back("shl $4, %rsp");   // Shift left by 4 bits
             x86_file.push_back("call printf@plt");
             // x86_file.push_back("pop %rbx");
@@ -2736,7 +2798,7 @@ string res_ins;
         }
         else if(ins[1]== "call,"){
             x86_file.push_back("shr $4, %rsp");   // Shift right by 4 bits
-            x86_file.push_back("add $1, %rsp");   // Add 1
+            x86_file.push_back("sub $1, %rsp");   // Add 1
             x86_file.push_back("shl $4, %rsp"); 
             x86_file.push_back("call "+ins[2]);
             x86_file.push_back("addq %r13, %rsp"); //restoring the space allocated for pushing the arguments
@@ -2775,7 +2837,7 @@ string res_ins;
         else if(ins[3].substr(0,13)=="declare_array"){
             string size = ins[3].substr(14, ins[3].size()-15);
             x86_file.push_back("shr $4, %rsp");   // Shift right by 4 bits
-            x86_file.push_back("add $1, %rsp");   // Add 1
+            x86_file.push_back("sub $1, %rsp");   // Add 1
             x86_file.push_back("shl $4, %rsp"); 
             x86_file.push_back("movq $"+ size +", %rdi");
             x86_file.push_back("call malloc@plt");
@@ -2811,6 +2873,11 @@ void create_x86_file(string filename){
     fout<<".note0:"<<endl;
     fout<<"        .string \"%ld\\n\""<<endl;
     fout<<"        .text"<<endl;
+    for(auto it: str_map){
+        fout<<".str"+it.first+":"<<endl;
+        fout<<"        .string \""+it.second+"\""<<endl;
+        fout<<"        .text"<<endl;
+    }
     fout<<".global main\n";
     // fout<<"main:\n";
     // fout << "push %rbp\n";

@@ -1,5 +1,13 @@
+def temp(a:int)->int:
+    if(a==0):
+        return 1
+    if(a==1):
+        return 1
+    return temp(a-1)+ temp(a-2)
+
 
 def main():
-    x:int = 45 
-    x = x >>3
-    print(x)
+    i:int=123
+    print(i)
+    i=temp(5)
+    print(i)

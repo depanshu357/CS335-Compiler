@@ -1,6 +1,6 @@
 def main():   
 
-    data : list[int] = [5, 3, 8, 2, 1, 9, 4, 6, 7]
+    data : list[int] = [10,9,8,7,6,5,4,3,2,1]
     i:int=data[0]
     j:int=data[1]
     k:int=data[2]
@@ -10,15 +10,17 @@ def main():
     o:int=data[6]
     p:int=data[7]
     q:int=data[8]
-    # print(i)
-    # print(j)
-    # print(k)
-    # print(l)
-    # print(m)
+    r:int=data[9]
+    print(i)
+    print(j)
+    print(k)
+    print(l)
+    print(m)
     print(n)
     print(o)
     print(p)
     print(q)
+    print(r)
 
     # for j in range(0,10):
     #     i = data[j]

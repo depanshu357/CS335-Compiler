@@ -7,13 +7,10 @@
 .str0:
         .string "\n"
         .text
-.str112:
-        .string "\n"
-        .text
-.str120:
-        .string "\n"
-        .text
 .str16:
+        .string "\n"
+        .text
+.str24:
         .string "\n"
         .text
 .str32:
@@ -36,11 +33,11 @@
         .text
 .global main
 
-#fib:   
-fib:
+#temp:   
+temp:
 pushq %rbp
 movq %rsp, %rbp
-subq $120, %rsp
+subq $112, %rsp
 pushq %rbx
 pushq %rdi
 pushq %rsi
@@ -69,8 +66,8 @@ mov -24(%rbp), %rax
 cmp $0, %rax
 je .label2
 
-#.t3 = 0
-movq $0, -32(%rbp)
+#.t3 = 1
+movq $1, -32(%rbp)
 
 #move8 .t3 %rax 
 movq -32(%rbp), %rax
@@ -83,7 +80,7 @@ popq %r12
 popq %rsi
 popq %rdi
 popq %rbx
-addq $120, %rsp
+addq $112, %rsp
 popq %rbp
 movq $8, %r13
 ret
@@ -127,7 +124,7 @@ popq %r12
 popq %rsi
 popq %rdi
 popq %rbx
-addq $120, %rsp
+addq $112, %rsp
 popq %rbp
 movq $8, %r13
 ret
@@ -153,11 +150,11 @@ movq %r13, -72(%rbp)
 #push .t8  
 pushq -72(%rbp)
 
-#call, fib  
+#call, temp  
 shr $4, %rsp
 sub $1, %rsp
 shl $4, %rsp
-call fib
+call temp
 addq %r13, %rsp
 
 #move8 %rax .t9 
@@ -175,11 +172,11 @@ movq %r13, -96(%rbp)
 #push .t11  
 pushq -96(%rbp)
 
-#call, fib  
+#call, temp  
 shr $4, %rsp
 sub $1, %rsp
 shl $4, %rsp
-call fib
+call temp
 addq %r13, %rsp
 
 #move8 %rax .t12 
@@ -191,12 +188,8 @@ movq -104(%rbp), %r14
 addq %r13, %r14
 movq %r14, -112(%rbp)
 
-#x = .t13
-movq -112(%rbp), %r13
-movq %r13, -120(%rbp)
-
-#move8 x %rax 
-movq -120(%rbp), %rax
+#move8 .t13 %rax 
+movq -112(%rbp), %rax
 
 #ret   
 popq %r15
@@ -206,7 +199,7 @@ popq %r12
 popq %rsi
 popq %rdi
 popq %rbx
-addq $120, %rsp
+addq $112, %rsp
 popq %rbp
 movq $8, %r13
 ret
@@ -215,23 +208,56 @@ ret
 main:
 pushq %rbp
 movq %rsp, %rbp
-subq $16, %rsp
+subq $32, %rsp
 
-#.t14 = 5
-movq $5, -8(%rbp)
+#.t14 = 123
+movq $123, -8(%rbp)
 
-#push .t14  
-pushq -8(%rbp)
+#i = .t14
+movq -8(%rbp), %r13
+movq %r13, -16(%rbp)
 
-#call, fib  
+#print, i int 
+mov -16(%rbp), %rax
+mov %rax, %rsi
+lea .note0(%rip), %rax
+mov %rax, %rdi
+xor %rax, %rax
 shr $4, %rsp
 sub $1, %rsp
 shl $4, %rsp
-call fib
+call printf@plt
+
+#.t15 = 5
+movq $5, -24(%rbp)
+
+#push .t15  
+pushq -24(%rbp)
+
+#call, temp  
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+call temp
 addq %r13, %rsp
 
-#move8 %rax .t15 
-movq %rax, -16(%rbp)
+#move8 %rax .t16 
+movq %rax, -32(%rbp)
+
+#i = .t16
+movq -32(%rbp), %r13
+movq %r13, -16(%rbp)
+
+#print, i int 
+mov -16(%rbp), %rax
+mov %rax, %rsi
+lea .note0(%rip), %rax
+mov %rax, %rdi
+xor %rax, %rax
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+call printf@plt
 
 pop %rbx
 mov $60, %rax       # System call number for exit
