@@ -22,4 +22,3 @@ def main():
     i=temp(5)
     print(i)
     print("func ended")
-
