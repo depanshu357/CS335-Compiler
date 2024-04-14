@@ -66,6 +66,7 @@
     string get_str_name();
     map<string,string> str_map;
     string last_string = "";
+    int str_count = 0;
 %}
 
 %union {
@@ -2529,6 +2530,7 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
     }else if(firstLetter=='"'){
         // cout<<"it is a string : "<<ins[3]<<endl;
         last_string = ins[3];
+        str_count++;
         is_string = 1;
     }
         // cout<<last_offset<<endl;
@@ -2801,8 +2803,8 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             cout<<ins[1]<<" hehehe "<<reg1<<" "<<reg2<<endl;        } */
         if(ins[1]=="="){
             if(last_string.size()>2 && is_string){
-                str_map[offset_1] = last_string.substr(1,last_string.size()-2)+"\\n";
-                str_map[offset_2] = last_string.substr(1,last_string.size()-2)+"\\n";
+                str_map[to_string(str_count)] = last_string.substr(1,last_string.size()-2)+"\\n";
+                /* str_map[o] = last_string.substr(1,last_string.size()-2)+"\\n"; */
 
             }else{
                 /* str_map[offset_1] = "\\n";
@@ -2817,7 +2819,7 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             }
             else{
                 if(is_string){
-                    x86_file.push_back("movq $.str" + offset_2 + ", %r13");
+                    x86_file.push_back("movq $.str" + to_string(str_count) + ", %r13");
                 }else{
                      x86_file.push_back("movq " + reg2 + ", %r13");
                 }

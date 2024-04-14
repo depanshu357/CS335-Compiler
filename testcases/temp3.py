@@ -1,7 +1,7 @@
 def func(x:str)->str:
     print(x)
     y:str = "World"
-    return y
+    return "Ompho"
     
 
 
@@ -16,7 +16,7 @@ def main():
 #     j:int=data[1]
 #     k:int=data[2]
 #     l:int=data[3]
-#     m:int=data[4]
+#     m:int=data[4] 
 #     n:int=data[5]
 #     o:int=data[6]
 #     p:int=data[7]

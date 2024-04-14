@@ -1,8 +1,9 @@
 func:   
 move8 16(%rbp) x 
 print, x str 
-.t1 = "Hello"
-move8 .t1 %rax 
+.t1 = "World"
+y = .t1
+move8 y %rax 
 ret   
 main:   
 .t2 = "Hello World"

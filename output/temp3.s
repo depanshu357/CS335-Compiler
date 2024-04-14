@@ -4,13 +4,10 @@
 .note0:
         .string "%ld\n"
         .text
-.str0:
-        .string "Hello World\n"
+.str1:
+        .string "World\n"
         .text
-.str16:
-        .string "Hello\n"
-        .text
-.str8:
+.str2:
         .string "Hello World\n"
         .text
 .global main
@@ -19,7 +16,7 @@
 func:
 pushq %rbp
 movq %rsp, %rbp
-subq $16, %rsp
+subq $24, %rsp
 pushq %rbx
 pushq %rdi
 pushq %rsi
@@ -38,19 +35,23 @@ mov %rax, %rsi
 movq -8(%rbp), %rdi
 mov %rax, %rdi
 xor %rax, %rax
-movq %rsp, -24(%rbp)
+movq %rsp, -32(%rbp)
 shr $4, %rsp
 sub $1, %rsp
 shl $4, %rsp
 call printf@plt
-movq -24(%rbp), %rsp
+movq -32(%rbp), %rsp
 
-#.t1 = "Hello"
-movq $.str0, %r13
+#.t1 = "World"
+movq $.str1, %r13
 movq %r13, -16(%rbp)
 
-#move8 .t1 %rax 
-movq -16(%rbp), %rax
+#y = .t1
+movq -16(%rbp), %r13
+movq %r13, -24(%rbp)
+
+#move8 y %rax 
+movq -24(%rbp), %rax
 
 #ret   
 popq %r15
@@ -60,7 +61,7 @@ popq %r12
 popq %rsi
 popq %rdi
 popq %rbx
-addq $16, %rsp
+addq $24, %rsp
 popq %rbp
 movq $8, %r13
 ret
@@ -72,7 +73,7 @@ movq %rsp, %rbp
 subq $40, %rsp
 
 #.t2 = "Hello World"
-movq $.str0, %r13
+movq $.str2, %r13
 movq %r13, -8(%rbp)
 
 #x = .t2
