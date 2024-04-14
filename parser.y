@@ -1572,9 +1572,9 @@ trailer: SMALL_OPEN {
             len_func_call_active=0;
             string temp=newTemp();
             string reg=newTemp();
-            create_ins(2,"=",temp,"-4","");
+            create_ins(2,"=",temp,"-8","");
             // create_ins(0,temp,"=","-4","");
-            create_ins(2,"=",reg,len_func_arguments[0][0]+"[aryan"+temp+"]","");
+            create_ins(2,"=",reg,len_func_arguments[0][0]+"["+temp+"]","");
             // len_func=-1;
             $$->addr=reg;
             $$->type_of_node="int";
