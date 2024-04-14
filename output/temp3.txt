@@ -1,0 +1,8 @@
+func:   
+move8 16(%rbp) x 
+print, x str 
+ret   
+main:   
+.t1 = "Hello World"
+x = .t1
+print, x str 

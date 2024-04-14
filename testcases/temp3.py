@@ -5,10 +5,8 @@ def func(x:str)->None:
 
 def main():   
 
-    data : list[int] = [10,9,8,7,6,5,4,3,2,1]
-    i:str = "Hello"
-    print(i)
-    func(i)
+    x:str = "Hello World"
+    print(x)
     
 
 #     i:int=data[0]

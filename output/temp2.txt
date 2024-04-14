@@ -1,39 +1,52 @@
-fib:   
+temp:   
 move8 16(%rbp) a 
-.t1 = 0
-.t2 = a == .t1
-if_false .t2 goto .label2
-.t3 = 0
-move8 .t3 %rax 
-ret   
-goto .label1  
-.label2:   
-.label1:   
-.t4 = 1
-.t5 = a == .t4
-if_false .t5 goto .label4
-.t6 = 1
-move8 .t6 %rax 
-ret   
-goto .label3  
-.label4:   
-.label3:   
-.t7 = 1
-.t8 = a - .t7
-push .t8  
-call, fib  
-move8 %rax .t9 
-.t10 = 2
-.t11 = a - .t10
-push .t11  
-call, fib  
-move8 %rax .t12 
-.t13 = .t9 + .t12
-x = .t13
-move8 x %rax 
+.t1 = 7
+.t3 = .t1 * 8
+i = a[.t3]
+.t4 = 3
+.t6 = .t4 * 8
+move8 a[.t6] %rax 
 ret   
 main:   
-.t14 = 5
-push .t14  
-call, fib  
-move8 %rax .t15 
+.t7 = 10
+.t8 = 9
+.t9 = 8
+.t10 = 7
+.t11 = 6
+.t12 = 5
+.t13 = 4
+.t14 = 3
+.t15 = 2
+.t16 = 1
+.t17 = alloc_mem(88) 
+.t18 = 0
+.t17[.t18] = 10 
+.t18 = .t18 + 8
+.t17[.t18] = .t7 
+.t18 = .t18 + 8
+.t17[.t18] = .t8 
+.t18 = .t18 + 8
+.t17[.t18] = .t9 
+.t18 = .t18 + 8
+.t17[.t18] = .t10 
+.t18 = .t18 + 8
+.t17[.t18] = .t11 
+.t18 = .t18 + 8
+.t17[.t18] = .t12 
+.t18 = .t18 + 8
+.t17[.t18] = .t13 
+.t18 = .t18 + 8
+.t17[.t18] = .t14 
+.t18 = .t18 + 8
+.t17[.t18] = .t15 
+.t18 = .t18 + 8
+.t17[.t18] = .t16 
+.t18 = .t18 + 8
+.t17 = .t17 + 8
+data = .t17
+#callnew   
+push data  
+call, temp  
+move8 %rax .t19 
+i = .t19
+print, i int 

@@ -2816,8 +2816,12 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
                 x86_file.push_back("movq "+reg2+", "+reg1);
             }
             else{
-                x86_file.push_back("movq " + reg2 + ", %r13");
-                x86_file.push_back("movq %r13, " +  reg1);
+                /* if(is_string){
+                    x86_file.push_back("movq $.str" + offset_2 + ", %r13");
+                }else{ */
+                     x86_file.push_back("movq " + reg2 + ", %r13");
+                /* } */
+                    x86_file.push_back("movq %r13, " +  reg1);
             }
             // cout<<ins[2]<<" "<<temp1<<endl;
             // cout<<ins[3]<<" "<<temp2<<endl;
@@ -2915,8 +2919,38 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
 
         }else if(ins[1]=="move8"){
             string reg1,reg2;
-            int temp1=get_offset(ins[2],symbol_table,reg1);
-            int temp2=get_offset(ins[3],symbol_table,reg2);
+            if(ins[2].back()==']'){
+                string reg4,reg5;
+                string s1 = ins[2].substr(0, ins[2].find('['));
+                string s2 = ins[2].substr(ins[2].find('[') + 1, ins[2].find(']') - ins[2].find('[') - 1);
+                
+                int temp1=get_offset(s1,symbol_table,reg4);
+                int temp2=get_offset(s2,symbol_table,reg5);
+                
+                x86_file.push_back("movq "+ reg4 + ", %r8");
+                x86_file.push_back("movq "+ reg5 + ", %r9");
+                reg1 = "( %r8, %r9 )";
+            }
+            else{
+                int temp1 = get_offset(ins[2], symbol_table, reg1);
+            }
+            if(ins[3].back()==']'){
+                string reg4,reg5;
+                string s1 = ins[3].substr(0, ins[3].find('['));
+                string s2 = ins[3].substr(ins[3].find('[') + 1, ins[3].find(']') - ins[3].find('[') - 1);
+                
+                int temp1=get_offset(s1,symbol_table,reg4);
+                int temp2=get_offset(s2,symbol_table,reg5);
+                
+                x86_file.push_back("movq "+ reg4 + ", %r10");
+                x86_file.push_back("movq "+ reg5 + ", %r11");
+                reg2 = "( %r10, %r11 )";
+            }
+            else{
+                int temp2 = get_offset(ins[3], symbol_table, reg2);
+            }
+            /* int temp1=get_offset(ins[2],symbol_table,reg1);
+            int temp2=get_offset(ins[3],symbol_table,reg2); */
             if((reg1[0]=='-'|| (reg1[0]<='9'&& reg1[0]>='0')) && (reg2[0]=='-'|| (reg2[0]<='9'&& reg2[0]>='0')))
             {
                 x86_file.push_back("movq "+reg1+", %r13");
@@ -2925,8 +2959,7 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             else{
                 x86_file.push_back("movq "+reg1+", "+reg2);
             }
-        }
-        else if(ins[1]=="ret"){
+        }else if(ins[1]=="ret"){
             x86_file.push_back("popq %r15");
             x86_file.push_back("popq %r14");
             x86_file.push_back("popq %r13");
@@ -2988,6 +3021,7 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             callnew(symbol_table);
         }
     }
+    is_string = 0;
 }
 
 void create_x86_file(string filename){
