@@ -1,12 +1,15 @@
-def func(x:str)->None:
+def func(x:str)->str:
     print(x)
+    y:str = "World"
+    return y
     
 
 
 def main():   
 
     x:str = "Hello World"
-    print(x)
+    y:str = func(x)
+    print(y)
     
 
 #     i:int=data[0]

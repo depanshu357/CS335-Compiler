@@ -2800,13 +2800,13 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
         /* if(ins[2]=="i"){
             cout<<ins[1]<<" hehehe "<<reg1<<" "<<reg2<<endl;        } */
         if(ins[1]=="="){
-            if(last_string.size()>2){
+            if(last_string.size()>2 && is_string){
                 str_map[offset_1] = last_string.substr(1,last_string.size()-2)+"\\n";
                 str_map[offset_2] = last_string.substr(1,last_string.size()-2)+"\\n";
 
             }else{
-                str_map[offset_1] = "\\n";
-                str_map[offset_2] = "\\n";
+                /* str_map[offset_1] = "\\n";
+                str_map[offset_2] = "\\n"; */
             }
             if(ins[3].back()==']' && ins[2].back()==']'){
                 x86_file.push_back("movq "+reg2+", %r13");
@@ -2816,11 +2816,11 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
                 x86_file.push_back("movq "+reg2+", "+reg1);
             }
             else{
-                /* if(is_string){
+                if(is_string){
                     x86_file.push_back("movq $.str" + offset_2 + ", %r13");
-                }else{ */
+                }else{
                      x86_file.push_back("movq " + reg2 + ", %r13");
-                /* } */
+                }
                     x86_file.push_back("movq %r13, " +  reg1);
             }
             // cout<<ins[2]<<" "<<temp1<<endl;
@@ -2864,7 +2864,8 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             x86_file.push_back("mov %rax, %rsi");
             if(ins[3]=="str"){
                 string str_name=get_str_name();
-                x86_file.push_back("leaq .str"+offset_1+"(%rip), %rax");
+                /* x86_file.push_back("leaq .str"+offset_1+"(%rip), %rax"); */
+                x86_file.push_back("movq "+reg+", %rdi");
             }else{
                 x86_file.push_back("lea .note0(%rip), %rax");
             }

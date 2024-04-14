@@ -8,7 +8,7 @@
         .string "Hello World\n"
         .text
 .str16:
-        .string "Hello World\n"
+        .string "Hello\n"
         .text
 .str8:
         .string "Hello World\n"
@@ -19,7 +19,7 @@
 func:
 pushq %rbp
 movq %rsp, %rbp
-subq $8, %rsp
+subq $16, %rsp
 pushq %rbx
 pushq %rdi
 pushq %rsi
@@ -35,15 +35,22 @@ movq %r13, -8(%rbp)
 #print, x str 
 mov -8(%rbp), %rax
 mov %rax, %rsi
-leaq .str8(%rip), %rax
+movq -8(%rbp), %rdi
 mov %rax, %rdi
 xor %rax, %rax
-movq %rsp, -16(%rbp)
+movq %rsp, -24(%rbp)
 shr $4, %rsp
 sub $1, %rsp
 shl $4, %rsp
 call printf@plt
-movq -16(%rbp), %rsp
+movq -24(%rbp), %rsp
+
+#.t1 = "Hello"
+movq $.str0, %r13
+movq %r13, -16(%rbp)
+
+#move8 .t1 %rax 
+movq -16(%rbp), %rax
 
 #ret   
 popq %r15
@@ -53,7 +60,7 @@ popq %r12
 popq %rsi
 popq %rdi
 popq %rbx
-addq $8, %rsp
+addq $16, %rsp
 popq %rbp
 movq $8, %r13
 ret
@@ -62,28 +69,49 @@ ret
 main:
 pushq %rbp
 movq %rsp, %rbp
-subq $24, %rsp
+subq $40, %rsp
 
-#.t1 = "Hello World"
+#.t2 = "Hello World"
 movq $.str0, %r13
 movq %r13, -8(%rbp)
 
-#x = .t1
+#x = .t2
 movq -8(%rbp), %r13
 movq %r13, -16(%rbp)
 
-#print, x str 
-mov -16(%rbp), %rax
+##callnew   
+movq %rsp, -40(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+
+#push x  
+pushq -16(%rbp)
+
+#call, func  
+call func
+addq %r13, %rsp
+movq -40(%rbp), %rsp
+
+#move8 %rax .t3 
+movq %rax, -24(%rbp)
+
+#y = .t3
+movq -24(%rbp), %r13
+movq %r13, -32(%rbp)
+
+#print, y str 
+mov -32(%rbp), %rax
 mov %rax, %rsi
-leaq .str16(%rip), %rax
+movq -32(%rbp), %rdi
 mov %rax, %rdi
 xor %rax, %rax
-movq %rsp, -24(%rbp)
+movq %rsp, -40(%rbp)
 shr $4, %rsp
 sub $1, %rsp
 shl $4, %rsp
 call printf@plt
-movq -24(%rbp), %rsp
+movq -40(%rbp), %rsp
 
 pop %rbx
 mov $60, %rax       # System call number for exit
