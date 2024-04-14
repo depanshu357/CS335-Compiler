@@ -1,17 +1,22 @@
+def func(x:str)->str:
+    print(x)
+    y:str = "World"
+    return "Ompho"
+    
+
+
 def main():   
 
-    data : list[int] = [10,9,8,7,6,5,4,3,2,1]
-    data[1] = data[2] * data[3]
-    i:int = data[1]
-    print(i)
-    print(data[1])
-    print("SAB HO GAYA")
+    x:str = "Hello World"
+    y:str = func(x)
+    print(y)
+    
 
 #     i:int=data[0]
 #     j:int=data[1]
 #     k:int=data[2]
 #     l:int=data[3]
-#     m:int=data[4]
+#     m:int=data[4] 
 #     n:int=data[5]
 #     o:int=data[6]
 #     p:int=data[7]

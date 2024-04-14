@@ -16,9 +16,9 @@ temporary:
 		bison -t -d -v parser.y 
 		flex lexer.l
 		g++ parser.tab.c lex.yy.c -o main
-		./main --input=./testcases/temp2.py --output=temp2
-		gcc -g -no-pie ./output/temp2.s -o temp2.o
-		./temp2.o
+		./main --input=./testcases/temp3.py --output=temp3
+		gcc -g -no-pie ./output/temp3.s -o temp3.o
+		./temp3.o
 
 
 # clean:

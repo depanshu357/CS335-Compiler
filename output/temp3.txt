@@ -3,15 +3,14 @@ move8 16(%rbp) x
 print, x str 
 .t1 = "World"
 y = .t1
-.t2 = "Ompho"
-move8 .t2 %rax 
+move8 y %rax 
 ret   
 main:   
-.t3 = "Hello World"
-x = .t3
+.t2 = "Hello World"
+x = .t2
 #callnew   
 push x  
 call, func  
-move8 %rax .t4 
-y = .t4
+move8 %rax .t3 
+y = .t3
 print, y str 

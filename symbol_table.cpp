@@ -318,11 +318,43 @@ vector<st_node> get_parameters(sym_table * symbol_table, string name){
     }
 }
 
+string search_in_global_scope(sym_table * symbol_table, string name){
+ sym_table * curr = symbol_table;
+    // cout<<"in sym table "<<name<<endl;
+    // for(int i=0;i<curr->parameters.size();i++){
+    //     cout<<curr->parameters[i].name<<" " <<name<<endl;
+    //     if(curr->parameters[i].name == name){
+    //         return curr->parameters[i].type;
+    //     }
+    //     if(curr->parameters[i].sub_symbol_table!=NULL){
+    //         string s=search_in_global_scope(curr->parameters[i].sub_symbol_table,name);
+    //         if(s!="NULL"){
+    //             return s;
+    //         }
+    //     }
+        
+    // }
+    for(int i=0;i<curr->sym_tbl_entry.size();i++){
+        // cout<<curr->sym_tbl_entry[i].name<<" " <<name<<endl;
+        if(curr->sym_tbl_entry[i].name == name){
+            return curr->sym_tbl_entry[i].type;
+        }
+        if(curr->sym_tbl_entry[i].sub_symbol_table!=NULL){
+            string s=search_in_global_scope(curr->sym_tbl_entry[i].sub_symbol_table,name);
+            if(s!="NULL"){
+                return s;
+            }
+        }
+        
+    }
+    return "NULL";
+}
     string
     search_type_in_sym_table(sym_table *symbol_table, string name)
 {
     sym_table * curr = symbol_table;
     while(curr!=NULL){
+    // cout<<"in symbol table "<<curr->name<<endl;
         for(int i=0;i<curr->parameters.size();i++){
             if(curr->parameters[i].name == name){
                 return curr->parameters[i].type;

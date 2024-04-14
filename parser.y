@@ -66,6 +66,7 @@
     string get_str_name();
     map<string,string> str_map;
     string last_string = "";
+    int str_count = 0;
 %}
 
 %union {
@@ -298,6 +299,13 @@ else_colon_suite_optional : ELSE COLON  suite {
 funcdef:  DEF funcdef_title  func_body_suite { 
         $$ = create_node(4,"Func_def",$1,$2,$3);
         // cout << $2->lexeme << "TESSSSS"<< endl;
+        if(string($2->lexeme)=="__init__"){
+            create_ins(0,"ret","","","");
+        }
+        if(curr_sym_tbl.top()->return_type=="None"  && curr_sym_tbl.top()->name!="main"){
+            create_ins(0,"ret","","","");
+        }
+
         if(curr_sym_tbl.size()>1 && string($2->lexeme)!="__init__")
         {
                 // cout<<"poping "<<curr_sym_tbl.top()->name<<endl; 
@@ -364,7 +372,14 @@ funcdef_title: NAME {
         }
 
         if(check_flag){
-            create_ins(0,curr_sym_tbl.top()->prev_sym_table->name+"@"+$1->lexeme+":","","","");
+            if(string($1->lexeme)!="__init__")
+                create_ins(0,curr_sym_tbl.top()->prev_sym_table->name+"_"+$1->lexeme+":","","","");
+            else 
+                {
+                    create_ins(0,curr_sym_tbl.top()->name+"_"+$1->lexeme+":","","","");
+                    curr_sym_tbl.top()->x86_offset-=8;
+                    offset_vec[curr_sym_tbl.top()->name+"self"] = to_string(curr_sym_tbl.top()->x86_offset);    
+                }
         }
         else
             create_ins(0,string($1->lexeme)+":","","","");
@@ -1286,7 +1301,7 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                         create_ins(0,"push",func_arguments[i][0],"","");
                     }
                     create_ins(0,"push",$1->lexeme,"","");
-                    create_ins(0,"call,",string($1->type_of_node)+"@"+func_arguments[0][0],"","");
+                    create_ins(0,"call,",string($1->type_of_node)+"_"+func_arguments[0][0],"","");
                 }
         
                 class_func_call_active=-1;
@@ -1330,8 +1345,14 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             }
             else{
                 string full_name=string($1->lexeme)+after_dot_name;
+                // cout<<full_name<<" line 1347 "<<after_dot_name.substr(1)<<endl;
+                
                 $$->type_of_node = search_type_in_sym_table(curr_sym_tbl.top(),full_name);
-
+                if(string($$->type_of_node)=="NULL" && after_dot_name.size()>1){
+                    $$->type_of_node = search_in_global_scope(global_sym_table,after_dot_name.substr(1));
+                    // cout<<"Inside  --------"<<endl;
+                }
+                // cout<<"line 1349 type= "<<$$->type_of_node<<endl;
             }
         }
         class_active=0;
@@ -1488,9 +1509,10 @@ trailer: SMALL_OPEN {
                     }
                     string reg=func_arguments[0][2];
                     int self_mem=get_ctr_self_size(global_sym_table,func_arguments[0][0]);
-                    create_ins(2,"=",reg,"alloc_mem("+to_string(self_mem)+")","");
+                    create_ins(0,reg,"=","alloc_mem("+to_string(self_mem)+")","");
                     create_ins(0,"push",reg,"","");
-                    create_ins(0,"call,",func_arguments[0][0]+"@__init__","","");
+                    create_ins(0,"call,",func_arguments[0][0]+"___init__","","");
+                    // create_ins(0,"call,",curr_sym_tbl.top()->name+"___init__","","");
                     $$->addr=reg;
                 }
                 // is_constructor=0;
@@ -1614,9 +1636,10 @@ trailer: SMALL_OPEN {
                     }
                     string reg=func_arguments[0][2];
                     int self_mem=get_ctr_self_size(global_sym_table,func_arguments[0][0]);
-                    create_ins(2,"=",reg,"alloc_mem("+to_string(self_mem)+")","");
+                    create_ins(0,reg,"=","alloc_mem("+to_string(self_mem)+")","");
                     create_ins(0,"push",reg,"","");
-                    create_ins(0,"call,",func_arguments[0][0]+"@__init__","","");
+                    create_ins(0,"call,",func_arguments[0][0]+"___init__","","");
+                    // create_ins(0,"call,",curr_sym_tbl.top()->name+"___init__","","");
                     $$->addr=reg;
                 }
                 // is_constructor=0;
@@ -2079,7 +2102,7 @@ atom: SMALL_OPEN testlist_comp SMALL_CLOSE {
         arr_active=0;
         string reg=newTemp();
         string array_size=to_string(get_type_size($3->type_of_node)*arr_elements.size()+8);
-        create_ins(0,reg, "=","declare_array("+array_size+")","");
+        create_ins(0,reg, "=","alloc_mem("+array_size+")","");
         $$->addr=reg;
         
         string temp=newTemp();
@@ -2507,6 +2530,7 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
     }else if(firstLetter=='"'){
         // cout<<"it is a string : "<<ins[3]<<endl;
         last_string = ins[3];
+        str_count++;
         is_string = 1;
     }
         // cout<<last_offset<<endl;
@@ -2778,12 +2802,13 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
         /* if(ins[2]=="i"){
             cout<<ins[1]<<" hehehe "<<reg1<<" "<<reg2<<endl;        } */
         if(ins[1]=="="){
-            if(last_string.size()>2){
-                str_map[offset_1] = last_string.substr(1,last_string.size()-2)+"\\n";
-                str_map[offset_2] = last_string.substr(1,last_string.size()-2)+"\\n";
+            if(last_string.size()>2 && is_string){
+                str_map[to_string(str_count)] = last_string.substr(1,last_string.size()-2)+"\\n";
+                /* str_map[o] = last_string.substr(1,last_string.size()-2)+"\\n"; */
+
             }else{
-                str_map[offset_1] = "\\n";
-                str_map[offset_2] = "\\n";
+                /* str_map[offset_1] = "\\n";
+                str_map[offset_2] = "\\n"; */
             }
             if(ins[3].back()==']' && ins[2].back()==']'){
                 x86_file.push_back("movq "+reg2+", %r13");
@@ -2793,8 +2818,12 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
                 x86_file.push_back("movq "+reg2+", "+reg1);
             }
             else{
-                x86_file.push_back("movq " + reg2 + ", %r13");
-                x86_file.push_back("movq %r13, " +  reg1);
+                if(is_string){
+                    x86_file.push_back("movq $.str" + to_string(str_count) + ", %r13");
+                }else{
+                     x86_file.push_back("movq " + reg2 + ", %r13");
+                }
+                    x86_file.push_back("movq %r13, " +  reg1);
             }
             // cout<<ins[2]<<" "<<temp1<<endl;
             // cout<<ins[3]<<" "<<temp2<<endl;
@@ -2837,7 +2866,8 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             x86_file.push_back("mov %rax, %rsi");
             if(ins[3]=="str"){
                 string str_name=get_str_name();
-                x86_file.push_back("leaq .str"+offset_1+"(%rip), %rax");
+                /* x86_file.push_back("leaq .str"+offset_1+"(%rip), %rax"); */
+                x86_file.push_back("movq "+reg+", %rdi");
             }else{
                 x86_file.push_back("lea .note0(%rip), %rax");
             }
@@ -2862,7 +2892,7 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
                 x86_file.push_back("movq %rsp, %rbp");
                 x86_file.push_back("subq $"+to_string(symbol_table->x86_offset*(-1) + 8)+", %rsp");
             }
-            if(ins[1]!="main:"&& (symbol_table->name+":" ==ins[1])){
+            if(ins[1]!="main:"&& ((symbol_table->name+":" ==ins[1])||(symbol_table->name+"___init__:"==ins[1])||(symbol_table->prev_sym_table->name+"_"+symbol_table->name+":"==ins[1]))){
                 x86_file.push_back("pushq %rbp");
                 x86_file.push_back("movq %rsp, %rbp");
                 x86_file.push_back("subq $"+to_string(symbol_table->x86_offset*(-1))+", %rsp");
@@ -2892,8 +2922,38 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
 
         }else if(ins[1]=="move8"){
             string reg1,reg2;
-            int temp1=get_offset(ins[2],symbol_table,reg1);
-            int temp2=get_offset(ins[3],symbol_table,reg2);
+            if(ins[2].back()==']'){
+                string reg4,reg5;
+                string s1 = ins[2].substr(0, ins[2].find('['));
+                string s2 = ins[2].substr(ins[2].find('[') + 1, ins[2].find(']') - ins[2].find('[') - 1);
+                
+                int temp1=get_offset(s1,symbol_table,reg4);
+                int temp2=get_offset(s2,symbol_table,reg5);
+                
+                x86_file.push_back("movq "+ reg4 + ", %r8");
+                x86_file.push_back("movq "+ reg5 + ", %r9");
+                reg1 = "( %r8, %r9 )";
+            }
+            else{
+                int temp1 = get_offset(ins[2], symbol_table, reg1);
+            }
+            if(ins[3].back()==']'){
+                string reg4,reg5;
+                string s1 = ins[3].substr(0, ins[3].find('['));
+                string s2 = ins[3].substr(ins[3].find('[') + 1, ins[3].find(']') - ins[3].find('[') - 1);
+                
+                int temp1=get_offset(s1,symbol_table,reg4);
+                int temp2=get_offset(s2,symbol_table,reg5);
+                
+                x86_file.push_back("movq "+ reg4 + ", %r10");
+                x86_file.push_back("movq "+ reg5 + ", %r11");
+                reg2 = "( %r10, %r11 )";
+            }
+            else{
+                int temp2 = get_offset(ins[3], symbol_table, reg2);
+            }
+            /* int temp1=get_offset(ins[2],symbol_table,reg1);
+            int temp2=get_offset(ins[3],symbol_table,reg2); */
             if((reg1[0]=='-'|| (reg1[0]<='9'&& reg1[0]>='0')) && (reg2[0]=='-'|| (reg2[0]<='9'&& reg2[0]>='0')))
             {
                 x86_file.push_back("movq "+reg1+", %r13");
@@ -2902,8 +2962,7 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             else{
                 x86_file.push_back("movq "+reg1+", "+reg2);
             }
-        }
-        else if(ins[1]=="ret"){
+        }else if(ins[1]=="ret"){
             x86_file.push_back("popq %r15");
             x86_file.push_back("popq %r14");
             x86_file.push_back("popq %r13");
@@ -2918,11 +2977,25 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
         }
         else if(ins[1]=="push"){
             string reg;
-            int temp=get_offset(ins[2],symbol_table,reg);
+            if(ins[2].back()==']'){
+                string reg4,reg5;
+                string s1 = ins[2].substr(0, ins[2].find('['));
+                string s2 = ins[2].substr(ins[2].find('[') + 1, ins[2].find(']') - ins[2].find('[') - 1);
+                
+                int temp1=get_offset(s1,symbol_table,reg4);
+                int temp2=get_offset(s2,symbol_table,reg5);
+                
+                x86_file.push_back("movq "+ reg4 + ", %r8");
+                x86_file.push_back("movq "+ reg5 + ", %r9");
+                reg = "( %r8, %r9 )";
+            }
+            else{
+                int temp1 = get_offset(ins[2], symbol_table, reg);
+            }
             x86_file.push_back("pushq "+reg);
         }
-        else if(ins[3].substr(0,13)=="declare_array"){
-            string size = ins[3].substr(14, ins[3].size()-15);
+        else if(ins[3].substr(0,9)=="alloc_mem"){
+            string size = ins[3].substr(10, ins[3].size()-11);
             callnew(symbol_table);
             x86_file.push_back("movq $"+ size +", %rdi");
             x86_file.push_back("call malloc@plt");
@@ -2951,6 +3024,7 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             callnew(symbol_table);
         }
     }
+    is_string = 0;
 }
 
 void create_x86_file(string filename){
@@ -3101,7 +3175,7 @@ int main(int argc, char* argv[]){
     MakeDOTFile(ast);
 
     /* MakeDOTFile(start_node); */
-    /* print_sym_table(global_sym_table); */
+    //  print_sym_table(global_sym_table); 
     printToCSV(global_sym_table,0,global_sym_table->name);
 
     fout<<"}";
