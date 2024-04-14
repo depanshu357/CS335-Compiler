@@ -1,11 +1,15 @@
+def func(x:str)->None:
+    print(x)
+    
+
+
 def main():   
 
     data : list[int] = [10,9,8,7,6,5,4,3,2,1]
-    data[1] = data[2] * data[3]
-    i:int = data[1]
+    i:str = "Hello"
     print(i)
-    print(data[1])
-    print("SAB HO GAYA")
+    func(i)
+    
 
 #     i:int=data[0]
 #     j:int=data[1]

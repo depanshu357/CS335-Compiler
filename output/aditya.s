@@ -4,379 +4,509 @@
 .note0:
         .string "%ld\n"
         .text
-.str:
-        .string "\n"
-        .text
 .str0:
-        .string "SAB HO GAYA\n"
+        .string "Hello\n"
         .text
 .str104:
-        .string "\n"
+        .string "Hello\n"
         .text
 .str112:
-        .string "\n"
+        .string "Hello\n"
         .text
-.str128:
-        .string "\n"
+.str120:
+        .string "Hello\n"
         .text
 .str144:
-        .string "\n"
+        .string "Hello\n"
+        .text
+.str152:
+        .string "Hello\n"
         .text
 .str16:
-        .string "\n"
-        .text
-.str160:
-        .string "\n"
-        .text
-.str176:
-        .string "\n"
-        .text
-.str192:
-        .string "\n"
-        .text
-.str200:
-        .string "\n"
-        .text
-.str216:
-        .string "SAB HO GAYA\n"
+        .string "Hello\n"
         .text
 .str24:
-        .string "\n"
+        .string "Hello\n"
         .text
 .str32:
-        .string "\n"
+        .string "Hello\n"
         .text
 .str40:
-        .string "\n"
+        .string "Hello\n"
         .text
 .str48:
-        .string "\n"
+        .string "Hello\n"
         .text
 .str56:
-        .string "\n"
+        .string "Hello\n"
         .text
 .str64:
-        .string "\n"
+        .string "Hello\n"
         .text
 .str72:
-        .string "\n"
+        .string "Hello\n"
         .text
 .str8:
-        .string "\n"
+        .string "Hello\n"
         .text
 .str80:
-        .string "\n"
+        .string "Hello\n"
         .text
 .str88:
-        .string "\n"
+        .string "Hello\n"
         .text
 .str96:
-        .string "\n"
+        .string "Hello\n"
         .text
 .global main
 
-#main:   
-main:
+#foo___init__:   
+foo___init__:
 pushq %rbp
 movq %rsp, %rbp
-subq $224, %rsp
+subq $40, %rsp
+pushq %rbx
+pushq %rdi
+pushq %rsi
+pushq %r12
+pushq %r13
+pushq %r14
+pushq %r15
 
-#.t1 = 10
-movq $10, -8(%rbp)
+#move8 0(%rbp) self 
+movq 0(%rbp), %r13
+movq %r13, -8(%rbp)
 
-#.t2 = 9
-movq $9, -16(%rbp)
+#.t1 = self + 0
+movq -8(%rbp), %r13
+movq $0, %r14
+addq %r13, %r14
+movq %r14, -16(%rbp)
 
-#.t3 = 8
-movq $8, -24(%rbp)
+#.t2 = 1
+movq $1, -24(%rbp)
 
-#.t4 = 7
-movq $7, -32(%rbp)
+#move8 .t2 .t1 
+movq -24(%rbp), %r13
+movq %r13, -16(%rbp)
 
-#.t5 = 6
-movq $6, -40(%rbp)
+#.t3 = self + 8
+movq -8(%rbp), %r13
+movq $8, %r14
+addq %r13, %r14
+movq %r14, -32(%rbp)
 
-#.t6 = 5
-movq $5, -48(%rbp)
+#.t4 = 1
+movq $1, -40(%rbp)
 
-#.t7 = 4
-movq $4, -56(%rbp)
+#move8 .t4 .t3 
+movq -40(%rbp), %r13
+movq %r13, -32(%rbp)
 
-#.t8 = 3
-movq $3, -64(%rbp)
+#ret   
+popq %r15
+popq %r14
+popq %r13
+popq %r12
+popq %rsi
+popq %rdi
+popq %rbx
+addq $40, %rsp
+popq %rbp
+movq $8, %r13
+ret
 
-#.t9 = 2
-movq $2, -72(%rbp)
+#foo_prit:   
+foo_prit:
+pushq %rbp
+movq %rsp, %rbp
+subq $16, %rsp
+pushq %rbx
+pushq %rdi
+pushq %rsi
+pushq %r12
+pushq %r13
+pushq %r14
+pushq %r15
 
-#.t10 = 1
-movq $1, -80(%rbp)
+#move8 0(%rbp) self 
+movq 0(%rbp), %r13
+movq %r13, -8(%rbp)
 
-#.t11 = declare_array(88) 
-movq %rsp, -224(%rbp)
+#.t5 = "Hello"
+movq (%rbp), %r13
+movq %r13, -16(%rbp)
+
+#print, .t5 str 
+mov -16(%rbp), %rax
+mov %rax, %rsi
+leaq .str16(%rip), %rax
+mov %rax, %rdi
+xor %rax, %rax
+movq %rsp, -24(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+call printf@plt
+movq -24(%rbp), %rsp
+
+#ret   
+popq %r15
+popq %r14
+popq %r13
+popq %r12
+popq %rsi
+popq %rdi
+popq %rbx
+addq $16, %rsp
+popq %rbp
+movq $8, %r13
+ret
+
+#foo_temp:   
+foo_temp:
+pushq %rbp
+movq %rsp, %rbp
+subq $152, %rsp
+pushq %rbx
+pushq %rdi
+pushq %rsi
+pushq %r12
+pushq %r13
+pushq %r14
+pushq %r15
+
+#move8 0(%rbp) self 
+movq 0(%rbp), %r13
+movq %r13, -8(%rbp)
+
+#move8 24(%rbp) a 
+movq 24(%rbp), %r13
+movq %r13, -16(%rbp)
+
+#.t6 = 10
+movq $10, -24(%rbp)
+
+#.t7 = 9
+movq $9, -32(%rbp)
+
+#.t8 = 8
+movq $8, -40(%rbp)
+
+#.t9 = 7
+movq $7, -48(%rbp)
+
+#.t10 = 6
+movq $6, -56(%rbp)
+
+#.t11 = 5
+movq $5, -64(%rbp)
+
+#.t12 = 4
+movq $4, -72(%rbp)
+
+#.t13 = 3
+movq $3, -80(%rbp)
+
+#.t14 = 2
+movq $2, -88(%rbp)
+
+#.t15 = 1
+movq $1, -96(%rbp)
+
+#.t16 = alloc_mem(88) 
+movq %rsp, -160(%rbp)
 shr $4, %rsp
 sub $1, %rsp
 shl $4, %rsp
 movq $88, %rdi
 call malloc@plt
-movq -224(%rbp), %rsp
-movq %rax, -96(%rbp)
+movq -160(%rbp), %rsp
+movq %rax, -112(%rbp)
 
-#.t12 = 0
-movq $0, -88(%rbp)
+#.t17 = 0
+movq $0, -104(%rbp)
 
-#.t11[.t12] = 10 
-movq -96(%rbp), %r13
-movq -88(%rbp), %r14
+#.t16[.t17] = 10 
+movq -112(%rbp), %r13
+movq -104(%rbp), %r14
 movq $10, %r15
 movq %r15, (%r13, %r14)
 
-#.t12 = .t12 + 8
-movq -88(%rbp), %r13
+#.t17 = .t17 + 8
+movq -104(%rbp), %r13
 movq $8, %r14
 addq %r13, %r14
-movq %r14, -88(%rbp)
+movq %r14, -104(%rbp)
 
-#.t11[.t12] = .t1 
-movq -96(%rbp), %r13
-movq -88(%rbp), %r14
-movq -8(%rbp), %r15
-movq %r15, (%r13, %r14)
-
-#.t12 = .t12 + 8
-movq -88(%rbp), %r13
-movq $8, %r14
-addq %r13, %r14
-movq %r14, -88(%rbp)
-
-#.t11[.t12] = .t2 
-movq -96(%rbp), %r13
-movq -88(%rbp), %r14
-movq -16(%rbp), %r15
-movq %r15, (%r13, %r14)
-
-#.t12 = .t12 + 8
-movq -88(%rbp), %r13
-movq $8, %r14
-addq %r13, %r14
-movq %r14, -88(%rbp)
-
-#.t11[.t12] = .t3 
-movq -96(%rbp), %r13
-movq -88(%rbp), %r14
+#.t16[.t17] = .t6 
+movq -112(%rbp), %r13
+movq -104(%rbp), %r14
 movq -24(%rbp), %r15
 movq %r15, (%r13, %r14)
 
-#.t12 = .t12 + 8
-movq -88(%rbp), %r13
+#.t17 = .t17 + 8
+movq -104(%rbp), %r13
 movq $8, %r14
 addq %r13, %r14
-movq %r14, -88(%rbp)
+movq %r14, -104(%rbp)
 
-#.t11[.t12] = .t4 
-movq -96(%rbp), %r13
-movq -88(%rbp), %r14
+#.t16[.t17] = .t7 
+movq -112(%rbp), %r13
+movq -104(%rbp), %r14
 movq -32(%rbp), %r15
 movq %r15, (%r13, %r14)
 
-#.t12 = .t12 + 8
-movq -88(%rbp), %r13
+#.t17 = .t17 + 8
+movq -104(%rbp), %r13
 movq $8, %r14
 addq %r13, %r14
-movq %r14, -88(%rbp)
+movq %r14, -104(%rbp)
 
-#.t11[.t12] = .t5 
-movq -96(%rbp), %r13
-movq -88(%rbp), %r14
+#.t16[.t17] = .t8 
+movq -112(%rbp), %r13
+movq -104(%rbp), %r14
 movq -40(%rbp), %r15
 movq %r15, (%r13, %r14)
 
-#.t12 = .t12 + 8
-movq -88(%rbp), %r13
+#.t17 = .t17 + 8
+movq -104(%rbp), %r13
 movq $8, %r14
 addq %r13, %r14
-movq %r14, -88(%rbp)
+movq %r14, -104(%rbp)
 
-#.t11[.t12] = .t6 
-movq -96(%rbp), %r13
-movq -88(%rbp), %r14
+#.t16[.t17] = .t9 
+movq -112(%rbp), %r13
+movq -104(%rbp), %r14
 movq -48(%rbp), %r15
 movq %r15, (%r13, %r14)
 
-#.t12 = .t12 + 8
-movq -88(%rbp), %r13
+#.t17 = .t17 + 8
+movq -104(%rbp), %r13
 movq $8, %r14
 addq %r13, %r14
-movq %r14, -88(%rbp)
+movq %r14, -104(%rbp)
 
-#.t11[.t12] = .t7 
-movq -96(%rbp), %r13
-movq -88(%rbp), %r14
+#.t16[.t17] = .t10 
+movq -112(%rbp), %r13
+movq -104(%rbp), %r14
 movq -56(%rbp), %r15
 movq %r15, (%r13, %r14)
 
-#.t12 = .t12 + 8
-movq -88(%rbp), %r13
+#.t17 = .t17 + 8
+movq -104(%rbp), %r13
 movq $8, %r14
 addq %r13, %r14
-movq %r14, -88(%rbp)
+movq %r14, -104(%rbp)
 
-#.t11[.t12] = .t8 
-movq -96(%rbp), %r13
-movq -88(%rbp), %r14
+#.t16[.t17] = .t11 
+movq -112(%rbp), %r13
+movq -104(%rbp), %r14
 movq -64(%rbp), %r15
 movq %r15, (%r13, %r14)
 
-#.t12 = .t12 + 8
-movq -88(%rbp), %r13
+#.t17 = .t17 + 8
+movq -104(%rbp), %r13
 movq $8, %r14
 addq %r13, %r14
-movq %r14, -88(%rbp)
+movq %r14, -104(%rbp)
 
-#.t11[.t12] = .t9 
-movq -96(%rbp), %r13
-movq -88(%rbp), %r14
+#.t16[.t17] = .t12 
+movq -112(%rbp), %r13
+movq -104(%rbp), %r14
 movq -72(%rbp), %r15
 movq %r15, (%r13, %r14)
 
-#.t12 = .t12 + 8
-movq -88(%rbp), %r13
+#.t17 = .t17 + 8
+movq -104(%rbp), %r13
 movq $8, %r14
 addq %r13, %r14
-movq %r14, -88(%rbp)
+movq %r14, -104(%rbp)
 
-#.t11[.t12] = .t10 
-movq -96(%rbp), %r13
-movq -88(%rbp), %r14
+#.t16[.t17] = .t13 
+movq -112(%rbp), %r13
+movq -104(%rbp), %r14
 movq -80(%rbp), %r15
 movq %r15, (%r13, %r14)
 
-#.t12 = .t12 + 8
-movq -88(%rbp), %r13
+#.t17 = .t17 + 8
+movq -104(%rbp), %r13
 movq $8, %r14
 addq %r13, %r14
-movq %r14, -88(%rbp)
+movq %r14, -104(%rbp)
 
-#.t11 = .t11 + 8
-movq -96(%rbp), %r13
+#.t16[.t17] = .t14 
+movq -112(%rbp), %r13
+movq -104(%rbp), %r14
+movq -88(%rbp), %r15
+movq %r15, (%r13, %r14)
+
+#.t17 = .t17 + 8
+movq -104(%rbp), %r13
 movq $8, %r14
 addq %r13, %r14
-movq %r14, -96(%rbp)
+movq %r14, -104(%rbp)
 
-#data = .t11
-movq -96(%rbp), %r13
-movq %r13, -104(%rbp)
+#.t16[.t17] = .t15 
+movq -112(%rbp), %r13
+movq -104(%rbp), %r14
+movq -96(%rbp), %r15
+movq %r15, (%r13, %r14)
 
-#.t13 = 1
-movq $1, -112(%rbp)
+#.t17 = .t17 + 8
+movq -104(%rbp), %r13
+movq $8, %r14
+addq %r13, %r14
+movq %r14, -104(%rbp)
 
-#.t15 = .t13 * 8
+#.t16 = .t16 + 8
 movq -112(%rbp), %r13
 movq $8, %r14
+addq %r13, %r14
+movq %r14, -112(%rbp)
+
+#data = .t16
+movq -112(%rbp), %r13
+movq %r13, -120(%rbp)
+
+#.t19 = a * 8
+movq -16(%rbp), %r13
+movq $8, %r14
 imulq %r13, %r14
-movq %r14, -120(%rbp)
+movq %r14, -128(%rbp)
 
-#.t16 = 2
-movq $2, -128(%rbp)
-
-#.t18 = .t16 * 8
-movq -128(%rbp), %r13
+#.t21 = a * 8
+movq -16(%rbp), %r13
 movq $8, %r14
 imulq %r13, %r14
 movq %r14, -136(%rbp)
 
-#.t19 = 3
-movq $3, -144(%rbp)
-
-#.t21 = .t19 * 8
-movq -144(%rbp), %r13
-movq $8, %r14
-imulq %r13, %r14
-movq %r14, -152(%rbp)
-
-#.t22 = data[.t18] * data[.t21]
-movq -104(%rbp), %r10
-movq -136(%rbp), %r11
-movq -104(%rbp), %r12
-movq -152(%rbp), %r15
+#.t22 = data[.t19] * data[.t21]
+movq -120(%rbp), %r10
+movq -128(%rbp), %r11
+movq -120(%rbp), %r12
+movq -136(%rbp), %r15
 movq ( %r10, %r11 ), %r13
 movq ( %r12, %r15 ), %r14
 imulq %r13, %r14
-movq %r14, -160(%rbp)
+movq %r14, -144(%rbp)
 
-#data[.t15] = .t22
-movq -104(%rbp), %r8
-movq -120(%rbp), %r9
-movq -160(%rbp), %r13
-movq %r13, ( %r8, %r9 )
-
-#.t23 = 1
-movq $1, -176(%rbp)
-
-#.t25 = .t23 * 8
-movq -176(%rbp), %r13
-movq $8, %r14
-imulq %r13, %r14
-movq %r14, -184(%rbp)
-
-#i = data[.t25]
-movq -104(%rbp), %r10
-movq -184(%rbp), %r11
-movq ( %r10, %r11 ), %r13
-movq %r13, -192(%rbp)
+#i = .t22
+movq -144(%rbp), %r13
+movq %r13, -152(%rbp)
 
 #print, i int 
-mov -192(%rbp), %rax
+mov -152(%rbp), %rax
 mov %rax, %rsi
 lea .note0(%rip), %rax
 mov %rax, %rdi
 xor %rax, %rax
-movq %rsp, -224(%rbp)
+movq %rsp, -160(%rbp)
 shr $4, %rsp
 sub $1, %rsp
 shl $4, %rsp
 call printf@plt
-movq -224(%rbp), %rsp
+movq -160(%rbp), %rsp
 
-#.t26 = 1
-movq $1, -200(%rbp)
+#move8 i %rax 
+movq -152(%rbp), %rax
 
-#.t28 = .t26 * 8
-movq -200(%rbp), %r13
-movq $8, %r14
-imulq %r13, %r14
-movq %r14, -208(%rbp)
+#ret   
+popq %r15
+popq %r14
+popq %r13
+popq %r12
+popq %rsi
+popq %rdi
+popq %rbx
+addq $152, %rsp
+popq %rbp
+movq $16, %r13
+ret
 
-#print, data[.t28] int 
-movq -104(%rbp), %r8
-movq -208(%rbp), %r9
-mov ( %r8, %r9 ), %rax
-mov %rax, %rsi
-lea .note0(%rip), %rax
-mov %rax, %rdi
-xor %rax, %rax
-movq %rsp, -224(%rbp)
+#main:   
+main:
+pushq %rbp
+movq %rsp, %rbp
+subq $24, %rsp
+
+##callnew   
+movq %rsp, -24(%rbp)
 shr $4, %rsp
 sub $1, %rsp
 shl $4, %rsp
-call printf@plt
-movq -224(%rbp), %rsp
 
-#.t29 = "SAB HO GAYA"
+#.t23 = alloc_mem(16) 
+movq %rsp, -24(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+movq $16, %rdi
+call malloc@plt
+movq -24(%rbp), %rsp
+movq %rax, (%rbp)
+
+#push .t23  
+pushq (%rbp)
+
+#call, foo___init__  
+call foo___init__
+addq %r13, %rsp
+movq -24(%rbp), %rsp
+
+#f = .t23
 movq (%rbp), %r13
-movq %r13, -216(%rbp)
+movq %r13, -8(%rbp)
 
-#print, .t29 str 
-mov -216(%rbp), %rax
+##callnew   
+movq %rsp, -24(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+
+#push f  
+pushq -8(%rbp)
+
+#call, foo_prit  
+call foo_prit
+addq %r13, %rsp
+movq -24(%rbp), %rsp
+
+#.t25 = 5
+movq $5, -16(%rbp)
+
+##callnew   
+movq %rsp, -24(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+
+#push .t25  
+pushq -16(%rbp)
+
+#push f  
+pushq -8(%rbp)
+
+#call, foo_temp  
+call foo_temp
+addq %r13, %rsp
+movq -24(%rbp), %rsp
+
+#move8 %rax i 
+movq %rax, (%rbp)
+
+#print, i int 
+mov (%rbp), %rax
 mov %rax, %rsi
-leaq .str216(%rip), %rax
+lea .note0(%rip), %rax
 mov %rax, %rdi
 xor %rax, %rax
-movq %rsp, -224(%rbp)
+movq %rsp, -24(%rbp)
 shr $4, %rsp
 sub $1, %rsp
 shl $4, %rsp
 call printf@plt
-movq -224(%rbp), %rsp
+movq -24(%rbp), %rsp
 
 pop %rbx
 mov $60, %rax       # System call number for exit

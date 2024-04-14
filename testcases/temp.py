@@ -1,9 +1,21 @@
+class foo():
+    def __init__(self):
+        self.x:int=1
+        self.y:int=1
+
+    def prit(self)->None:
+        print("Hello")
+    
+    def temp(self,a:int)->int:
+        data : list[int] = [10,9,8,7,6,5,4,3,2,1]
+        i:int = data[a] * data[a]
+        print(i)
+        return i
+
 def main():
-    data : list[int] = [5, 3, 8, 2, 1, 9, 4, 6, 7]
-    i:int=0
-    for i in range(0,8):
-        data[i] = data[i+1]
-    i = data[8]
+    f:foo=foo()
+    f.prit()
+    i:int=f.temp(5)
     print(i)
 
 
