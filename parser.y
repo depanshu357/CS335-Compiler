@@ -85,8 +85,7 @@
 %token <elem> __NAME__ __MAIN__
 %token <elem> ADD_EQUAL SUB_EQUAL MUL_EQUAL  AT_EQUAL  DIV_EQUAL MOD_EQUAL BITWISE_AND_EQUAL  BITWISE_OR_EQUAL  BITWISE_XOR_EQUAL SHIFT_LEFT_EQUAL  SHIFT_RIGHT_EQUAL  POW_EQUAL  FLOOR_DIV_EQUAL 
 %token INDENT DEDENT
-%type <elem> start file_input stmt compound_stmt async_stmt if_stmt if_stmt_deviation elif_namedexpr_test_colon_suite_star while_stmt while_stmt_deviation for_stmt   funcdef funcdef_title func_type_hint_optional parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr  symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr symbol_term_star term symbol_factor_star  factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option expr_star_expr_option_list   testlist_comp   namedexpr_test test atom number string_plus  else_colon_suite_optional 
-symbol_term_plus symbol_factor_plus
+%type <elem> start file_input stmt compound_stmt async_stmt if_stmt if_stmt_deviation elif_namedexpr_test_colon_suite_star while_stmt while_stmt_deviation for_stmt   funcdef funcdef_title func_type_hint_optional parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr  symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr  term  factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option expr_star_expr_option_list   testlist_comp   namedexpr_test test atom number string_plus  else_colon_suite_optional 
 
 %%
     
@@ -975,38 +974,7 @@ shift_arith_expr_star: /*empty*/ {$$=NULL;}
         }
     }
     ;
-
-arith_expr: term symbol_term_star  {
-    $$ = create_node(3,"Expressions",$1,$2);
-    if($2==NULL || $2->type_of_node=="undefined"){
-        $$->type_of_node= $1->type_of_node;
-    }else if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
-        cout<<"Error invalid operand type at line " <<yylineno <<endl;
-            return 0;
-    }else if($1->type_of_node=="float" || $2->type_of_node=="float"){
-        $$->type_of_node= "float";
-    }else{
-        $$->type_of_node= "int";
-    }
-    if($2!=NULL){
-        string reg=newTemp();
-        // $1->addr="t45";
-        // $2->addr="t41";
-        create_ins(3,$2->residual_ins, reg,$1->addr, $2->addr);
-        $$->addr=reg;
-    }
-    else{
-        $$->addr=$1->addr;
-    
-    }
-
-} ;
-
-symbol_term_star: /*empty*/ {$$=NULL;}
-    |symbol_term_plus {$$=$1;};
-    ;
-
-symbol_term_plus:symbol_term_star ADD term{
+arith_expr:arith_expr ADD term {
         $$ = create_node(4,"Operator_expr",$1,$2,$3);
         if($3->type_of_node!="int" && $3->type_of_node!="float" && $3->type_of_node!="bool"){
             cout<<"Error invalid operand type at line " <<yylineno <<endl;
@@ -1024,12 +992,7 @@ symbol_term_plus:symbol_term_star ADD term{
         }
         if($1!=NULL){
             string reg=newTemp();
-            string op;
-            if($1->residual_ins=="-")
-                op="-";
-            else
-                op="+";
-            create_ins(3,op, reg,$1->addr, $3->addr);
+            create_ins(3,"+", reg,$1->addr, $3->addr);
             $$->addr=reg;
             $$->residual_ins=$1->residual_ins;
         }
@@ -1038,7 +1001,7 @@ symbol_term_plus:symbol_term_star ADD term{
             $$->residual_ins="+";
         }
     }
-    |symbol_term_star SUB term {
+    | arith_expr SUB term {
         $$ = create_node(4,"Operator_expr",$1,$2,$3);
         if($3->type_of_node!="int" && $3->type_of_node!="float" && $3->type_of_node!="bool"){
             cout<<"Error invalid operand type at line " <<yylineno <<endl;
@@ -1055,57 +1018,22 @@ symbol_term_plus:symbol_term_star ADD term{
             $$->type_of_node= "int";
         }
         if($1!=NULL){
-        string reg=newTemp();
-        string op;
-        if($1->residual_ins=="-")
-            op="+";
-        else
-            op="-";
-        create_ins(3,op, reg,$1->addr, $3->addr);
-        $$->addr=reg;
-        $$->residual_ins=$1->residual_ins;
+            string reg=newTemp();
+            create_ins(3,"-", reg,$1->addr, $3->addr);
+            $$->addr=reg;
+            $$->residual_ins=$1->residual_ins;
         }
         else{
             $$->addr=$3->addr;
-            $$->residual_ins="-";
+            $$->residual_ins="+";
         }
-    };
+    }
+    | term {$$=$1;}
+    ;
 
-term: factor symbol_factor_star {
-    $$ = create_node(3,"Terms",$1,$2);
-    if($2==NULL){
-        $$->type_of_node= $1->type_of_node;
-    }else if($2->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="bool"){
-        // cout<<"line 495 ";
-        cout<<"Error invalid operand type at line " <<yylineno <<endl;
-            return 0;
-        
-    }else if($1->type_of_node!="float" && $1->type_of_node!="int" && $2->type_of_node!="float" && $2->type_of_node!="int"){
-        cout<<"Error invalid operand type at line " <<yylineno <<endl;
-            return 0;
-    }
-    else {
-        if($1->type_of_node=="float" || $2->type_of_node=="float")
-            $$->type_of_node= "float";
-        else
-            $$->type_of_node= "int";
-    }
-    if($2!=NULL){
-        string reg=newTemp();
-        create_ins(3,$2->residual_ins, reg,$1->addr, $2->addr);
-        $$->addr=reg;
-    }
-    else {
-        $$->addr=$1->addr;
-    }
-    };
-    
 
-symbol_factor_star:{/*empty*/ $$=NULL;}
-    | symbol_factor_plus {$$=$1;};
-
-symbol_factor_plus:symbol_factor_star MUL factor{
-        $$ = create_node(4,"Operator_expr",$1,$2,$3);
+term:term MUL factor {
+    $$ = create_node(4,"Operator_expr",$1,$2,$3);
         if($3->type_of_node!="int" && $3->type_of_node!="float" && $3->type_of_node!="bool"){
             cout<<"Error invalid operand type at line " <<yylineno <<endl;
             return 0;
@@ -1121,25 +1049,17 @@ symbol_factor_plus:symbol_factor_star MUL factor{
             $$->type_of_node= "int";
         }
         if($1!=NULL){
-        string reg=newTemp();
-        // $2->addr="t45";
-        // $3->addr="t45";
-        // $1->addr="t34";
-        string op;
-        if($1->residual_ins=="/" || $1->residual_ins=="//")
-            op="/";
-        else
-            op="*";
-        create_ins(3,op, reg,$1->addr, $3->addr);
-        $$->addr=reg;
-        $$->residual_ins=$1->residual_ins;
+            string reg=newTemp();
+            create_ins(3,"*", reg,$1->addr, $3->addr);
+            $$->addr=reg;
+            $$->residual_ins=$1->residual_ins;
         }
         else{
             $$->addr=$3->addr;
             $$->residual_ins="*";
         }
     }
-    | symbol_factor_star DIV factor{
+    |term DIV factor {
         $$ = create_node(4,"Operator_expr",$1,$2,$3);
         if($3->type_of_node!="int" && $3->type_of_node!="float" && $3->type_of_node!="bool"){
             cout<<"Error invalid operand type at line " <<yylineno <<endl;
@@ -1156,25 +1076,17 @@ symbol_factor_plus:symbol_factor_star MUL factor{
             $$->type_of_node= "int";
         }
         if($1!=NULL){
-        string reg=newTemp();
-        // $2->addr="t45";
-        // $3->addr="t45";
-        // $1->addr="t34";
-        string op;
-        if($1->residual_ins=="/" || $1->residual_ins=="//")
-            op="*";
-        else
-            op="/";
-        create_ins(3,op, reg,$1->addr, $3->addr);
-        $$->addr=reg;
-        $$->residual_ins=$1->residual_ins;
+            string reg=newTemp();
+            create_ins(3,"/", reg,$1->addr, $3->addr);
+            $$->addr=reg;
+            $$->residual_ins=$1->residual_ins;
         }
         else{
             $$->addr=$3->addr;
             $$->residual_ins="/";
         }
     }
-    | symbol_factor_star FLOOR_DIV factor{
+    |term FLOOR_DIV factor {
         $$ = create_node(4,"Operator_expr",$1,$2,$3);
         if($3->type_of_node!="int" && $3->type_of_node!="float" && $3->type_of_node!="bool"){
             cout<<"Error invalid operand type at line " <<yylineno <<endl;
@@ -1191,25 +1103,17 @@ symbol_factor_plus:symbol_factor_star MUL factor{
             $$->type_of_node= "int";
         }
         if($1!=NULL){
-        string reg=newTemp();
-        // $2->addr="t45";
-        // $3->addr="t45";
-        // $1->addr="t34";
-        string op;
-        if($1->residual_ins=="/" || $1->residual_ins=="//")
-            op="*";
-        else
-            op="/";
-        create_ins(3,op, reg,$1->addr, $3->addr);
-        $$->addr=reg;
-        $$->residual_ins=$1->residual_ins;
+            string reg=newTemp();
+            create_ins(3,"//", reg,$1->addr, $3->addr);
+            $$->addr=reg;
+            $$->residual_ins=$1->residual_ins;
         }
         else{
             $$->addr=$3->addr;
             $$->residual_ins="//";
         }
     }
-    | symbol_factor_star MOD factor{
+    |term MOD factor {
         $$ = create_node(4,"Operator_expr",$1,$2,$3);
         if($3->type_of_node!="int" && $3->type_of_node!="float" && $3->type_of_node!="bool"){
             cout<<"Error invalid operand type at line " <<yylineno <<endl;
@@ -1226,24 +1130,18 @@ symbol_factor_plus:symbol_factor_star MUL factor{
             $$->type_of_node= "int";
         }
         if($1!=NULL){
-        string reg=newTemp();
-        // $2->addr="t45";
-        // $3->addr="t45";
-        // $1->addr="t34";
-        string op;
-        // if($1->residual_ins=="/" || $1->residual_ins=="//")
-        //     op="*";
-        // else
-        //     op="/";
-        create_ins(3,"%", reg,$1->addr, $3->addr);
-        $$->addr=reg;
-        $$->residual_ins=$1->residual_ins;
+            string reg=newTemp();
+            create_ins(3,"%", reg,$1->addr, $3->addr);
+            $$->addr=reg;
+            $$->residual_ins=$1->residual_ins;
         }
         else{
             $$->addr=$3->addr;
             $$->residual_ins="%";
         }
-    };
+    }
+    |factor {$$=$1;}
+    ;
 
 
 // symbol_factor_star: /*empty*/ {$$=NULL;}
