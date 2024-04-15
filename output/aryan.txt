@@ -1,8 +1,29 @@
+Test___init__:   
+move8 0(%rbp) self 
+.t1 = self + 0
+.t2 = 1
+move8 .t2 .t1 
+ret   
+Test_add:   
+move8 0(%rbp) self 
+move8 24(%rbp) b 
+.t3 = self + 8
+.t4 = .t3 + b
+move8 .t4 x 
+move8 x %rax 
+ret   
 main:   
-.t1 = 8
-.t2 = 4
-.t3 = 2
-.t4 = .t2 - .t3
-.t5 = .t1 - .t4
-x = .t5
-print, x int 
+#callnew   
+.t5 = alloc_mem(8) 
+push .t5  
+call, Test___init__  
+i = .t5
+.t6 = 0
+j = .t6
+.t7 = 1
+#callnew   
+push .t7  
+push i  
+call, Test_add  
+move8 %rax j 
+print, j int 
