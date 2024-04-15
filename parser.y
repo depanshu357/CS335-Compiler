@@ -1577,6 +1577,8 @@ trailer: SMALL_OPEN {
             create_ins(2,"=",reg,len_func_arguments[0][0]+"["+temp+"]","");
             // len_func=-1;
             $$->addr=reg;
+
+            len_func_arguments.clear();
             $$->type_of_node="int";
             // if(func_call_active==1){
             //     func_arguments.push_back({reg,"int"});

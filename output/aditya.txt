@@ -4,38 +4,39 @@ move8 16(%rbp) arr
 i = .t1
 .t2 = 0
 j = .t2
-.t3 = 10
-n = .t3
-.t4 = 0
-.t4 = .t4 - 1
-.t5 = .t4
+print, i int 
+.t3 = 0
+.t4 = 3
+.t3 = .t3 - 1
+.t5 = .t3
 .label2:   
 .t5 = .t5 + 1
-.t6 = .t5 < n
+.t6 = .t5 < .t4
 if_false .t6 goto .label1
 i = .t5
 .t7 = 0
+.t8 = 3
 .t7 = .t7 - 1
-.t8 = .t7
+.t9 = .t7
 .label4:   
-.t8 = .t8 + 1
-.t9 = .t8 < n
-if_false .t9 goto .label3
-j = .t8
-.t11 = j * 8
-a = arr[.t11]
-.t12 = 1
-.t13 = j + .t12
-.t15 = .t13 * 8
-b = arr[.t15]
-.t16 = a > b
-if_false .t16 goto .label6
-.t18 = j * 8
-arr[.t18] = b
-.t19 = 1
-.t20 = j + .t19
-.t22 = .t20 * 8
-arr[.t22] = a
+.t9 = .t9 + 1
+.t10 = .t9 < .t8
+if_false .t10 goto .label3
+j = .t9
+.t12 = j * 8
+a = arr[.t12]
+.t13 = 1
+.t14 = j + .t13
+.t16 = .t14 * 8
+b = arr[.t16]
+.t17 = a > b
+if_false .t17 goto .label6
+.t19 = j * 8
+arr[.t19] = b
+.t20 = 1
+.t21 = j + .t20
+.t23 = .t21 * 8
+arr[.t23] = a
 goto .label5  
 .label6:   
 .label5:   
@@ -45,59 +46,27 @@ goto .label2
 .label1:   
 ret   
 main:   
-.t23 = 10
-.t24 = 9
-.t25 = 8
-.t26 = 7
-.t27 = 6
-.t28 = 5
-.t29 = 4
-.t30 = 3
-.t31 = 2
-.t32 = 1
-.t33 = alloc_mem(88) 
-.t34 = 0
-.t33[.t34] = 10 
-.t34 = .t34 + 8
-.t33[.t34] = .t23 
-.t34 = .t34 + 8
-.t33[.t34] = .t24 
-.t34 = .t34 + 8
-.t33[.t34] = .t25 
-.t34 = .t34 + 8
-.t33[.t34] = .t26 
-.t34 = .t34 + 8
-.t33[.t34] = .t27 
-.t34 = .t34 + 8
-.t33[.t34] = .t28 
-.t34 = .t34 + 8
-.t33[.t34] = .t29 
-.t34 = .t34 + 8
-.t33[.t34] = .t30 
-.t34 = .t34 + 8
-.t33[.t34] = .t31 
-.t34 = .t34 + 8
-.t33[.t34] = .t32 
-.t34 = .t34 + 8
-.t33 = .t33 + 8
-data = .t33
+.t24 = 3
+.t25 = 2
+.t26 = 1
+.t27 = alloc_mem(32) 
+.t28 = 0
+.t27[.t28] = 3 
+.t28 = .t28 + 8
+.t27[.t28] = .t24 
+.t28 = .t28 + 8
+.t27[.t28] = .t25 
+.t28 = .t28 + 8
+.t27[.t28] = .t26 
+.t28 = .t28 + 8
+.t27 = .t27 + 8
+data = .t27
 #callnew   
 push data  
 call, temp  
-move8 %rax .t35 
-.t36 = 10
-n = .t36
-.t37 = 0
-i = .t37
-.t38 = 0
-.t38 = .t38 - 1
-.t39 = .t38
-.label8:   
-.t39 = .t39 + 1
-.t40 = .t39 < n
-if_false .t40 goto .label7
-i = .t39
-.t42 = i * 8
-print, data[.t42] int 
-goto .label8  
-.label7:   
+move8 %rax .t29 
+.t30 = 0
+i = .t30
+.t31 = 0
+.t33 = .t31 * 8
+print, data[.t33] int 
