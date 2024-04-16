@@ -45,7 +45,7 @@
     vector<vector<string>> func_arguments;
     vector<string> x86_file;
     void create_ins(int type, string optype, string addr1, string addr2, string addr3);
-    void print_x86_ins(vector<string> & ins, sym_table * symbol_table);
+    void print_x86_ins(vector<string> & ins, sym_table * symbol_table, int ins_no);
     vector<vector<string>>instructions;
     vector<string>range_arg;
     string prev_var_name="";
@@ -67,6 +67,7 @@
     map<string,string> str_map;
     string last_string = "";
     int str_count = 0;
+    // set<int> str_cmp_ins_no;
 %}
 
 %union {
@@ -444,7 +445,10 @@ tfpdef: NAME { $$ = $1;
             add_to_vector(parameter_vec, $1->lexeme, $1->lexeme,yylineno);
             int size_of_var=8;
             // create_ins(0,"move"+to_string(size_of_var),to_string(func_par_offset)+"(%rbp)",$1->lexeme,"");
-            parameter_ins.push_back({"0","move8",to_string(func_par_offset)+"(%rbp)",$1->lexeme,""});
+            
+            parameter_ins.push_back({"0","move8",to_string(func_par_offset +16)+"(%rbp)",$1->lexeme,""});
+            // cout << $1->lexeme << " line 448" << endl;
+
             func_par_offset+=size_of_var; //size of self pointer
             
         }
@@ -456,7 +460,8 @@ tfpdef: NAME { $$ = $1;
             int size_of_var=get_type_size($2->lexeme);
             // create_ins(0,"move"+to_string(size_of_var),to_string(func_par_offset)+"(%rbp)",$1->lexeme,"");
             parameter_ins.push_back({"0","move8",to_string(func_par_offset +16)+"(%rbp)",$1->lexeme,""});
-            func_par_offset+=size_of_var;
+            // cout<<$1->lexeme<<" line 460"<<endl;
+            func_par_offset += size_of_var;
         }
         else{
         delete_sym_table(curr_sym_tbl.top(),$1->lexeme);
@@ -650,11 +655,11 @@ expr_stmt: testlist_star_expr annassign {$$ = create_node(3,"Expr_stmt",$1,$2);
             class_active = 0;
         }
         else if(prev_self==1){
-            create_ins(0,"move8",$2->addr,$1->addr,"");
+            create_ins(0,"move8",$2->addr,$1->addr+"[0]","");
             prev_self=0;
         }else if(prev_self==2){
-            create_ins(0,"move8",$2->addr,$1->addr,"");
-            prev_self=0;
+            create_ins(0,"move8",$2->addr+"[0]",$1->addr,"");
+            prev_self = 0;
         }
         else{
             create_ins(2,$2->residual_ins, $1->addr,$2->addr, "");
@@ -1281,11 +1286,16 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             
             
             string reg=newTemp();
-            create_ins(3,"+",reg,"self",to_string(class_par_offset));
+            create_ins(3, "+", reg, "self", to_string(curr_sym_tbl.top()->class_self_offset));
             class_par_offset+=get_type_size($2->type_of_node);
-            $$->addr=reg;
+                $$->addr = reg;
             if(string($1->lexeme)=="self")
+            {
+                curr_sym_tbl.top()->self_offset_map[full_name]=curr_sym_tbl.top()->class_self_offset;
+                curr_sym_tbl.top()->class_self_offset+=8;
                 prev_self=1;
+                // cout<<full_name<<" "<<curr_sym_tbl.top()->name<<" "<<curr_sym_tbl.top()->class_self_offset<<endl;
+            }
 
             // $$->type_of_node = $3->lexeme;
             is_dot_name=0;
@@ -1312,21 +1322,31 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
             is_dot_name=0;
 
             int curr_offset=get_offset_from_tbl(curr_sym_tbl.top(),full_name);
+            if (string($1->lexeme) == "self")
+                prev_self = 2;
             if(!brack_open){
                 if(curr_offset==-1 && dot_is_spl_type.size()==0){
                     cout<<"Error invalid variable at line no "<<yylineno<<endl;
                     return 0;
                 }
                 string reg=newTemp();
-                if(class_active==0 && dot_is_spl_type.size()==0)
-                    {
-                        create_ins(3,"+",reg,"self",to_string(curr_offset));
-                    }
                 $$->addr=reg;
-            }
-            if(string($1->lexeme)=="self")
-                prev_self=2;
+                if(class_active==0 && dot_is_spl_type.size()==0)
+                {
+                    create_ins(3, "+", reg, "self", to_string(curr_sym_tbl.top()->self_offset_map[full_name]));
+                    $$->addr = reg + "[0]";
+                    prev_self=0;
+                }
 
+            }
+            
+            if(print_func_call_active==1){
+                string reg = newTemp();
+                
+                create_ins(3, "+", reg, "self", to_string(curr_sym_tbl.top()->self_offset_map[full_name]));
+                
+                $$->addr = reg+"[0]";
+            }
 
             if(class_func_call_active==1){
                 vector<st_node>sym_tbl_func_param=get_class_func_parameters(global_sym_table,$1->type_of_node,func_arguments[0][0]);
@@ -2042,6 +2062,10 @@ comparison: expr comp_op_expr_plus {
             }
         string reg = newTemp();
         create_ins(3,$2->residual_ins, reg,$1->addr, $2->addr);
+        // cout<<$1->type_of_node<<endl;
+        // if($1->type_of_node == "str") {
+            // str_cmp_ins_no.insert(instructions.size()-1);
+        // }
         $$->residual_ins = $1->residual_ins;
         $$->addr = reg;
        
@@ -2468,6 +2492,15 @@ void create_ins(int type, string optype, string addr1,string addr2, string addr3
         // x86_file.push_back("subq $8, %rsp");
         // cout<<"subq $8, %rsp"<<endl;
     }
+    if (type == 0 && optype == "move8" && offset_vec.find(curr_sym_tbl.top()->name + addr2) == offset_vec.end())
+    {
+        curr_sym_tbl.top()->x86_offset -= 8;
+        offset_vec[curr_sym_tbl.top()->name + addr2] = to_string(curr_sym_tbl.top()->x86_offset);
+        // flag=1;
+        // x86_file.push_back("subq $8, %rsp");
+        // cout<<"subq $8, %rsp"<<endl;
+    }
+
     if(type==0 && addr2.substr(0,9)=="alloc_mem" &&  optype[0]=='.' && offset_vec.find(curr_sym_tbl.top()->name+optype)==offset_vec.end()){
         curr_sym_tbl.top()->x86_offset-=8;
         offset_vec[curr_sym_tbl.top()->name+optype] = to_string(curr_sym_tbl.top()->x86_offset);
@@ -2578,7 +2611,7 @@ void callnew(sym_table * symbol_table){
     return;
 }
 
-void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
+void print_x86_ins(vector<string> &ins,  sym_table *symbol_table,int ins_no)
 {
     /* if(ins[2]=="i"){
         cout<<ins[0]<<"heheheehe"<<endl;
@@ -2598,6 +2631,9 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
         res_ins=ins[1]+" "+ins[2]+" "+ins[3]+" "+ins[4];
     }
     x86_file.push_back("\n#"+res_ins);
+    // if(str_cmp_ins_no.count(ins_no)){
+    //     x86_file.push_back("# comparison of strings");
+    // }
     // cout<<ins[3]
     char firstLetter = ins[3][0];
     int is_string = 0;
@@ -2752,20 +2788,20 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
             x86_file.push_back("movq %r14, "+reg1);
         }
-        else if(ins[1]=="=="){
-            x86_file.push_back("movq " + reg2 + ", %r13");
-            x86_file.push_back("movq " + reg3 + ", %r14");     // Move the value of 'a' into %rax
-            x86_file.push_back("cmpq %r13, %r14");      // Compare 'b' with 'a'
-            x86_file.push_back("setne %al");             // Set %al to 1 if 'b' is not equal to 'a', otherwise set to 0
-            x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
-            x86_file.push_back("movq %r14, "+reg1);
-        }
         else if (ins[1] == "&")
         {
             x86_file.push_back("movq " + reg2 + ", %r13");
             x86_file.push_back("movq " + reg3 + ", %r14");
             x86_file.push_back("andq %r13, %r14");
             x86_file.push_back("movq %r14, " + reg1);
+        }
+        else if(ins[1]=="!="){
+            x86_file.push_back("movq " + reg2 + ", %r13");
+            x86_file.push_back("movq " + reg3 + ", %r14");
+            x86_file.push_back("cmpq %r13, %r14");
+            x86_file.push_back("setne %al");
+            x86_file.push_back("movzbq %al, %r13");
+            x86_file.push_back("movq %r13, " + reg1);
         }
         else if (ins[1] == "|")
         {
@@ -3030,14 +3066,14 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table)
             }
             /* int temp1=get_offset(ins[2],symbol_table,reg1);
             int temp2=get_offset(ins[3],symbol_table,reg2); */
-            if((reg1[0]=='-'|| (reg1[0]<='9'&& reg1[0]>='0')) && (reg2[0]=='-'|| (reg2[0]<='9'&& reg2[0]>='0')))
-            {
+            /* if((reg1[0]=='-'|| (reg1[0]<='9'&& reg1[0]>='0')) && (reg2[0]=='-'|| (reg2[0]<='9'&& reg2[0]>='0')))
+            { */
                 x86_file.push_back("movq "+reg1+", %r13");
                 x86_file.push_back("movq %r13, "+reg2);
-            }
+            /* }
             else{
                 x86_file.push_back("movq "+reg1+", "+reg2);
-            }
+            } */
         }else if(ins[1]=="ret"){
             x86_file.push_back("popq %r15");
             x86_file.push_back("popq %r14");
@@ -3137,8 +3173,10 @@ void create_x86_file(string filename){
 
 void generate_x86_ins(){
     for(int i=0;i<instructions.size();i++){
-        
-        print_x86_ins(instructions[i],sym_tbl_info[i]);
+        if(instructions[i][1]=="programStart:"){
+            return;
+        }
+        print_x86_ins(instructions[i],sym_tbl_info[i],i);
     }
 }
 

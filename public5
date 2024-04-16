@@ -1,0 +1,538 @@
+digraph G{
+
+label     = "AST"
+fontname  = "Cascadia code"
+fontsize  = 30
+labelloc  = t
+
+node   [ fontname="Cascadia code" ]
+	532		[ style = solid label = "START"  ];
+	532 -> 531
+	531		[ style = solid label = "File Input"  ];
+	531 -> 127
+	127		[ style = solid label = "Func_def"  ];
+	127 -> 0
+	0		[ style = solid label = "KEYWORD 
+(def)" color = red shape = rectangle ];
+	127 -> 11
+	11		[ style = solid label = "Func_def"  ];
+	11 -> 1
+	1		[ style = solid label = "IDENTIFIER 
+(fibonacci)" color = red shape = rectangle ];
+	11 -> 8
+	8		[ style = solid label = "Arguments"  ];
+	8 -> 2
+	2		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	8 -> 5
+	5		[ style = solid label = "Identifier"  ];
+	5 -> 3
+	3		[ style = solid label = "IDENTIFIER 
+(n)" color = red shape = rectangle ];
+	5 -> 4
+	4		[ style = solid label = "TYPE_HINT 
+(:int)" color = red shape = rectangle ];
+	8 -> 6
+	6		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	11 -> 9
+	9		[ style = solid label = "TYPE_HINT 
+(->int)" color = red shape = rectangle ];
+	11 -> 10
+	10		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	127 -> 126
+	126		[ style = solid label = "If_stmt"  ];
+	126 -> 12
+	12		[ style = solid label = "KEYWORD 
+(if)" color = red shape = rectangle ];
+	126 -> 28
+	28		[ style = solid label = "Expressions"  ];
+	28 -> 13
+	13		[ style = solid label = "IDENTIFIER 
+(n)" color = red shape = rectangle ];
+	28 -> 27
+	27		[ style = solid label = "Expressions"  ];
+	27 -> 14
+	14		[ style = solid label = "RELATIONAL_OP 
+(<=)" color = red shape = rectangle ];
+	27 -> 20
+	20		[ style = solid label = "INTEGER 
+(0)" color = red shape = rectangle ];
+	126 -> 21
+	21		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	126 -> 41
+	41		[ style = solid label = "Return_stmt"  ];
+	41 -> 31
+	31		[ style = solid label = "KEYWORD 
+(return)" color = red shape = rectangle ];
+	41 -> 32
+	32		[ style = solid label = "INTEGER 
+(0)" color = red shape = rectangle ];
+	126 -> 125
+	125		[ style = solid label = "elif_stmt"  ];
+	125 -> 75
+	75		[ style = solid label = "Elif_block"  ];
+	75 -> 43
+	43		[ style = solid label = "KEYWORD 
+(elif)" color = red shape = rectangle ];
+	75 -> 59
+	59		[ style = solid label = "Expressions"  ];
+	59 -> 44
+	44		[ style = solid label = "IDENTIFIER 
+(n)" color = red shape = rectangle ];
+	59 -> 58
+	58		[ style = solid label = "Expressions"  ];
+	58 -> 45
+	45		[ style = solid label = "RELATIONAL_OP 
+(==)" color = red shape = rectangle ];
+	58 -> 51
+	51		[ style = solid label = "INTEGER 
+(1)" color = red shape = rectangle ];
+	75 -> 52
+	52		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	75 -> 72
+	72		[ style = solid label = "Return_stmt"  ];
+	72 -> 62
+	62		[ style = solid label = "KEYWORD 
+(return)" color = red shape = rectangle ];
+	72 -> 63
+	63		[ style = solid label = "INTEGER 
+(1)" color = red shape = rectangle ];
+	125 -> 74
+	74		[ style = solid label = "KEYWORD 
+(else)" color = red shape = rectangle ];
+	125 -> 76
+	76		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	125 -> 123
+	123		[ style = solid label = "Return_stmt"  ];
+	123 -> 77
+	77		[ style = solid label = "KEYWORD 
+(return)" color = red shape = rectangle ];
+	123 -> 115
+	115		[ style = solid label = "Operator_expr"  ];
+	115 -> 96
+	96		[ style = solid label = "Terms"  ];
+	96 -> 78
+	78		[ style = solid label = "IDENTIFIER 
+(fibonacci)" color = red shape = rectangle ];
+	96 -> 93
+	93		[ style = solid label = "Arguments"  ];
+	93 -> 79
+	79		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	93 -> 86
+	86		[ style = solid label = "Operator_expr"  ];
+	86 -> 80
+	80		[ style = solid label = "IDENTIFIER 
+(n)" color = red shape = rectangle ];
+	86 -> 81
+	81		[ style = solid label = "ARITHMETIC_OP 
+(-)" color = red shape = rectangle ];
+	86 -> 83
+	83		[ style = solid label = "INTEGER 
+(1)" color = red shape = rectangle ];
+	93 -> 84
+	84		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	115 -> 94
+	94		[ style = solid label = "ARITHMETIC_OP 
+(+)" color = red shape = rectangle ];
+	115 -> 114
+	114		[ style = solid label = "Terms"  ];
+	114 -> 97
+	97		[ style = solid label = "IDENTIFIER 
+(fibonacci)" color = red shape = rectangle ];
+	114 -> 112
+	112		[ style = solid label = "Arguments"  ];
+	112 -> 98
+	98		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	112 -> 105
+	105		[ style = solid label = "Operator_expr"  ];
+	105 -> 99
+	99		[ style = solid label = "IDENTIFIER 
+(n)" color = red shape = rectangle ];
+	105 -> 100
+	100		[ style = solid label = "ARITHMETIC_OP 
+(-)" color = red shape = rectangle ];
+	105 -> 102
+	102		[ style = solid label = "INTEGER 
+(2)" color = red shape = rectangle ];
+	112 -> 103
+	103		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	531 -> 530
+	530		[ style = solid label = "File Input"  ];
+	530 -> 508
+	508		[ style = solid label = "Func_def"  ];
+	508 -> 128
+	128		[ style = solid label = "KEYWORD 
+(def)" color = red shape = rectangle ];
+	508 -> 134
+	134		[ style = solid label = "Func_def"  ];
+	134 -> 129
+	129		[ style = solid label = "IDENTIFIER 
+(main)" color = red shape = rectangle ];
+	134 -> 132
+	132		[ style = solid label = "Parantheses"  ];
+	132 -> 130
+	130		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	132 -> 131
+	131		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	134 -> 133
+	133		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	508 -> 507
+	507		[ style = solid label = "Stmts"  ];
+	507 -> 169
+	169		[ style = solid label = "Expr_stmt"  ];
+	169 -> 137
+	137		[ style = solid label = "Identifier"  ];
+	137 -> 135
+	135		[ style = solid label = "IDENTIFIER 
+(fib_number1)" color = red shape = rectangle ];
+	137 -> 136
+	136		[ style = solid label = "TYPE_HINT 
+(:int)" color = red shape = rectangle ];
+	169 -> 168
+	168		[ style = solid label = "Expr_stmt"  ];
+	168 -> 138
+	138		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	168 -> 160
+	160		[ style = solid label = "Terms"  ];
+	160 -> 147
+	147		[ style = solid label = "IDENTIFIER 
+(fibonacci)" color = red shape = rectangle ];
+	160 -> 158
+	158		[ style = solid label = "Arguments"  ];
+	158 -> 148
+	148		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	158 -> 149
+	149		[ style = solid label = "INTEGER 
+(9)" color = red shape = rectangle ];
+	158 -> 150
+	150		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	507 -> 506
+	506		[ style = solid label = "Stmts"  ];
+	506 -> 205
+	205		[ style = solid label = "Expr_stmt"  ];
+	205 -> 173
+	173		[ style = solid label = "Identifier"  ];
+	173 -> 171
+	171		[ style = solid label = "IDENTIFIER 
+(fib_number2)" color = red shape = rectangle ];
+	173 -> 172
+	172		[ style = solid label = "TYPE_HINT 
+(:int)" color = red shape = rectangle ];
+	205 -> 204
+	204		[ style = solid label = "Expr_stmt"  ];
+	204 -> 174
+	174		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	204 -> 196
+	196		[ style = solid label = "Terms"  ];
+	196 -> 183
+	183		[ style = solid label = "IDENTIFIER 
+(fibonacci)" color = red shape = rectangle ];
+	196 -> 194
+	194		[ style = solid label = "Arguments"  ];
+	194 -> 184
+	184		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	194 -> 185
+	185		[ style = solid label = "INTEGER 
+(10)" color = red shape = rectangle ];
+	194 -> 186
+	186		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	506 -> 505
+	505		[ style = solid label = "Stmts"  ];
+	505 -> 241
+	241		[ style = solid label = "Expr_stmt"  ];
+	241 -> 209
+	209		[ style = solid label = "Identifier"  ];
+	209 -> 207
+	207		[ style = solid label = "IDENTIFIER 
+(fib_number3)" color = red shape = rectangle ];
+	209 -> 208
+	208		[ style = solid label = "TYPE_HINT 
+(:int)" color = red shape = rectangle ];
+	241 -> 240
+	240		[ style = solid label = "Expr_stmt"  ];
+	240 -> 210
+	210		[ style = solid label = "ASSIGNMENT_OP 
+(=)" color = red shape = rectangle ];
+	240 -> 232
+	232		[ style = solid label = "Terms"  ];
+	232 -> 219
+	219		[ style = solid label = "IDENTIFIER 
+(fibonacci)" color = red shape = rectangle ];
+	232 -> 230
+	230		[ style = solid label = "Arguments"  ];
+	230 -> 220
+	220		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	230 -> 221
+	221		[ style = solid label = "INTEGER 
+(11)" color = red shape = rectangle ];
+	230 -> 222
+	222		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	505 -> 504
+	504		[ style = solid label = "Stmts"  ];
+	504 -> 256
+	256		[ style = solid label = "Terms"  ];
+	256 -> 243
+	243		[ style = solid label = "IDENTIFIER 
+(print)" color = red shape = rectangle ];
+	256 -> 254
+	254		[ style = solid label = "Arguments"  ];
+	254 -> 244
+	244		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	254 -> 245
+	245		[ style = solid label = "IDENTIFIER 
+(fib_number1)" color = red shape = rectangle ];
+	254 -> 246
+	246		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	504 -> 503
+	503		[ style = solid label = "Stmts"  ];
+	503 -> 278
+	278		[ style = solid label = "Terms"  ];
+	278 -> 265
+	265		[ style = solid label = "IDENTIFIER 
+(print)" color = red shape = rectangle ];
+	278 -> 276
+	276		[ style = solid label = "Arguments"  ];
+	276 -> 266
+	266		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	276 -> 267
+	267		[ style = solid label = "IDENTIFIER 
+(fib_number2)" color = red shape = rectangle ];
+	276 -> 268
+	268		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	503 -> 502
+	502		[ style = solid label = "Stmts"  ];
+	502 -> 300
+	300		[ style = solid label = "Terms"  ];
+	300 -> 287
+	287		[ style = solid label = "IDENTIFIER 
+(print)" color = red shape = rectangle ];
+	300 -> 298
+	298		[ style = solid label = "Arguments"  ];
+	298 -> 288
+	288		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	298 -> 289
+	289		[ style = solid label = "IDENTIFIER 
+(fib_number3)" color = red shape = rectangle ];
+	298 -> 290
+	290		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	502 -> 501
+	501		[ style = solid label = "Stmts"  ];
+	501 -> 419
+	419		[ style = solid label = "If_stmt"  ];
+	419 -> 309
+	309		[ style = solid label = "KEYWORD 
+(if)" color = red shape = rectangle ];
+	419 -> 363
+	363		[ style = solid label = "Arguments"  ];
+	363 -> 310
+	310		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	363 -> 361
+	361		[ style = solid label = "Expressions"  ];
+	361 -> 326
+	326		[ style = solid label = "Expressions"  ];
+	326 -> 311
+	311		[ style = solid label = "IDENTIFIER 
+(fib_number1)" color = red shape = rectangle ];
+	326 -> 325
+	325		[ style = solid label = "Expressions"  ];
+	325 -> 312
+	312		[ style = solid label = "RELATIONAL_OP 
+(==)" color = red shape = rectangle ];
+	325 -> 318
+	318		[ style = solid label = "INTEGER 
+(34)" color = red shape = rectangle ];
+	361 -> 360
+	360		[ style = solid label = "And_term"  ];
+	360 -> 319
+	319		[ style = solid label = "KEYWORD 
+(and)" color = red shape = rectangle ];
+	360 -> 342
+	342		[ style = solid label = "Expressions"  ];
+	342 -> 327
+	327		[ style = solid label = "IDENTIFIER 
+(fib_number2)" color = red shape = rectangle ];
+	342 -> 341
+	341		[ style = solid label = "Expressions"  ];
+	341 -> 328
+	328		[ style = solid label = "RELATIONAL_OP 
+(==)" color = red shape = rectangle ];
+	341 -> 334
+	334		[ style = solid label = "INTEGER 
+(55)" color = red shape = rectangle ];
+	360 -> 359
+	359		[ style = solid label = "And_term"  ];
+	359 -> 335
+	335		[ style = solid label = "KEYWORD 
+(and)" color = red shape = rectangle ];
+	359 -> 358
+	358		[ style = solid label = "Expressions"  ];
+	358 -> 343
+	343		[ style = solid label = "IDENTIFIER 
+(fib_number3)" color = red shape = rectangle ];
+	358 -> 357
+	357		[ style = solid label = "Expressions"  ];
+	357 -> 344
+	344		[ style = solid label = "RELATIONAL_OP 
+(==)" color = red shape = rectangle ];
+	357 -> 350
+	350		[ style = solid label = "INTEGER 
+(89)" color = red shape = rectangle ];
+	363 -> 351
+	351		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	419 -> 364
+	364		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	419 -> 385
+	385		[ style = solid label = "Terms"  ];
+	385 -> 372
+	372		[ style = solid label = "IDENTIFIER 
+(print)" color = red shape = rectangle ];
+	385 -> 383
+	383		[ style = solid label = "Arguments"  ];
+	383 -> 373
+	373		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	383 -> 374
+	374		[ style = solid label = "STRING_LITERAL 
+(\"Fibonacci test passed\")" color = red shape = rectangle ];
+	383 -> 375
+	375		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	419 -> 418
+	418		[ style = solid label = "elif_stmt"  ];
+	418 -> 394
+	394		[ style = solid label = "KEYWORD 
+(else)" color = red shape = rectangle ];
+	418 -> 395
+	395		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	418 -> 409
+	409		[ style = solid label = "Terms"  ];
+	409 -> 396
+	396		[ style = solid label = "IDENTIFIER 
+(print)" color = red shape = rectangle ];
+	409 -> 407
+	407		[ style = solid label = "Arguments"  ];
+	407 -> 397
+	397		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	407 -> 398
+	398		[ style = solid label = "STRING_LITERAL 
+(\"Fibonacci test failed\")" color = red shape = rectangle ];
+	407 -> 399
+	399		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	501 -> 500
+	500		[ style = solid label = "If_stmt"  ];
+	500 -> 420
+	420		[ style = solid label = "KEYWORD 
+(if)" color = red shape = rectangle ];
+	500 -> 444
+	444		[ style = solid label = "Arguments"  ];
+	444 -> 421
+	421		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	444 -> 441
+	441		[ style = solid label = "Expressions"  ];
+	441 -> 422
+	422		[ style = solid label = "IDENTIFIER 
+(fib_number3)" color = red shape = rectangle ];
+	441 -> 440
+	440		[ style = solid label = "Expressions"  ];
+	440 -> 423
+	423		[ style = solid label = "RELATIONAL_OP 
+(==)" color = red shape = rectangle ];
+	440 -> 435
+	435		[ style = solid label = "Operator_expr"  ];
+	435 -> 429
+	429		[ style = solid label = "IDENTIFIER 
+(fib_number2)" color = red shape = rectangle ];
+	435 -> 430
+	430		[ style = solid label = "ARITHMETIC_OP 
+(+)" color = red shape = rectangle ];
+	435 -> 432
+	432		[ style = solid label = "IDENTIFIER 
+(fib_number1)" color = red shape = rectangle ];
+	444 -> 433
+	433		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	500 -> 445
+	445		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	500 -> 466
+	466		[ style = solid label = "Terms"  ];
+	466 -> 453
+	453		[ style = solid label = "IDENTIFIER 
+(print)" color = red shape = rectangle ];
+	466 -> 464
+	464		[ style = solid label = "Arguments"  ];
+	464 -> 454
+	454		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	464 -> 455
+	455		[ style = solid label = "STRING_LITERAL 
+(\"Fibonacci test passed\")" color = red shape = rectangle ];
+	464 -> 456
+	456		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	500 -> 499
+	499		[ style = solid label = "elif_stmt"  ];
+	499 -> 475
+	475		[ style = solid label = "KEYWORD 
+(else)" color = red shape = rectangle ];
+	499 -> 476
+	476		[ style = solid label = "DELIMITER 
+(:)" color = red shape = rectangle ];
+	499 -> 490
+	490		[ style = solid label = "Terms"  ];
+	490 -> 477
+	477		[ style = solid label = "IDENTIFIER 
+(print)" color = red shape = rectangle ];
+	490 -> 488
+	488		[ style = solid label = "Arguments"  ];
+	488 -> 478
+	478		[ style = solid label = "DELIMITER 
+(()" color = red shape = rectangle ];
+	488 -> 479
+	479		[ style = solid label = "STRING_LITERAL 
+(\"Fibonacci test failed\")" color = red shape = rectangle ];
+	488 -> 480
+	480		[ style = solid label = "DELIMITER 
+())" color = red shape = rectangle ];
+	530 -> 528
+	528		[ style = solid label = "Simple_stmts"  ];
+	528 -> 509
+	509		[ style = solid label = "KEYWORD 
+(if)" color = red shape = rectangle ];
+	528 -> 510
+	510		[ style = solid label = "KEYWORD 
+(__name__)" color = red shape = rectangle ];
+}

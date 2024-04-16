@@ -17,6 +17,8 @@ typedef struct sym_table {
     int total_offset = 0;
     int x86_offset=0;
     string return_type;
+    int class_self_offset=0;
+    map<string,int>self_offset_map;
     sym_table * prev_sym_table;
     vector<string>global_vars;
     vector<st_node> sym_tbl_entry; //this will contain entries of sym_table
@@ -75,6 +77,11 @@ void create_entry(sym_table * curr_sym_tbl,string name, string type, int line_no
         new_entry.sub_symbol_table->prev_sym_table=curr_sym_tbl;
         new_entry.sub_symbol_table->total_offset=0;  
         new_entry.sub_symbol_table->name=name;  
+        new_entry.sub_symbol_table->class_self_offset=0;
+        new_entry.sub_symbol_table->self_offset_map.clear();
+        for(auto it:curr_sym_tbl->self_offset_map){
+            new_entry.sub_symbol_table->self_offset_map[it.first]=it.second;
+        }
     }
     curr_sym_tbl->sym_tbl_entry.push_back(new_entry);
 }

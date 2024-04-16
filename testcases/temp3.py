@@ -1,15 +1,8 @@
-def func(x:str)->str:
-    print(x)
-    y:str = "World"
-    return "Ompho"
-    
 
 
 def main():   
 
-    x:str = "Hello World"
-    y:str = func(x)
-    print(y)
+    x:int = "He" < "Hd"
     
 
 #     i:int=data[0]

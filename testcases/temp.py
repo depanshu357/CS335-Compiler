@@ -1,21 +1,27 @@
-class foo():
-    def __init__(self):
-        self.x:int=1
-        self.y:int=1
+class klass():
+    def __init__(self,x:int):
+        self.a: int = 1
+        self.b: int = 2
 
-    def prit(self)->None:
-        print("Hello")
-    
-    def temp(self,a:int)->int:
-        data : list[int] = [10,9,8,7,6,5,4,3,2,1]
-        i:int = data[a] * data[a]
-        print(i)
-        return i
+    def add(self) -> None:
+        x :int = self.a + self.b
+        print(x)
+        return 
+
+class temp():
+    def __init__(self,x:int):
+        self.z:int = x
+        
+
+    def sub(self) -> int:
+        print(self.z)
+        return 3
+
+
 
 def main():
-    f:foo=foo()
-    f.prit()
-    i:int=f.temp(5)
-    print(i)
-
-
+    z:temp=temp(123)
+    k:klass = klass(2)
+    # print(z)
+    w:int = z.sub()
+    k.add()
