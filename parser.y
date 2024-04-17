@@ -67,7 +67,7 @@
     map<string,string> str_map;
     string last_string = "";
     int str_count = 0;
-    // set<int> str_cmp_ins_no;
+    set<int> str_cmp_ins_no;
 %}
 
 %union {
@@ -2063,9 +2063,9 @@ comparison: expr comp_op_expr_plus {
         string reg = newTemp();
         create_ins(3,$2->residual_ins, reg,$1->addr, $2->addr);
         // cout<<$1->type_of_node<<endl;
-        // if($1->type_of_node == "str") {
-            // str_cmp_ins_no.insert(instructions.size()-1);
-        // }
+        if($1->type_of_node == "str" && $2->type_of_node == "str") {
+            str_cmp_ins_no.insert(instructions.size()-1);
+        }
         $$->residual_ins = $1->residual_ins;
         $$->addr = reg;
        
@@ -2460,7 +2460,7 @@ string get_str_name(){
 void create_ins(int type, string optype, string addr1,string addr2, string addr3 ){
     vector<string> instruct{to_string(type), optype, addr1, addr2, addr3};
     // int flag=0;
-    if((type==2 || type==3) &&offset_vec.find(curr_sym_tbl.top()->name+addr1)==offset_vec.end())
+    if((type==2 || type==3) && offset_vec.find(curr_sym_tbl.top()->name+addr1)==offset_vec.end())
     {
         curr_sym_tbl.top()->x86_offset-=8;
         offset_vec[curr_sym_tbl.top()->name+addr1] = to_string(curr_sym_tbl.top()->x86_offset);
@@ -2631,9 +2631,9 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table,int ins_no)
         res_ins=ins[1]+" "+ins[2]+" "+ins[3]+" "+ins[4];
     }
     x86_file.push_back("\n#"+res_ins);
-    // if(str_cmp_ins_no.count(ins_no)){
-    //     x86_file.push_back("# comparison of strings");
-    // }
+    if(str_cmp_ins_no.count(ins_no)){
+        x86_file.push_back("# comparison of strings");
+    }
     // cout<<ins[3]
     char firstLetter = ins[3][0];
     int is_string = 0;
@@ -2704,6 +2704,7 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table,int ins_no)
             offset_3 = get_last_offset(reg3);
         }
         // cout<<offset_1<<" "<<offset_2<<" "<<offset_3<<endl;
+
         
         if (ins[1] == "+")
         {
@@ -2749,20 +2750,41 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table,int ins_no)
             x86_file.push_back("movq %rdx, " + reg1);
         }
         else if(ins[1]==">"){
-            x86_file.push_back("movq " + reg2 + ", %r13");
-            x86_file.push_back("movq " + reg3 + ", %r14");     // Move the value of 'a' into %rax
-            x86_file.push_back("cmpq %r14, %r13");      // Compare 'a' with 'b'
-            x86_file.push_back("setg %al");             // Set %al to 1 if 'a' is greater than 'b', otherwise set to 0
-            x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
-            x86_file.push_back("movq %r14, "+reg1);
+            if(str_cmp_ins_no.count(ins_no)){
+                x86_file.push_back("movq " + reg2 + ", %rdi");
+                x86_file.push_back("movq " + reg3 + ", %rsi");
+                x86_file.push_back("call strcmp@PLT");
+                x86_file.push_back("cmp $1, %eax");
+                x86_file.push_back("sete %al");             
+                x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
+                x86_file.push_back("movq %r14, "+reg1);
+            }else{
+
+                x86_file.push_back("movq " + reg2 + ", %r13");
+                x86_file.push_back("movq " + reg3 + ", %r14");     // Move the value of 'a' into %rax
+                x86_file.push_back("cmpq %r14, %r13");      // Compare 'a' with 'b'
+                x86_file.push_back("setg %al");             // Set %al to 1 if 'a' is greater than 'b', otherwise set to 0
+                x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
+                x86_file.push_back("movq %r14, "+reg1);
+            }
         }
         else if(ins[1]=="<"){
-            x86_file.push_back("movq " + reg2 + ", %r13");
-            x86_file.push_back("movq " + reg3 + ", %r14");     // Move the value of 'a' into %rax
-            x86_file.push_back("cmpq %r13, %r14");      // Compare 'b' with 'a'
-            x86_file.push_back("setg %al");             // Set %al to 1 if 'b' is greater than 'a', otherwise set to 0
-            x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
-            x86_file.push_back("movq %r14, "+reg1);
+            if(str_cmp_ins_no.count(ins_no)){
+                x86_file.push_back("movq " + reg2 + ", %rdi");
+                x86_file.push_back("movq " + reg3 + ", %rsi");
+                x86_file.push_back("call strcmp@PLT");
+                x86_file.push_back("cmp $1, %eax");
+                x86_file.push_back("setne %al");             
+                x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
+                x86_file.push_back("movq %r14, "+reg1);
+            }else{
+                x86_file.push_back("movq " + reg2 + ", %r13");
+                x86_file.push_back("movq " + reg3 + ", %r14");     // Move the value of 'a' into %rax
+                x86_file.push_back("cmpq %r13, %r14");      // Compare 'b' with 'a'
+                x86_file.push_back("setg %al");             // Set %al to 1 if 'b' is greater than 'a', otherwise set to 0
+                x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
+                x86_file.push_back("movq %r14, "+reg1);
+            }
         }
         else if(ins[1]==">="){
             x86_file.push_back("movq " + reg2 + ", %r13");
@@ -2781,12 +2803,22 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table,int ins_no)
             x86_file.push_back("movq %r14, "+reg1);
         }
         else if(ins[1]=="=="){
-            x86_file.push_back("movq " + reg2 + ", %r13");
-            x86_file.push_back("movq " + reg3 + ", %r14");     // Move the value of 'a' into %rax
-            x86_file.push_back("cmpq %r13, %r14");      // Compare 'b' with 'a'
-            x86_file.push_back("sete %al");             // Set %al to 1 if 'b' is  equal to 'a', otherwise set to 0
-            x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
-            x86_file.push_back("movq %r14, "+reg1);
+            if(str_cmp_ins_no.count(ins_no)){
+                x86_file.push_back("movq " + reg2 + ", %rdi");
+                x86_file.push_back("movq " + reg3 + ", %rsi");
+                x86_file.push_back("call strcmp@PLT");
+                x86_file.push_back("cmpq $0, %rax");
+                x86_file.push_back("sete %al");             
+                x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
+                x86_file.push_back("movq %r14, "+reg1);
+            }else{
+                x86_file.push_back("movq " + reg2 + ", %r13");
+                x86_file.push_back("movq " + reg3 + ", %r14");     // Move the value of 'a' into %rax
+                x86_file.push_back("cmpq %r13, %r14");      // Compare 'b' with 'a'
+                x86_file.push_back("sete %al");             // Set %al to 1 if 'b' is  equal to 'a', otherwise set to 0
+                x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
+                x86_file.push_back("movq %r14, "+reg1);
+            }
         }
         else if (ins[1] == "&")
         {
@@ -2796,12 +2828,22 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table,int ins_no)
             x86_file.push_back("movq %r14, " + reg1);
         }
         else if(ins[1]=="!="){
-            x86_file.push_back("movq " + reg2 + ", %r13");
-            x86_file.push_back("movq " + reg3 + ", %r14");
-            x86_file.push_back("cmpq %r13, %r14");
-            x86_file.push_back("setne %al");
-            x86_file.push_back("movzbq %al, %r13");
-            x86_file.push_back("movq %r13, " + reg1);
+            if(str_cmp_ins_no.count(ins_no)){
+                x86_file.push_back("movq " + reg2 + ", %rdi");
+                x86_file.push_back("movq " + reg3 + ", %rsi");
+                x86_file.push_back("call strcmp@PLT");
+                x86_file.push_back("cmpq $0, %rax");
+                x86_file.push_back("setne %al");             
+                x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
+                x86_file.push_back("movq %r14, "+reg1);
+            }else{
+                x86_file.push_back("movq " + reg2 + ", %r13");
+                x86_file.push_back("movq " + reg3 + ", %r14");
+                x86_file.push_back("cmpq %r13, %r14");
+                x86_file.push_back("setne %al");
+                x86_file.push_back("movzbq %al, %r13");
+                x86_file.push_back("movq %r13, " + reg1);
+            }
         }
         else if (ins[1] == "|")
         {

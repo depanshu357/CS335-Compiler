@@ -2,8 +2,12 @@
 
 def main():   
 
-    x:int = "He" < "Hd"
-    
+    # x:int = "Hd" > "He"
+    x:int = "Hello" > "Hello"
+    if(x):
+        print("True")
+    else:
+        print("False")
 
 #     i:int=data[0]
 #     j:int=data[1]

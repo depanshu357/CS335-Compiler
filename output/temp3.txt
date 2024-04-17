@@ -1,5 +1,13 @@
 main:   
-.t1 = "He"
-.t2 = "Hd"
-.t3 = .t1 < .t2
+.t1 = "Hello"
+.t2 = "Hello"
+.t3 = .t1 > .t2
 x = .t3
+if_false x goto .label2
+.t4 = "True"
+print, .t4 str 
+goto .label1  
+.label2:   
+.t5 = "False"
+print, .t5 str 
+.label1:   
