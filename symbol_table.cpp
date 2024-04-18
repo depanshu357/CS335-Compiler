@@ -278,6 +278,25 @@ int search_class_func(sym_table * symbol_table,string class_name, string func_na
     return 0;
 }
 
+string get_full_name(sym_table *global_sym_table,string clas_name,string func_name){
+    for(int i=0;i<global_sym_table->sym_tbl_entry.size();i++){
+        if(global_sym_table->sym_tbl_entry[i].name == clas_name && global_sym_table->sym_tbl_entry[i].type == clas_name){
+            sym_table * curr = global_sym_table->sym_tbl_entry[i].sub_symbol_table;
+            while(curr!=global_sym_table){
+                for(int i=0;i<curr->sym_tbl_entry.size();i++){
+                    if(curr->sym_tbl_entry[i].name == func_name){
+                        return curr->name+"_"+curr->sym_tbl_entry[i].name;
+                    }
+                }
+                curr=curr->prev_sym_table;
+            }
+        }
+    }
+    return "NULL";
+}
+                
+
+
 vector<st_node> get_class_func_parameters(sym_table *symbol_table,string class_name, string func_name)
 {
     sym_table *curr=NULL;

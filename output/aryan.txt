@@ -1,107 +1,99 @@
-bubbleSort:   
-move8 16(%rbp) array 
-.t1 = 0
-i = .t1
-.t2 = 0
-j = .t2
-.t3 = -8
-.t4 = array[.t3]
-.t5 = -1
-.t6 = .t5
-.label2:   
-.t6 = .t6 + 1
-.t7 = .t6 < .t4
-if_false .t7 goto .label1
-i = .t6
-.t8 = False
-swapped = .t8
-.t9 = 0
-.t10 = -8
-.t11 = array[.t10]
-.t12 = .t11 - i
-.t13 = 1
-.t14 = .t12 - .t13
-.t9 = .t9 - 1
-.t15 = .t9
-.label4:   
-.t15 = .t15 + 1
-.t16 = .t15 < .t14
-if_false .t16 goto .label3
-j = .t15
-.t18 = j * 8
-.t19 = 1
-.t20 = j + .t19
-.t22 = .t20 * 8
-.t23 = array[.t18] > array[.t22]
-if_false .t23 goto .label6
-.t25 = j * 8
-temp = array[.t25]
-.t27 = j * 8
-.t28 = 1
-.t29 = j + .t28
-.t31 = .t29 * 8
-array[.t27] = array[.t31]
-.t32 = 1
-.t33 = j + .t32
-.t35 = .t33 * 8
-array[.t35] = temp
-.t36 = True
-swapped = .t36
-goto .label5  
-.label6:   
-.label5:   
-goto .label4  
-.label3:   
-.t37 = not swapped
-if_false .t37 goto .label8
-goto .label7  
-.label8:   
-.label7:   
-goto .label2  
-.label1:   
+ompho___init__:   
+move8 16(%rbp) self 
+.t1 = self + 0
+.t2 = 1
+move8 .t2 .t1[0] 
+ret   
+ompho_say_my_name:   
+move8 16(%rbp) self 
+.t3 = "omphoo"
+move8 .t3 %rax 
+ret   
+foo___init__:   
+move8 16(%rbp) self 
+.t5 = self + 0
+.t6 = 1
+.t5 = .t4
+ret   
+foo_sub:   
+move8 16(%rbp) self 
+move8 24(%rbp) a 
+move8 32(%rbp) b 
+.t7 = a - b
+move8 .t7 %rax 
+ret   
+klass___init__:   
+move8 16(%rbp) self 
+move8 24(%rbp) x 
+.t9 = self + 0
+.t10 = 1
+.t9 = .t8
+.t11 = self + 8
+.t12 = 2
+move8 .t12 .t11[0] 
+ret   
+klass_add:   
+move8 16(%rbp) self 
+.t13 = self + 0
+.t14 = self + 8
+.t15 = .t13[0] + .t14[0]
+x = .t15
+print, x int 
+ret   
+ret   
+temp___init__:   
+move8 16(%rbp) self 
+move8 24(%rbp) x 
+.t16 = self + 0
+move8 x .t16[0] 
+ret   
+temp_sub:   
+move8 16(%rbp) self 
+.t17 = self + 0
+print, .t17[0] int 
+.t18 = 3
+move8 .t18 %rax 
 ret   
 main:   
-.t38 = 2
-.t39 = .t38 * -1
-.t40 = 45
-.t41 = 0
-.t42 = 11
-.t43 = 9
-.t44 = .t43 * -1
-.t45 = alloc_mem(48) 
-.t46 = 0
-.t45[.t46] = 5
-.t46 = .t46 + 8
-.t45[.t46] = .t39
-.t46 = .t46 + 8
-.t45[.t46] = .t40
-.t46 = .t46 + 8
-.t45[.t46] = .t41
-.t46 = .t46 + 8
-.t45[.t46] = .t42
-.t46 = .t46 + 8
-.t45[.t46] = .t44
-.t46 = .t46 + 8
-.t45 = .t45 + 8
-data = .t45
+.t20 = 123
 #callnew   
-push data  
-call, bubbleSort  
-move8 %rax .t47 
-.t48 = "Sorted Array in Ascending Order:"
-print, .t48 str 
-.t49 = 0
-i = .t49
-.t50 = -8
-.t51 = data[.t50]
-.t52 = -1
-.t53 = .t52
-.label10:   
-.t53 = .t53 + 1
-.t54 = .t53 < .t51
-if_false .t54 goto .label9
-i = .t53
-.t56 = i * 8
-print, data[.t56] int 
-goto .label10  
-.label9:   
+push .t20  
+.t19 = alloc_mem(8) 
+push .t19  
+call, temp___init__  
+z = .t19
+.t22 = 2
+#callnew   
+push .t22  
+.t21 = alloc_mem(16) 
+push .t21  
+call, klass___init__  
+k = .t21
+#callnew   
+push z  
+call, temp_sub  
+move8 %rax w 
+.t24 = 102
+.t25 = 33
+#callnew   
+push .t25  
+push .t24  
+push k  
+call, foo_sub  
+move8 %rax m 
+#callnew   
+push k  
+call, ompho_say_my_name  
+move8 %rax l 
+print, m int 
+.t28 = "b"
+a = .t28
+.t29 = "a"
+b = .t29
+.t30 = a == b
+print, .t30 int 
+.t31 = a > b
+print, .t31 int 
+.t32 = a < b
+print, .t32 int 
+print, l str 

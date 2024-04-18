@@ -5,15 +5,21 @@
         .string "%ld\n"
         .text
 .str1:
-        .string "Sorted Array in Ascending Order:\n"
+        .string "omphoo\n"
+        .text
+.str2:
+        .string "b\n"
+        .text
+.str3:
+        .string "a\n"
         .text
 .global main
 
-#bubbleSort:   
-bubbleSort:
+#ompho___init__:   
+ompho___init__:
 pushq %rbp
 movq %rsp, %rbp
-subq $312, %rsp
+subq $40, %rsp
 pushq %rbx
 pushq %rdi
 pushq %rsi
@@ -22,289 +28,24 @@ pushq %r13
 pushq %r14
 pushq %r15
 
-#move8 16(%rbp) array 
+#move8 16(%rbp) self 
 movq 16(%rbp), %r13
 movq %r13, -8(%rbp)
 
-#.t1 = 0
-movq $0, -24(%rbp)
-
-#i = .t1
-movq -24(%rbp), %r13
-movq %r13, -32(%rbp)
-
-#.t2 = 0
-movq $0, -40(%rbp)
-
-#j = .t2
-movq -40(%rbp), %r13
-movq %r13, -48(%rbp)
-
-#.t3 = -8
-movq $-8, %r13
-movq %r13, -56(%rbp)
-
-#.t4 = array[.t3]
-movq -8(%rbp), %r10
-movq -56(%rbp), %r11
-movq ( %r10, %r11 ), %r13
-movq %r13, -64(%rbp)
-
-#.t5 = -1
-movq $-1, %r13
-movq %r13, -72(%rbp)
-
-#.t6 = .t5
-movq -72(%rbp), %r13
-movq %r13, -80(%rbp)
-
-#.label2:   
-.label2:
-
-#.t6 = .t6 + 1
-movq -80(%rbp), %r13
-movq $1, %r14
+#.t1 = self + 0
+movq -8(%rbp), %r13
+movq $0, %r14
 addq %r13, %r14
-movq %r14, -80(%rbp)
+movq %r14, -24(%rbp)
 
-#.t7 = .t6 < .t4
-movq -80(%rbp), %r13
-movq -64(%rbp), %r14
-cmpq %r13, %r14
-setg %al
-movzbq %al, %r14
-movq %r14, -88(%rbp)
+#.t2 = 1
+movq $1, -32(%rbp)
 
-#if_false .t7 goto .label1
-mov -88(%rbp), %rax
-cmp $0, %rax
-je .label1
-
-#i = .t6
-movq -80(%rbp), %r13
-movq %r13, -32(%rbp)
-
-#.t8 = False
-movq (%rbp), %r13
-movq %r13, -96(%rbp)
-
-#swapped = .t8
-movq -96(%rbp), %r13
-movq %r13, -104(%rbp)
-
-#.t9 = 0
-movq $0, -112(%rbp)
-
-#.t10 = -8
-movq $-8, %r13
-movq %r13, -120(%rbp)
-
-#.t11 = array[.t10]
-movq -8(%rbp), %r10
-movq -120(%rbp), %r11
-movq ( %r10, %r11 ), %r13
-movq %r13, -128(%rbp)
-
-#.t12 = .t11 - i
-movq -128(%rbp), %r13
-movq -32(%rbp), %r14
-subq %r14, %r13
-movq %r13, -136(%rbp)
-
-#.t13 = 1
-movq $1, -144(%rbp)
-
-#.t14 = .t12 - .t13
-movq -136(%rbp), %r13
-movq -144(%rbp), %r14
-subq %r14, %r13
-movq %r13, -152(%rbp)
-
-#.t9 = .t9 - 1
-movq -112(%rbp), %r13
-movq $1, %r14
-subq %r14, %r13
-movq %r13, -112(%rbp)
-
-#.t15 = .t9
-movq -112(%rbp), %r13
-movq %r13, -160(%rbp)
-
-#.label4:   
-.label4:
-
-#.t15 = .t15 + 1
-movq -160(%rbp), %r13
-movq $1, %r14
-addq %r13, %r14
-movq %r14, -160(%rbp)
-
-#.t16 = .t15 < .t14
-movq -160(%rbp), %r13
-movq -152(%rbp), %r14
-cmpq %r13, %r14
-setg %al
-movzbq %al, %r14
-movq %r14, -168(%rbp)
-
-#if_false .t16 goto .label3
-mov -168(%rbp), %rax
-cmp $0, %rax
-je .label3
-
-#j = .t15
-movq -160(%rbp), %r13
-movq %r13, -48(%rbp)
-
-#.t18 = j * 8
-movq -48(%rbp), %r13
-movq $8, %r14
-imulq %r13, %r14
-movq %r14, -176(%rbp)
-
-#.t19 = 1
-movq $1, -184(%rbp)
-
-#.t20 = j + .t19
-movq -48(%rbp), %r13
-movq -184(%rbp), %r14
-addq %r13, %r14
-movq %r14, -192(%rbp)
-
-#.t22 = .t20 * 8
-movq -192(%rbp), %r13
-movq $8, %r14
-imulq %r13, %r14
-movq %r14, -200(%rbp)
-
-#.t23 = array[.t18] > array[.t22]
-movq -8(%rbp), %r10
-movq -176(%rbp), %r11
-movq -8(%rbp), %r12
-movq -200(%rbp), %r15
-movq ( %r10, %r11 ), %r13
-movq ( %r12, %r15 ), %r14
-cmpq %r14, %r13
-setg %al
-movzbq %al, %r14
-movq %r14, -208(%rbp)
-
-#if_false .t23 goto .label6
-mov -208(%rbp), %rax
-cmp $0, %rax
-je .label6
-
-#.t25 = j * 8
-movq -48(%rbp), %r13
-movq $8, %r14
-imulq %r13, %r14
-movq %r14, -216(%rbp)
-
-#temp = array[.t25]
-movq -8(%rbp), %r10
-movq -216(%rbp), %r11
-movq ( %r10, %r11 ), %r13
-movq %r13, -224(%rbp)
-
-#.t27 = j * 8
-movq -48(%rbp), %r13
-movq $8, %r14
-imulq %r13, %r14
-movq %r14, -232(%rbp)
-
-#.t28 = 1
-movq $1, -240(%rbp)
-
-#.t29 = j + .t28
-movq -48(%rbp), %r13
-movq -240(%rbp), %r14
-addq %r13, %r14
-movq %r14, -248(%rbp)
-
-#.t31 = .t29 * 8
-movq -248(%rbp), %r13
-movq $8, %r14
-imulq %r13, %r14
-movq %r14, -256(%rbp)
-
-#array[.t27] = array[.t31]
-movq -8(%rbp), %r8
-movq -232(%rbp), %r9
-movq -8(%rbp), %r10
-movq -256(%rbp), %r11
-movq ( %r10, %r11 ), %r13
-movq %r13, ( %r8, %r9 )
-
-#.t32 = 1
-movq $1, -272(%rbp)
-
-#.t33 = j + .t32
-movq -48(%rbp), %r13
-movq -272(%rbp), %r14
-addq %r13, %r14
-movq %r14, -280(%rbp)
-
-#.t35 = .t33 * 8
-movq -280(%rbp), %r13
-movq $8, %r14
-imulq %r13, %r14
-movq %r14, -288(%rbp)
-
-#array[.t35] = temp
-movq -8(%rbp), %r8
-movq -288(%rbp), %r9
-movq -224(%rbp), %r13
-movq %r13, ( %r8, %r9 )
-
-#.t36 = True
-movq (%rbp), %r13
-movq %r13, -304(%rbp)
-
-#swapped = .t36
-movq -304(%rbp), %r13
-movq %r13, -104(%rbp)
-
-#goto .label5  
-jmp .label5
-
-#.label6:   
-.label6:
-
-#.label5:   
-.label5:
-
-#goto .label4  
-jmp .label4
-
-#.label3:   
-.label3:
-
-#.t37 = not swapped
-movq -104(%rbp), %r14
-cmpq $0, %r14
-sete %al
-movzbq %al, %r14
-movq %r14, -312(%rbp)
-
-#if_false .t37 goto .label8
-mov -312(%rbp), %rax
-cmp $0, %rax
-je .label8
-
-#goto .label7  
-jmp .label7
-
-#.label8:   
-.label8:
-
-#.label7:   
-.label7:
-
-#goto .label2  
-jmp .label2
-
-#.label1:   
-.label1:
+#move8 .t2 .t1[0] 
+movq -24(%rbp), %r10
+movq $0, %r11
+movq -32(%rbp), %r13
+movq %r13, ( %r10, %r11 )
 
 #ret   
 popq %r15
@@ -314,7 +55,384 @@ popq %r12
 popq %rsi
 popq %rdi
 popq %rbx
-addq $312, %rsp
+addq $40, %rsp
+popq %rbp
+movq $8, %r13
+ret
+
+#ompho_say_my_name:   
+ompho_say_my_name:
+pushq %rbp
+movq %rsp, %rbp
+subq $32, %rsp
+pushq %rbx
+pushq %rdi
+pushq %rsi
+pushq %r12
+pushq %r13
+pushq %r14
+pushq %r15
+
+#move8 16(%rbp) self 
+movq 16(%rbp), %r13
+movq %r13, -8(%rbp)
+
+#.t3 = "omphoo"
+movq $.str1, %r13
+movq %r13, -24(%rbp)
+
+#move8 .t3 %rax 
+movq -24(%rbp), %r13
+movq %r13, %rax
+
+#ret   
+popq %r15
+popq %r14
+popq %r13
+popq %r12
+popq %rsi
+popq %rdi
+popq %rbx
+addq $32, %rsp
+popq %rbp
+movq $8, %r13
+ret
+
+#foo___init__:   
+foo___init__:
+pushq %rbp
+movq %rsp, %rbp
+subq $32, %rsp
+pushq %rbx
+pushq %rdi
+pushq %rsi
+pushq %r12
+pushq %r13
+pushq %r14
+pushq %r15
+
+#move8 16(%rbp) self 
+movq 16(%rbp), %r13
+movq %r13, -8(%rbp)
+
+#.t5 = self + 0
+movq -8(%rbp), %r13
+movq $0, %r14
+addq %r13, %r14
+movq %r14, -24(%rbp)
+
+#.t6 = 1
+movq $1, -32(%rbp)
+
+#.t5 = .t4
+movq (%rbp), %r13
+movq %r13, -24(%rbp)
+
+#ret   
+popq %r15
+popq %r14
+popq %r13
+popq %r12
+popq %rsi
+popq %rdi
+popq %rbx
+addq $32, %rsp
+popq %rbp
+movq $8, %r13
+ret
+
+#foo_sub:   
+foo_sub:
+pushq %rbp
+movq %rsp, %rbp
+subq $64, %rsp
+pushq %rbx
+pushq %rdi
+pushq %rsi
+pushq %r12
+pushq %r13
+pushq %r14
+pushq %r15
+
+#move8 16(%rbp) self 
+movq 16(%rbp), %r13
+movq %r13, -8(%rbp)
+
+#move8 24(%rbp) a 
+movq 24(%rbp), %r13
+movq %r13, -16(%rbp)
+
+#move8 32(%rbp) b 
+movq 32(%rbp), %r13
+movq %r13, -24(%rbp)
+
+#.t7 = a - b
+movq -16(%rbp), %r13
+movq -24(%rbp), %r14
+subq %r14, %r13
+movq %r13, -56(%rbp)
+
+#move8 .t7 %rax 
+movq -56(%rbp), %r13
+movq %r13, %rax
+
+#ret   
+popq %r15
+popq %r14
+popq %r13
+popq %r12
+popq %rsi
+popq %rdi
+popq %rbx
+addq $64, %rsp
+popq %rbp
+movq $24, %r13
+ret
+
+#klass___init__:   
+klass___init__:
+pushq %rbp
+movq %rsp, %rbp
+subq $72, %rsp
+pushq %rbx
+pushq %rdi
+pushq %rsi
+pushq %r12
+pushq %r13
+pushq %r14
+pushq %r15
+
+#move8 16(%rbp) self 
+movq 16(%rbp), %r13
+movq %r13, -8(%rbp)
+
+#move8 24(%rbp) x 
+movq 24(%rbp), %r13
+movq %r13, -32(%rbp)
+
+#.t9 = self + 0
+movq -8(%rbp), %r13
+movq $0, %r14
+addq %r13, %r14
+movq %r14, -40(%rbp)
+
+#.t10 = 1
+movq $1, -48(%rbp)
+
+#.t9 = .t8
+movq (%rbp), %r13
+movq %r13, -40(%rbp)
+
+#.t11 = self + 8
+movq -8(%rbp), %r13
+movq $8, %r14
+addq %r13, %r14
+movq %r14, -56(%rbp)
+
+#.t12 = 2
+movq $2, -64(%rbp)
+
+#move8 .t12 .t11[0] 
+movq -56(%rbp), %r10
+movq $0, %r11
+movq -64(%rbp), %r13
+movq %r13, ( %r10, %r11 )
+
+#ret   
+popq %r15
+popq %r14
+popq %r13
+popq %r12
+popq %rsi
+popq %rdi
+popq %rbx
+addq $72, %rsp
+popq %rbp
+movq $16, %r13
+ret
+
+#klass_add:   
+klass_add:
+pushq %rbp
+movq %rsp, %rbp
+subq $48, %rsp
+pushq %rbx
+pushq %rdi
+pushq %rsi
+pushq %r12
+pushq %r13
+pushq %r14
+pushq %r15
+
+#move8 16(%rbp) self 
+movq 16(%rbp), %r13
+movq %r13, -8(%rbp)
+
+#.t13 = self + 0
+movq -8(%rbp), %r13
+movq $0, %r14
+addq %r13, %r14
+movq %r14, -24(%rbp)
+
+#.t14 = self + 8
+movq -8(%rbp), %r13
+movq $8, %r14
+addq %r13, %r14
+movq %r14, -32(%rbp)
+
+#.t15 = .t13[0] + .t14[0]
+movq -24(%rbp), %r10
+movq $0, %r11
+movq -32(%rbp), %r12
+movq $0, %r15
+movq ( %r10, %r11 ), %r13
+movq ( %r12, %r15 ), %r14
+addq %r13, %r14
+movq %r14, -40(%rbp)
+
+#x = .t15
+movq -40(%rbp), %r13
+movq %r13, -48(%rbp)
+
+#print, x int 
+mov -48(%rbp), %rax
+mov %rax, %rsi
+lea .note0(%rip), %rax
+mov %rax, %rdi
+xor %rax, %rax
+movq %rsp, -56(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+call printf@plt
+movq -56(%rbp), %rsp
+
+#ret   
+popq %r15
+popq %r14
+popq %r13
+popq %r12
+popq %rsi
+popq %rdi
+popq %rbx
+addq $48, %rsp
+popq %rbp
+movq $8, %r13
+ret
+
+#ret   
+popq %r15
+popq %r14
+popq %r13
+popq %r12
+popq %rsi
+popq %rdi
+popq %rbx
+addq $48, %rsp
+popq %rbp
+movq $8, %r13
+ret
+
+#temp___init__:   
+temp___init__:
+pushq %rbp
+movq %rsp, %rbp
+subq $48, %rsp
+pushq %rbx
+pushq %rdi
+pushq %rsi
+pushq %r12
+pushq %r13
+pushq %r14
+pushq %r15
+
+#move8 16(%rbp) self 
+movq 16(%rbp), %r13
+movq %r13, -8(%rbp)
+
+#move8 24(%rbp) x 
+movq 24(%rbp), %r13
+movq %r13, -32(%rbp)
+
+#.t16 = self + 0
+movq -8(%rbp), %r13
+movq $0, %r14
+addq %r13, %r14
+movq %r14, -40(%rbp)
+
+#move8 x .t16[0] 
+movq -40(%rbp), %r10
+movq $0, %r11
+movq -32(%rbp), %r13
+movq %r13, ( %r10, %r11 )
+
+#ret   
+popq %r15
+popq %r14
+popq %r13
+popq %r12
+popq %rsi
+popq %rdi
+popq %rbx
+addq $48, %rsp
+popq %rbp
+movq $16, %r13
+ret
+
+#temp_sub:   
+temp_sub:
+pushq %rbp
+movq %rsp, %rbp
+subq $24, %rsp
+pushq %rbx
+pushq %rdi
+pushq %rsi
+pushq %r12
+pushq %r13
+pushq %r14
+pushq %r15
+
+#move8 16(%rbp) self 
+movq 16(%rbp), %r13
+movq %r13, -8(%rbp)
+
+#.t17 = self + 0
+movq -8(%rbp), %r13
+movq $0, %r14
+addq %r13, %r14
+movq %r14, -16(%rbp)
+
+#print, .t17[0] int 
+movq -16(%rbp), %r8
+movq $0, %r9
+mov ( %r8, %r9 ), %rax
+mov %rax, %rsi
+lea .note0(%rip), %rax
+mov %rax, %rdi
+xor %rax, %rax
+movq %rsp, -32(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+call printf@plt
+movq -32(%rbp), %rsp
+
+#.t18 = 3
+movq $3, -24(%rbp)
+
+#move8 .t18 %rax 
+movq -24(%rbp), %r13
+movq %r13, %rax
+
+#ret   
+popq %r15
+popq %r14
+popq %r13
+popq %r12
+popq %rsi
+popq %rdi
+popq %rbx
+addq $24, %rsp
 popq %rbp
 movq $8, %r13
 ret
@@ -323,241 +441,252 @@ ret
 main:
 pushq %rbp
 movq %rsp, %rbp
-subq $184, %rsp
+subq $160, %rsp
 
-#.t38 = 2
-movq $2, -8(%rbp)
+#.t20 = 123
+movq $123, -8(%rbp)
 
-#.t39 = .t38 * -1
-movq -8(%rbp), %r13
-movq $-1, %r14
-imulq %r13, %r14
-movq %r14, -16(%rbp)
-
-#.t40 = 45
-movq $45, -24(%rbp)
-
-#.t41 = 0
-movq $0, -32(%rbp)
-
-#.t42 = 11
-movq $11, -40(%rbp)
-
-#.t43 = 9
-movq $9, -48(%rbp)
-
-#.t44 = .t43 * -1
-movq -48(%rbp), %r13
-movq $-1, %r14
-imulq %r13, %r14
-movq %r14, -56(%rbp)
-
-#.t45 = alloc_mem(48) 
-movq %rsp, -184(%rbp)
+##callnew   
+movq %rsp, -160(%rbp)
 shr $4, %rsp
 sub $1, %rsp
 shl $4, %rsp
-movq $48, %rdi
+
+#push .t20  
+pushq -8(%rbp)
+
+#.t19 = alloc_mem(8) 
+movq %rsp, -160(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+movq $8, %rdi
 call malloc@plt
-movq -184(%rbp), %rsp
-movq %rax, -64(%rbp)
+movq -160(%rbp), %rsp
+movq %rax, -16(%rbp)
 
-#.t46 = 0
-movq $0, -72(%rbp)
+#push .t19  
+pushq -16(%rbp)
 
-#.t45[.t46] = 5
-movq -64(%rbp), %r8
-movq -72(%rbp), %r9
-movq $5, ( %r8, %r9 )
+#call, temp___init__  
+call temp___init__
+addq %r13, %rsp
+movq -160(%rbp), %rsp
 
-#.t46 = .t46 + 8
-movq -72(%rbp), %r13
-movq $8, %r14
-addq %r13, %r14
-movq %r14, -72(%rbp)
-
-#.t45[.t46] = .t39
-movq -64(%rbp), %r8
-movq -72(%rbp), %r9
+#z = .t19
 movq -16(%rbp), %r13
-movq %r13, ( %r8, %r9 )
+movq %r13, -24(%rbp)
 
-#.t46 = .t46 + 8
-movq -72(%rbp), %r13
-movq $8, %r14
-addq %r13, %r14
-movq %r14, -72(%rbp)
+#.t22 = 2
+movq $2, -32(%rbp)
 
-#.t45[.t46] = .t40
-movq -64(%rbp), %r8
-movq -72(%rbp), %r9
-movq -24(%rbp), %r13
-movq %r13, ( %r8, %r9 )
+##callnew   
+movq %rsp, -160(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
 
-#.t46 = .t46 + 8
-movq -72(%rbp), %r13
-movq $8, %r14
-addq %r13, %r14
-movq %r14, -72(%rbp)
+#push .t22  
+pushq -32(%rbp)
 
-#.t45[.t46] = .t41
-movq -64(%rbp), %r8
-movq -72(%rbp), %r9
-movq -32(%rbp), %r13
-movq %r13, ( %r8, %r9 )
+#.t21 = alloc_mem(16) 
+movq %rsp, -160(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+movq $16, %rdi
+call malloc@plt
+movq -160(%rbp), %rsp
+movq %rax, -40(%rbp)
 
-#.t46 = .t46 + 8
-movq -72(%rbp), %r13
-movq $8, %r14
-addq %r13, %r14
-movq %r14, -72(%rbp)
+#push .t21  
+pushq -40(%rbp)
 
-#.t45[.t46] = .t42
-movq -64(%rbp), %r8
-movq -72(%rbp), %r9
+#call, klass___init__  
+call klass___init__
+addq %r13, %rsp
+movq -160(%rbp), %rsp
+
+#k = .t21
 movq -40(%rbp), %r13
-movq %r13, ( %r8, %r9 )
+movq %r13, -48(%rbp)
 
-#.t46 = .t46 + 8
-movq -72(%rbp), %r13
-movq $8, %r14
-addq %r13, %r14
-movq %r14, -72(%rbp)
+##callnew   
+movq %rsp, -160(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
 
-#.t45[.t46] = .t44
-movq -64(%rbp), %r8
-movq -72(%rbp), %r9
-movq -56(%rbp), %r13
-movq %r13, ( %r8, %r9 )
+#push z  
+pushq -24(%rbp)
 
-#.t46 = .t46 + 8
-movq -72(%rbp), %r13
-movq $8, %r14
-addq %r13, %r14
-movq %r14, -72(%rbp)
+#call, temp_sub  
+call temp_sub
+addq %r13, %rsp
+movq -160(%rbp), %rsp
 
-#.t45 = .t45 + 8
-movq -64(%rbp), %r13
-movq $8, %r14
-addq %r13, %r14
-movq %r14, -64(%rbp)
+#move8 %rax w 
+movq %rax, %r13
+movq %r13, -64(%rbp)
 
-#data = .t45
-movq -64(%rbp), %r13
+#.t24 = 102
+movq $102, -72(%rbp)
+
+#.t25 = 33
+movq $33, -80(%rbp)
+
+##callnew   
+movq %rsp, -160(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+
+#push .t25  
+pushq -80(%rbp)
+
+#push .t24  
+pushq -72(%rbp)
+
+#push k  
+pushq -48(%rbp)
+
+#call, foo_sub  
+call foo_sub
+addq %r13, %rsp
+movq -160(%rbp), %rsp
+
+#move8 %rax m 
+movq %rax, %r13
 movq %r13, -88(%rbp)
 
 ##callnew   
-movq %rsp, -184(%rbp)
+movq %rsp, -160(%rbp)
 shr $4, %rsp
 sub $1, %rsp
 shl $4, %rsp
 
-#push data  
-pushq -88(%rbp)
+#push k  
+pushq -48(%rbp)
 
-#call, bubbleSort  
-call bubbleSort
+#call, ompho_say_my_name  
+call ompho_say_my_name
 addq %r13, %rsp
-movq -184(%rbp), %rsp
+movq -160(%rbp), %rsp
 
-#move8 %rax .t47 
+#move8 %rax l 
 movq %rax, %r13
 movq %r13, -96(%rbp)
 
-#.t48 = "Sorted Array in Ascending Order:"
-movq $.str1, %r13
-movq %r13, -112(%rbp)
-
-#print, .t48 str 
-mov -112(%rbp), %rax
-mov %rax, %rsi
-movq -112(%rbp), %rdi
-mov %rax, %rdi
-xor %rax, %rax
-movq %rsp, -184(%rbp)
-shr $4, %rsp
-sub $1, %rsp
-shl $4, %rsp
-call printf@plt
-movq -184(%rbp), %rsp
-
-#.t49 = 0
-movq $0, -120(%rbp)
-
-#i = .t49
-movq -120(%rbp), %r13
-movq %r13, -128(%rbp)
-
-#.t50 = -8
-movq $-8, %r13
-movq %r13, -136(%rbp)
-
-#.t51 = data[.t50]
-movq -88(%rbp), %r10
-movq -136(%rbp), %r11
-movq ( %r10, %r11 ), %r13
-movq %r13, -144(%rbp)
-
-#.t52 = -1
-movq $-1, %r13
-movq %r13, -152(%rbp)
-
-#.t53 = .t52
-movq -152(%rbp), %r13
-movq %r13, -160(%rbp)
-
-#.label10:   
-.label10:
-
-#.t53 = .t53 + 1
-movq -160(%rbp), %r13
-movq $1, %r14
-addq %r13, %r14
-movq %r14, -160(%rbp)
-
-#.t54 = .t53 < .t51
-movq -160(%rbp), %r13
-movq -144(%rbp), %r14
-cmpq %r13, %r14
-setg %al
-movzbq %al, %r14
-movq %r14, -168(%rbp)
-
-#if_false .t54 goto .label9
-mov -168(%rbp), %rax
-cmp $0, %rax
-je .label9
-
-#i = .t53
-movq -160(%rbp), %r13
-movq %r13, -128(%rbp)
-
-#.t56 = i * 8
-movq -128(%rbp), %r13
-movq $8, %r14
-imulq %r13, %r14
-movq %r14, -176(%rbp)
-
-#print, data[.t56] int 
-movq -88(%rbp), %r8
-movq -176(%rbp), %r9
-mov ( %r8, %r9 ), %rax
+#print, m int 
+mov -88(%rbp), %rax
 mov %rax, %rsi
 lea .note0(%rip), %rax
 mov %rax, %rdi
 xor %rax, %rax
-movq %rsp, -184(%rbp)
+movq %rsp, -160(%rbp)
 shr $4, %rsp
 sub $1, %rsp
 shl $4, %rsp
 call printf@plt
-movq -184(%rbp), %rsp
+movq -160(%rbp), %rsp
 
-#goto .label10  
-jmp .label10
+#.t28 = "b"
+movq $.str2, %r13
+movq %r13, -104(%rbp)
 
-#.label9:   
-.label9:
+#a = .t28
+movq -104(%rbp), %r13
+movq %r13, -112(%rbp)
+
+#.t29 = "a"
+movq $.str3, %r13
+movq %r13, -120(%rbp)
+
+#b = .t29
+movq -120(%rbp), %r13
+movq %r13, -128(%rbp)
+
+#.t30 = a == b
+# comparison of strings
+movq -112(%rbp), %rdi
+movq -128(%rbp), %rsi
+call strcmp@PLT
+cmpq $0, %rax
+sete %al
+movzbq %al, %r14
+movq %r14, -136(%rbp)
+
+#print, .t30 int 
+mov -136(%rbp), %rax
+mov %rax, %rsi
+lea .note0(%rip), %rax
+mov %rax, %rdi
+xor %rax, %rax
+movq %rsp, -160(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+call printf@plt
+movq -160(%rbp), %rsp
+
+#.t31 = a > b
+# comparison of strings
+movq -112(%rbp), %rdi
+movq -128(%rbp), %rsi
+call strcmp@PLT
+cmp $1, %eax
+sete %al
+movzbq %al, %r14
+movq %r14, -144(%rbp)
+
+#print, .t31 int 
+mov -144(%rbp), %rax
+mov %rax, %rsi
+lea .note0(%rip), %rax
+mov %rax, %rdi
+xor %rax, %rax
+movq %rsp, -160(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+call printf@plt
+movq -160(%rbp), %rsp
+
+#.t32 = a < b
+# comparison of strings
+movq -112(%rbp), %rdi
+movq -128(%rbp), %rsi
+call strcmp@PLT
+test %eax, %eax
+setl %al
+movzbq %al, %r14
+movq %r14, -152(%rbp)
+
+#print, .t32 int 
+mov -152(%rbp), %rax
+mov %rax, %rsi
+lea .note0(%rip), %rax
+mov %rax, %rdi
+xor %rax, %rax
+movq %rsp, -160(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+call printf@plt
+movq -160(%rbp), %rsp
+
+#print, l str 
+mov -96(%rbp), %rax
+mov %rax, %rsi
+movq -96(%rbp), %rdi
+mov %rax, %rdi
+xor %rax, %rax
+movq %rsp, -160(%rbp)
+shr $4, %rsp
+sub $1, %rsp
+shl $4, %rsp
+call printf@plt
+movq -160(%rbp), %rsp
 
 pop %rbx
 mov $60, %rax       # System call number for exit

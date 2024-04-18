@@ -1374,7 +1374,10 @@ atom_expr: AWAIT atom trailer_star {$$=create_node(4,"Await_stmt",$1,$2,$3);}
                         create_ins(0,"push",func_arguments[i][0],"","");
                     }
                     create_ins(0,"push",$1->lexeme,"","");
-                    create_ins(0,"call,",string($1->type_of_node)+"_"+func_arguments[0][0],"","");
+                    string get_name=get_full_name(global_sym_table,$1->type_of_node,func_arguments[0][0]);
+
+                    // create_ins(0,"call,",string($1->type_of_node)+"_"+func_arguments[0][0],"","");
+                    create_ins(0,"call,",get_name,"","");
                 }
         
                 class_func_call_active=-1;
@@ -2770,13 +2773,21 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table,int ins_no)
         }
         else if(ins[1]=="<"){
             if(str_cmp_ins_no.count(ins_no)){
-                x86_file.push_back("movq " + reg2 + ", %rdi");
-                x86_file.push_back("movq " + reg3 + ", %rsi");
-                x86_file.push_back("call strcmp@PLT");
-                x86_file.push_back("cmp $1, %eax");
-                x86_file.push_back("setne %al");             
-                x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
-                x86_file.push_back("movq %r14, "+reg1);
+                x86_file.push_back("movq " + reg2 + ", %rdi");    // Move address of string a into %rdi
+                x86_file.push_back("movq " + reg3 + ", %rsi");    // Move address of string b into %rsi
+                x86_file.push_back("call strcmp@PLT");            // Call strcmp to compare the strings
+                x86_file.push_back("test %eax, %eax");            // Test if result is zero
+                x86_file.push_back("setl %al");                   // Set AL to 1 if string a < b (result < 0)
+                x86_file.push_back("movzbq %al, %r14");           // Zero-extend AL to 64 bits and store in %r14
+                x86_file.push_back("movq %r14, "+reg1);           // Move the result into reg1
+
+                // x86_file.push_back("movq " + reg2 + ", %rdi");
+                // x86_file.push_back("movq " + reg3 + ", %rsi");
+                // x86_file.push_back("call strcmp@PLT");
+                // x86_file.push_back("cmp $1, %eax");
+                // x86_file.push_back("setne %al");             
+                // x86_file.push_back("movzbq %al, %r14");     // Move the result into %r14, zero-extending it to 64 bits
+                // x86_file.push_back("movq %r14, "+reg1);
             }else{
                 x86_file.push_back("movq " + reg2 + ", %r13");
                 x86_file.push_back("movq " + reg3 + ", %r14");     // Move the value of 'a' into %rax
