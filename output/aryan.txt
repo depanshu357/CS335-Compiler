@@ -1,7 +1,7 @@
-main:   
-.t1 = 1
-.t2 = 2
-.t3 = 3
+highest:   
+.t1 = 263
+.t2 = 262
+.t3 = 248
 .t4 = alloc_mem(32) 
 .t5 = 0
 .t4[.t5] = 3
@@ -13,15 +13,212 @@ main:
 .t4[.t5] = .t3
 .t5 = .t5 + 8
 .t4 = .t4 + 8
-arr = .t4
-.t6 = -8
-.t7 = arr[.t6]
-.t7 = .t7 * 8
-.label2:   
-.t6 = .t6 + 8
-.t8 = .t6 < .t7
-if_false .t8 goto .label1
-i = arr[.t6]
-print, i int 
-goto .label2  
+move8 .t4 %rax 
+ret   
+highest_against:   
+.t6 = "PWI,2013"
+.t7 = "SRH,2024"
+.t8 = "GL,2016"
+.t9 = alloc_mem(32) 
+.t10 = 0
+.t9[.t10] = 3
+.t10 = .t10 + 8
+.t9[.t10] = .t6
+.t10 = .t10 + 8
+.t9[.t10] = .t7
+.t10 = .t10 + 8
+.t9[.t10] = .t8
+.t10 = .t10 + 8
+.t9 = .t9 + 8
+move8 .t9 %rax 
+ret   
+lowest:   
+.t11 = 49
+.t12 = 68
+.t13 = 70
+.t14 = alloc_mem(32) 
+.t15 = 0
+.t14[.t15] = 3
+.t15 = .t15 + 8
+.t14[.t15] = .t11
+.t15 = .t15 + 8
+.t14[.t15] = .t12
+.t15 = .t15 + 8
+.t14[.t15] = .t13
+.t15 = .t15 + 8
+.t14 = .t14 + 8
+move8 .t14 %rax 
+ret   
+lowest_against:   
+.t16 = "KKR, 2017"
+.t17 = "SRH, 2022"
+.t18 = "RR,2014 and CSK, 2019"
+.t19 = alloc_mem(32) 
+.t20 = 0
+.t19[.t20] = 3
+.t20 = .t20 + 8
+.t19[.t20] = .t16
+.t20 = .t20 + 8
+.t19[.t20] = .t17
+.t20 = .t20 + 8
+.t19[.t20] = .t18
+.t20 = .t20 + 8
+.t19 = .t19 + 8
+move8 .t19 %rax 
+ret   
+binary_search:   
+move8 16(%rbp) arr 
+move8 24(%rbp) x 
+.t21 = 0
+low = .t21
+.t22 = -8
+.t23 = arr[.t22]
+.t24 = 1
+.t25 = .t23 - .t24
+high = .t25
 .label1:   
+.t26 = low <= high
+if_false .t26 goto .label2
+.t27 = high - low
+.t28 = 2
+.t29 = .t27 // .t28
+.t30 = low + .t29
+mid = .t30
+.t32 = mid * 8
+.t33 = arr[.t32] == x
+if_false .t33 goto .label4
+move8 mid %rax 
+ret   
+goto .label3  
+.label4:   
+.t35 = mid * 8
+.t36 = arr[.t35] < x
+if_false .t36 goto .label5
+.t37 = 1
+.t38 = mid + .t37
+low = .t38
+goto .label3  
+.label5:   
+.t39 = 1
+.t40 = mid - .t39
+high = .t40
+.label3:   
+goto .label1  
+.label2:   
+.t41 = 1
+.t42 = .t41 * -1
+move8 .t42 %rax 
+ret   
+main:   
+#callnew   
+call, highest  
+move8 %rax .t43 
+runs_highest = .t43
+#callnew   
+call, highest_against  
+move8 %rax .t44 
+runs_highest_against = .t44
+#callnew   
+call, lowest  
+move8 %rax .t45 
+runs_lowest = .t45
+#callnew   
+call, lowest_against  
+move8 %rax .t46 
+runs_lowest_against = .t46
+.t47 = "IPL Stats : RCB highest runs in a match"
+print, .t47 str 
+.t48 = 0
+i = .t48
+.t49 = 0
+.t50 = -8
+.t51 = runs_highest[.t50]
+.t49 = .t49 - 1
+.t52 = .t49
+.label7:   
+.t52 = .t52 + 1
+.t53 = .t52 < .t51
+if_false .t53 goto .label6
+i = .t52
+.t55 = i * 8
+print, runs_highest[.t55] int 
+.t56 = "against - "
+print, .t56 str 
+.t58 = i * 8
+print, runs_highest_against[.t58] str 
+.t59 = 1
+.t60 = i + .t59
+i = .t60
+goto .label7  
+.label6:   
+.t61 = "IPL Stats : RCB lowest runs in a match"
+print, .t61 str 
+.t62 = 0
+j = .t62
+.t63 = 0
+.t64 = -8
+.t65 = runs_lowest[.t64]
+.t63 = .t63 - 1
+.t66 = .t63
+.label9:   
+.t66 = .t66 + 1
+.t67 = .t66 < .t65
+if_false .t67 goto .label8
+j = .t66
+.t69 = j * 8
+print, runs_lowest[.t69] int 
+.t70 = "against - "
+print, .t70 str 
+.t72 = j * 8
+print, runs_lowest_against[.t72] str 
+.t73 = 1
+.t74 = j + .t73
+j = .t74
+goto .label9  
+.label8:   
+.t75 = "CSK"
+.t76 = "DC"
+.t77 = "GL"
+.t78 = "KKR"
+.t79 = "LSG"
+.t80 = "MI"
+.t81 = "PK"
+.t82 = "RCB"
+.t83 = "RR"
+.t84 = "SRH"
+.t85 = alloc_mem(88) 
+.t86 = 0
+.t85[.t86] = 10
+.t86 = .t86 + 8
+.t85[.t86] = .t75
+.t86 = .t86 + 8
+.t85[.t86] = .t76
+.t86 = .t86 + 8
+.t85[.t86] = .t77
+.t86 = .t86 + 8
+.t85[.t86] = .t78
+.t86 = .t86 + 8
+.t85[.t86] = .t79
+.t86 = .t86 + 8
+.t85[.t86] = .t80
+.t86 = .t86 + 8
+.t85[.t86] = .t81
+.t86 = .t86 + 8
+.t85[.t86] = .t82
+.t86 = .t86 + 8
+.t85[.t86] = .t83
+.t86 = .t86 + 8
+.t85[.t86] = .t84
+.t86 = .t86 + 8
+.t85 = .t85 + 8
+arr = .t85
+.t87 = "RCB"
+#callnew   
+push .t87  
+push arr  
+call, binary_search  
+move8 %rax .t88 
+index = .t88
+.t89 = "Index of RCB in sorted array is:"
+print, .t89 str 
+print, index int 
