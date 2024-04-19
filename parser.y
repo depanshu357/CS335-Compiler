@@ -31,6 +31,7 @@
     int is_class_arg=0;
     string newTemp();
     vector<string> label_st;
+    vector<string>loop_stack;
     string newLabel();
     vector<string> arr_elements;
     int arr_active = 0;
@@ -220,6 +221,7 @@ for_stmt: FOR exprlist IN testlist COLON {
             create_ins(2,"=",sizetemp2,$4->addr+"["+temp1+"]","");
             create_ins(3,"*",sizetemp2,sizetemp2,"8");
             string label1=newLabel(); //label for FOR
+            loop_stack.push_back(label1); // for break stmt
             create_ins(0,label1+":","","","");
             string temp2=newTemp();
             create_ins(3,"+",temp1,temp1,to_string(offset));
@@ -249,6 +251,7 @@ for_stmt: FOR exprlist IN testlist COLON {
             string label2=newLabel(); //after FOR label
             create_ins(2,"=",temp1,low,"");
             string label1=newLabel(); //label for FOR
+            loop_stack.push_back(label1); // for break stmt
             create_ins(0,label1+":","","","");
             string temp2=newTemp();
             create_ins(3,"+",temp1,temp1,"1");
@@ -268,7 +271,9 @@ for_stmt: FOR exprlist IN testlist COLON {
             create_ins(0,"goto",label_st.back(),"","");
             label_st.pop_back();
         }
-
+        if(!loop_stack.empty()){
+            loop_stack.pop_back();
+        }
         if(!label_st.empty())
         {
             create_ins(0,label_st.back()+":","","","");
@@ -530,9 +535,19 @@ flow_stmt: break_stmt {$$ = $1;}
     | raise_stmt {$$ = $1;}
     ;
     
-break_stmt: BREAK {$$  = $1;};
+break_stmt: BREAK {$$  = $1;
+        for(int i=0;i<label_st.size();i++){
+            if(!loop_stack.empty() &&label_st[i]==loop_stack.back() && i>0){
+                create_ins(0,"goto",label_st[i-1],"","");
+                
+                break;
+            }
+        }
+    };
 
-continue_stmt: CONTINUE {$$ = $1;};
+continue_stmt: CONTINUE {$$ = $1;
+        create_ins(0,"goto",loop_stack.back(),"","");
+    };
 
 return_stmt: RETURN testlist_star_expr {
         $$ = create_node(3,"Return_stmt",$1,$2);
