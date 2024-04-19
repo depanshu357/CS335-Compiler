@@ -1,24 +1,54 @@
-def binarySearch(array: list[int], x: int, low: int, high: int) -> int:
-  while low <= high:
-      mid: int = low + (high - low) // 2
-      if array[mid] == x:
-          return mid
-      elif array[mid] < x:
-          low = mid + 1
-      else:
-          high = mid - 1
-  return -1
-
-
 def main():
-  array: list[int] = [3, 4, 5, 9, 10, 15, 24, 53]
-  result: int = binarySearch(array, 9, 0, len(array) - 1)
 
-  if result != -1:
-      print("Element is present at index:")
-      print(result)
-  else:
-      print("Element is not present")
+    # Check precedence
+    print("6 * 3 // 2 is: (6 * 3) // 2")
+    print(6 * 3 // 2)
+    print("18 // 3 * 2 is: (18 // 3) * 2")
+    print(18 // 3 * 2)
 
+    print("9 // 3 %% 2 is: (9 // 3) %% 2")
+    print(9 // 3 % 2)
+    print("9 %% 3 // 2 is: 9 %% (3 // 2)")
+    print(9 % 3 // 2)
+
+    print("6 / 3 * 2 is: (6 / 3) * 2")
+    print(6 / 3 * 2)
+    print("6 * 4 / 2 is: 6 * (4 / 2) ")
+    print(6 * 4 / 2)
+
+    print("6 * 3 + 2 is: (6 * 3) + 2")
+    print(6 * 3 + 2)
+    print("6 + 3 * 2 is: 6 + (3 * 2)")
+    print(6 + 3 * 2)
+
+    print("6 + 3 - 2 is: 6 + (3 - 2)")
+    print(6 + 3 - 2)
+    print("6 - 3 + 2 is: (6 - 3) + 2")
+    print(6 - 3 + 2)
+
+    # Check associativity
+    print("\nChecking associativity:")
+    print("2 * 3 * 2 is: 2 * (3 * 2) ")
+    print(2 * 3 * 2)
+
+    print("6 // 3 // 2 is: (6 // 3) // 2")
+    print(6 // 3 // 2)
+
+    print("8 %% 5 %% 3 is: (8 %% 5) %% 3 ")
+    print(8 % 5 % 3)
+
+    print("6 / 3 / 2 is: (6 / 3) / 2")
+    print(6 / 3 / 2)
+
+    print("6 * 3 * 2 is: (6 * 3) * 2")
+    print(6 * 3 * 2)
+
+    print("6 + 3 + 2 is: (6 + 3) + 2")
+    print(6 + 3 + 2)
+
+    print("6 - 3 - 2 is: (6 - 3) - 2")
+    print(6 - 3 - 2)
+
+    
 if __name__ == "__main__":
-  main()
+    main()

@@ -1,99 +1,27 @@
-ompho___init__:   
-move8 16(%rbp) self 
-.t1 = self + 0
-.t2 = 1
-move8 .t2 .t1[0] 
-ret   
-ompho_say_my_name:   
-move8 16(%rbp) self 
-.t3 = "omphoo"
-move8 .t3 %rax 
-ret   
-foo___init__:   
-move8 16(%rbp) self 
-.t5 = self + 0
-.t6 = 1
-.t5 = .t4
-ret   
-foo_sub:   
-move8 16(%rbp) self 
-move8 24(%rbp) a 
-move8 32(%rbp) b 
-.t7 = a - b
-move8 .t7 %rax 
-ret   
-klass___init__:   
-move8 16(%rbp) self 
-move8 24(%rbp) x 
-.t9 = self + 0
-.t10 = 1
-.t9 = .t8
-.t11 = self + 8
-.t12 = 2
-move8 .t12 .t11[0] 
-ret   
-klass_add:   
-move8 16(%rbp) self 
-.t13 = self + 0
-.t14 = self + 8
-.t15 = .t13[0] + .t14[0]
-x = .t15
-print, x int 
-ret   
-ret   
-temp___init__:   
-move8 16(%rbp) self 
-move8 24(%rbp) x 
-.t16 = self + 0
-move8 x .t16[0] 
-ret   
-temp_sub:   
-move8 16(%rbp) self 
-.t17 = self + 0
-print, .t17[0] int 
-.t18 = 3
-move8 .t18 %rax 
-ret   
 main:   
-.t20 = 123
-#callnew   
-push .t20  
-.t19 = alloc_mem(8) 
-push .t19  
-call, temp___init__  
-z = .t19
-.t22 = 2
-#callnew   
-push .t22  
-.t21 = alloc_mem(16) 
-push .t21  
-call, klass___init__  
-k = .t21
-#callnew   
-push z  
-call, temp_sub  
-move8 %rax w 
-.t24 = 102
-.t25 = 33
-#callnew   
-push .t25  
-push .t24  
-push k  
-call, foo_sub  
-move8 %rax m 
-#callnew   
-push k  
-call, ompho_say_my_name  
-move8 %rax l 
-print, m int 
-.t28 = "b"
-a = .t28
-.t29 = "a"
-b = .t29
-.t30 = a == b
-print, .t30 int 
-.t31 = a > b
-print, .t31 int 
-.t32 = a < b
-print, .t32 int 
-print, l str 
+.t1 = 1
+.t2 = 2
+.t3 = 3
+.t4 = alloc_mem(32) 
+.t5 = 0
+.t4[.t5] = 3
+.t5 = .t5 + 8
+.t4[.t5] = .t1
+.t5 = .t5 + 8
+.t4[.t5] = .t2
+.t5 = .t5 + 8
+.t4[.t5] = .t3
+.t5 = .t5 + 8
+.t4 = .t4 + 8
+arr = .t4
+.t6 = -8
+.t7 = arr[.t6]
+.t7 = .t7 * 8
+.label2:   
+.t6 = .t6 + 8
+.t8 = .t6 < .t7
+if_false .t8 goto .label1
+i = arr[.t6]
+print, i int 
+goto .label2  
+.label1:   

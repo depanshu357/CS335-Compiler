@@ -86,7 +86,7 @@
 %token <elem> __NAME__ __MAIN__
 %token <elem> ADD_EQUAL SUB_EQUAL MUL_EQUAL  AT_EQUAL  DIV_EQUAL MOD_EQUAL BITWISE_AND_EQUAL  BITWISE_OR_EQUAL  BITWISE_XOR_EQUAL SHIFT_LEFT_EQUAL  SHIFT_RIGHT_EQUAL  POW_EQUAL  FLOOR_DIV_EQUAL 
 %token INDENT DEDENT
-%type <elem> start file_input stmt compound_stmt async_stmt if_stmt if_stmt_deviation elif_namedexpr_test_colon_suite_star while_stmt while_stmt_deviation for_stmt   funcdef funcdef_title func_type_hint_optional parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr  symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr shift_arith_expr_star arith_expr  term  factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument comp_iter sync_comp_for comp_for comp_if test_nocond or_test or_and_test_star and_test and_not_test_star not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option expr_star_expr_option_list   testlist_comp   namedexpr_test test atom number string_plus  else_colon_suite_optional 
+%type <elem> start file_input stmt compound_stmt async_stmt if_stmt if_stmt_deviation elif_namedexpr_test_colon_suite_star while_stmt while_stmt_deviation for_stmt   funcdef funcdef_title func_type_hint_optional parameters typedlist_argument typedlist_arguments comma_option_argument_star typedarglist tfpdef func_body_suite suite stmt_plus simple_stmt semi_colon_small_stmt_star small_stmt flow_stmt break_stmt continue_stmt return_stmt raise_stmt global_stmt nonlocal_stmt comma_name_star assert_stmt expr_stmt testlist symbol_test_star expr_stmt_option1_plus annassign testlist_star_expr testlist_star_expr_option1_star augassign expr  symbol_xor_expr_star xor_expr symbol_and_expr_star and_expr symbol_shift_expr_star shift_expr  arith_expr  term  factor power atom_expr trailer_star trailer classdef bracket_arglist_optional arglist argument_list subscriptlist subscript_list subscript argument comp_iter sync_comp_for comp_for comp_if test_nocond or_test  and_test  not_test comparison comp_op_expr_plus comp_op exprlist expr_star_expr_option namedexpr_test_star_expr_option_list namedexpr_test_star_expr_option expr_star_expr_option_list   testlist_comp   namedexpr_test test atom number string_plus  else_colon_suite_optional 
 
 %%
     
@@ -912,73 +912,114 @@ symbol_shift_expr_star: BITWISE_AND shift_expr symbol_shift_expr_star {
     }
     | /*empty*/ {$$=NULL;}
     ;
-
-shift_expr: arith_expr shift_arith_expr_star {
-    $$ = create_node(3,"Expressions",$1,$2);
-    if($2==NULL || $2->type_of_node=="undefined"){
-        $$->type_of_node= $1->type_of_node;
-    }else{
-        if(($2->type_of_node!="int" && $2->type_of_node!="bool") || ($1->type_of_node!="int" && $1->type_of_node!="bool")){
+shift_expr:shift_expr SHIFT_LEFT arith_expr {
+     $$ = create_node(4,"Shift_expr",$1,$2,$3);
+       if($1->type_of_node!="int" && $3->type_of_node!="int"){
             cout<<"Error invalid operand type at line " <<yylineno <<endl;
             return 0;
         }
-        $$->type_of_node= "int";
+        $$->type_of_node="int";
+        if($1!=NULL){
+            string reg=newTemp();
+            create_ins(3,"<<", reg,$1->addr, $3->addr);
+            $$->addr=reg;
+            $$->residual_ins=$1->residual_ins;
+        }
+        else{
+            $$->addr=$3->addr;
+            $$->residual_ins="<<";
+        }
     }
+    |shift_expr SHIFT_RIGHT arith_expr {
+        $$ = create_node(4,"Shift_expr",$1,$2,$3);
+       if($1->type_of_node!="int" && $3->type_of_node!="int"){
+            cout<<"Error invalid operand type at line " <<yylineno <<endl;
+            return 0;
+        }
+        $$->type_of_node="int";
+        if($1!=NULL){
+            string reg=newTemp();
+            create_ins(3,">>", reg,$1->addr, $3->addr);
+            $$->addr=reg;
+            $$->residual_ins=$1->residual_ins;
+        }
+        else{
+            $$->addr=$3->addr;
+            $$->residual_ins=">>";
+        }
     
-    if($2==NULL){
-        $$->addr= $1->addr;
-        $$->residual_ins= $1->residual_ins;
     }
-    else{
-        string reg = newTemp();
-        create_ins(3,$2->residual_ins,reg,$1->addr,$2->addr);
-        $$->addr = reg;
-        $$->residual_ins = $1->residual_ins;
-    }
-    // cout<<"line 616 "<<$$->addr<<endl;
+    |arith_expr {
+        $$ = $1;
+    };
 
-};
 
-shift_arith_expr_star: /*empty*/ {$$=NULL;}
-    | SHIFT_LEFT arith_expr shift_arith_expr_star {
-        $$ = create_node(4,"Shift_left_expr",$1,$2,$3);
-        if($2->type_of_node!="int" && $2->type_of_node!="bool"){
-            cout<<"Error invalid operand type at line " <<yylineno <<endl;
-            return 0;
-        }
-        $$->type_of_node = $2->type_of_node;
-        if($3!=NULL){
-            string reg=newTemp();
-            create_ins(3,$3->residual_ins, reg,$2->addr, $3->addr);
-            $$->addr=reg;
-            $$->residual_ins=$1->lexeme;
-        }
-        else{
-            $$->addr=$2->addr;
-            $$->residual_ins=$1->lexeme;
+// shift_expr: arith_expr shift_arith_expr_star {
+//     $$ = create_node(3,"Expressions",$1,$2);
+//     if($2==NULL || $2->type_of_node=="undefined"){
+//         $$->type_of_node= $1->type_of_node;
+//     }else{
+//         if(($2->type_of_node!="int" && $2->type_of_node!="bool") || ($1->type_of_node!="int" && $1->type_of_node!="bool")){
+//             cout<<"Error invalid operand type at line " <<yylineno <<endl;
+//             return 0;
+//         }
+//         $$->type_of_node= "int";
+//     }
+    
+//     if($2==NULL){
+//         $$->addr= $1->addr;
+//         $$->residual_ins= $1->residual_ins;
+//     }
+//     else{
+//         string reg = newTemp();
+//         create_ins(3,$2->residual_ins,reg,$1->addr,$2->addr);
+//         $$->addr = reg;
+//         $$->residual_ins = $1->residual_ins;
+//     }
+//     // cout<<"line 616 "<<$$->addr<<endl;
 
-        }
+// };
+
+// shift_arith_expr_star: /*empty*/ {$$=NULL;}
+//     | SHIFT_LEFT arith_expr shift_arith_expr_star {
+//         $$ = create_node(4,"Shift_left_expr",$1,$2,$3);
+//         if($2->type_of_node!="int" && $2->type_of_node!="bool"){
+//             cout<<"Error invalid operand type at line " <<yylineno <<endl;
+//             return 0;
+//         }
+//         $$->type_of_node = $2->type_of_node;
+//         if($3!=NULL){
+//             string reg=newTemp();
+//             create_ins(3,$3->residual_ins, reg,$2->addr, $3->addr);
+//             $$->addr=reg;
+//             $$->residual_ins=$1->lexeme;
+//         }
+//         else{
+//             $$->addr=$2->addr;
+//             $$->residual_ins=$1->lexeme;
+
+//         }
         
-    }
-    | SHIFT_RIGHT arith_expr shift_arith_expr_star {
-        $$ = create_node(4,"Shift_right_expr",$1,$2,$3);
-        if($2->type_of_node!="int" && $2->type_of_node!="bool"){
-            cout<<"Error invalid operand type at line " <<yylineno <<endl;
-            return 0;
-        }
-        $$->type_of_node = $2->type_of_node;
-        if($3!=NULL){
-            string reg=newTemp();
-            create_ins(3,$3->residual_ins, reg,$1->addr, $3->addr);
-            $$->addr=reg;
-            $$->residual_ins=$1->lexeme;
-        }
-        else{
-            $$->addr=$2->addr;
-            $$->residual_ins=$1->lexeme;
-        }
-    }
-    ;
+//     }
+//     | SHIFT_RIGHT arith_expr shift_arith_expr_star {
+//         $$ = create_node(4,"Shift_right_expr",$1,$2,$3);
+//         if($2->type_of_node!="int" && $2->type_of_node!="bool"){
+//             cout<<"Error invalid operand type at line " <<yylineno <<endl;
+//             return 0;
+//         }
+//         $$->type_of_node = $2->type_of_node;
+//         if($3!=NULL){
+//             string reg=newTemp();
+//             create_ins(3,$3->residual_ins, reg,$1->addr, $3->addr);
+//             $$->addr=reg;
+//             $$->residual_ins=$1->lexeme;
+//         }
+//         else{
+//             $$->addr=$2->addr;
+//             $$->residual_ins=$1->lexeme;
+//         }
+//     }
+//     ;
 arith_expr:arith_expr ADD term {
         $$ = create_node(4,"Operator_expr",$1,$2,$3);
         if($3->type_of_node!="int" && $3->type_of_node!="float" && $3->type_of_node!="bool"){
@@ -1947,83 +1988,124 @@ comp_if: IF test_nocond {$$=create_node(3,"IF_stmt",$1,$2);}
 
 test_nocond: or_test {$$=$1;};
 
-or_test: and_test or_and_test_star{
-        $$=create_node(3,"Expressions",$1,$2);
-        if($2==NULL)
-            $$->type_of_node=$1->type_of_node;
-        else{
-            $$->type_of_node="int";
-            }
-        
-        if($2==NULL ){
-            $$->addr=$1->addr;
+
+or_test:or_test OR and_test {
+    $$ = create_node(4,"OR_expr",$1,$2,$3);
+       if($1->type_of_node!="int" && $3->type_of_node!="int"){
+            cout<<"Error invalid operand type at line " <<yylineno <<endl;
+            return 0;
+        }
+        $$->type_of_node="int";
+        if($1!=NULL){
+            string reg=newTemp();
+            create_ins(3,"or", reg,$1->addr, $3->addr);
+            $$->addr=reg;
             $$->residual_ins=$1->residual_ins;
-        }else{
-            string reg = newTemp();
-            create_ins(3,$2->residual_ins,reg,$1->addr,$2->addr);
-            $$->addr = reg;
-            // cout<<$2->residual_ins<<endl;
-            $$->residual_ins = $1->residual_ins;
-        }
-    };
-
-or_and_test_star:OR and_test or_and_test_star {
-        $$=create_node(4,"OR_term",$1,$2,$3);
-        if($3==NULL)
-        {
-            $$->residual_ins = $1->lexeme;
-            $$->addr = $2->addr;
-            // cout<<$1->lexeme<<" "<<$$->addr<<endl;
         }
         else{
-            string reg = newTemp();
-            create_ins(2,$3->residual_ins, reg,$2->addr,$3->addr);
-            $$->residual_ins = $1->lexeme;
-            $$->addr = reg;
+            $$->addr=$3->addr;
+            $$->residual_ins="or";
         }
     }
-    | { $$ = NULL;}
-    ;
-    
-and_test: not_test and_not_test_star {
-    $$=create_node(3,"Expressions",$1,$2);
-    if($2==NULL)
-        $$->type_of_node=$1->type_of_node;
-    else{
-        // karna hai
-        $$->type_of_node="int";
-        }
-    if($2==NULL ){
-        $$->addr=$1->addr;
-        $$->residual_ins=$1->residual_ins;
-        // cout<<"yeh kyu when line "<<yylineno<<endl;
-    }else{
-        // cout<<"line 1128 "<<$2->addr<<" "<<yylineno<<endl;
-        string reg = newTemp();
-        create_ins(3,$2->residual_ins,reg,$1->addr,$2->addr);
-        $$->addr = reg;
-        // cout<<$2->residual_ins<<endl;
-        $$->residual_ins = $1->residual_ins;
-    }
-};
+    | and_test {$$=$1;}; 
 
-and_not_test_star: AND not_test and_not_test_star {
-        $$=create_node(4,"And_term",$1,$2,$3);
+// or_test: and_test or_and_test_star{
+//         $$=create_node(3,"Expressions",$1,$2);
+//         if($2==NULL)
+//             $$->type_of_node=$1->type_of_node;
+//         else{
+//             $$->type_of_node="int";
+//             }
+        
+//         if($2==NULL ){
+//             $$->addr=$1->addr;
+//             $$->residual_ins=$1->residual_ins;
+//         }else{
+//             string reg = newTemp();
+//             create_ins(3,$2->residual_ins,reg,$1->addr,$2->addr);
+//             $$->addr = reg;
+//             // cout<<$2->residual_ins<<endl;
+//             $$->residual_ins = $1->residual_ins;
+//         }
+//     };
+
+// or_and_test_star:OR and_test or_and_test_star {
+//         $$=create_node(4,"OR_term",$1,$2,$3);
+//         if($3==NULL)
+//         {
+//             $$->residual_ins = $1->lexeme;
+//             $$->addr = $2->addr;
+//             // cout<<$1->lexeme<<" "<<$$->addr<<endl;
+//         }
+//         else{
+//             string reg = newTemp();
+//             create_ins(2,$3->residual_ins, reg,$2->addr,$3->addr);
+//             $$->residual_ins = $1->lexeme;
+//             $$->addr = reg;
+//         }
+//     }
+//     | { $$ = NULL;}
+//     ;
+
+and_test:and_test AND not_test {
+    $$ = create_node(4,"AND_expr",$1,$2,$3);
+       if($1->type_of_node!="int" && $3->type_of_node!="int"){
+            cout<<"Error invalid operand type at line " <<yylineno <<endl;
+            return 0;
+        }
         $$->type_of_node="int";
-        if($3==NULL)
-        {
-            $$->residual_ins = $1->lexeme;
-            $$->addr = $2->addr;
+        if($1!=NULL){
+            string reg=newTemp();
+            create_ins(3,"and", reg,$1->addr, $3->addr);
+            $$->addr=reg;
+            $$->residual_ins=$1->residual_ins;
         }
         else{
-            string reg = newTemp();
-            create_ins(2,$3->residual_ins, reg,$2->addr,$3->addr);
-            $$->residual_ins = $1->lexeme;
-            $$->addr = reg;
+            $$->addr=$3->addr;
+            $$->residual_ins="and";
         }
     }
-    | { $$ = NULL;}
-    ;
+    | not_test {$$=$1;}; 
+
+// and_test: not_test and_not_test_star {
+//     $$=create_node(3,"Expressions",$1,$2);
+//     if($2==NULL)
+//         $$->type_of_node=$1->type_of_node;
+//     else{
+//         // karna hai
+//         $$->type_of_node="int";
+//         }
+//     if($2==NULL ){
+//         $$->addr=$1->addr;
+//         $$->residual_ins=$1->residual_ins;
+//         // cout<<"yeh kyu when line "<<yylineno<<endl;
+//     }else{
+//         // cout<<"line 1128 "<<$2->addr<<" "<<yylineno<<endl;
+//         string reg = newTemp();
+//         create_ins(3,$2->residual_ins,reg,$1->addr,$2->addr);
+//         $$->addr = reg;
+//         // cout<<$2->residual_ins<<endl;
+//         $$->residual_ins = $1->residual_ins;
+//     }
+// };
+
+// and_not_test_star: AND not_test and_not_test_star {
+//         $$=create_node(4,"And_term",$1,$2,$3);
+//         $$->type_of_node="int";
+//         if($3==NULL)
+//         {
+//             $$->residual_ins = $1->lexeme;
+//             $$->addr = $2->addr;
+//         }
+//         else{
+//             string reg = newTemp();
+//             create_ins(2,$3->residual_ins, reg,$2->addr,$3->addr);
+//             $$->residual_ins = $1->lexeme;
+//             $$->addr = reg;
+//         }
+//     }
+//     | { $$ = NULL;}
+//     ;
 
 not_test: NOT not_test {
         $$=create_node(3,"Not_term",$1,$2);
@@ -2908,6 +2990,7 @@ void print_x86_ins(vector<string> &ins,  sym_table *symbol_table,int ins_no)
             x86_file.push_back("movq %r14, %rcx");
             x86_file.push_back("shl %cl, %al");
             x86_file.push_back("movq %rax, " + reg1);
+            
         }
         else if(ins[1]==">>"){
             x86_file.push_back("movq " + reg2 + ", %r13");
@@ -3325,7 +3408,7 @@ int main(int argc, char* argv[]){
     
     // Open the output file
     // output_file = "output.dot";
-	fout.open(output_file.c_str() , ios::out | ios::trunc);
+	fout.open(("./output/"+output_file+".dot").c_str() , ios::out | ios::trunc);
     
 
     fout<<"digraph G{"<<endl;
